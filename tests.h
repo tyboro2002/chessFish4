@@ -11,7 +11,9 @@ class TestRunner {
     int passedTests = 0;
     int totalTests = 0;
     std::vector<std::string> failedTests;
+    bool printPassed = true;
 public:
+    TestRunner(bool printPassedArg = true) : printPassed(printPassedArg) {}
     int runAutomatedTestCases();
 private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
@@ -19,6 +21,7 @@ private:
 
     /* test cases */
     void kingMovesGenerator();
+    void knightMovesGenerator();
 };
 
 void king_danger_squares_test();

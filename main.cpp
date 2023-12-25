@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
 #ifdef RUN_TESTS
-    TestRunner testRunner;
+    TestRunner testRunner = TestRunner(false);
     testRunner.runAutomatedTestCases();
     //king_danger_squares_test();
     //path_test();

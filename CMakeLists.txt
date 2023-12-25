@@ -12,4 +12,5 @@ add_executable(ChessFish4 main.cpp
         tests.h
         tests.cpp
         chessFish4Game.cpp
-        chessFish4Game.h)
+        chessFish4Game.h
+        testMoves.h)
