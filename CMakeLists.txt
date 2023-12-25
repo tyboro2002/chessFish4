@@ -10,4 +10,4 @@ add_executable(ChessFish4 main.cpp
         engine.cpp
         time.cpp
         tests.h
-        test.cpp)
+        tests.cpp)
