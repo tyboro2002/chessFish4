@@ -8,6 +8,8 @@ add_executable(ChessFish4 main.cpp
         game.cpp
         engine.h
         engine.cpp
-        time.cpp
+        timing.cpp
         tests.h
-        tests.cpp)
+        tests.cpp
+        chessFish4Game.cpp
+        chessFish4Game.h)

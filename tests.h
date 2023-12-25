@@ -1,9 +1,25 @@
-// engine.h : Include file for standard system include files,
+// test.h : Include file for standard system include files,
 // or project specific include files.
 
 #pragma once
-
+#include <string>
+#include <vector>
 #include <iostream>
+#include <iostream>
+
+class TestRunner {
+    int passedTests = 0;
+    int totalTests = 0;
+    std::vector<std::string> failedTests;
+public:
+    int runAutomatedTestCases();
+private:
+    void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
+    void testResultFalse(bool condition, const std::string& testName); // Utility function to check and report test results
+
+    /* test cases */
+    void kingMovesGenerator();
+};
 
 void king_danger_squares_test();
 void path_test();
@@ -25,7 +41,6 @@ bool mateInOneTest();
 bool mateInTwoTest();
 bool mateInThreeTest();
 
-void kingMovesGenerator();
 void knightMovesGenerator();
 
 void randomTest();
