@@ -121,7 +121,7 @@ int main()
     //time_minimax_code();
     //time_mate_test_code();
     //runAutomatedTests();
-    //runGame();
+    runGame();
 
     //time_parralel_evaluation();
 
