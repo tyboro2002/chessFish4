@@ -15,7 +15,12 @@ add_executable(ChessFish4 main.cpp
         chessFish4Game.h
         testMoves.h
         GUIEngine.h
-        GUIEngineGame.h)
+        GUIEngineGame.h
+        MagicNumberGenerator.cpp
+        MagicNumberGenerator.h
+        MagicsTester.cpp
+        MagicsTester.h
+        moves.cpp)
 
 target_link_libraries(ChessFish4 PRIVATE
         -lpng             # for libpng

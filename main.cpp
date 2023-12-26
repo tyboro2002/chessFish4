@@ -11,7 +11,7 @@ using namespace std;
 
 #define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
-//#define DRAW // Define this macro to run draw
+#define DRAW // Define this macro to run draw
 
 int main() {
 #ifdef RUN_TESTS
@@ -23,13 +23,11 @@ int main() {
     ChessFishVisualiserUI ui;
     if (ui.Construct(1920*SCREEN_SIZE, 1080*SCREEN_SIZE, 1, 1, true))
         ui.Start();
-    return 0;
 #endif
 
 #ifdef RUN_GAME
     runGame();
 #endif
-
     return 0;
 }
 
