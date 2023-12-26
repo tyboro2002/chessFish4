@@ -210,10 +210,91 @@ void TestRunner::knightMovesGenerator() {
     }
 }
 
+void TestRunner::rookMovesGenerator() {
+    Board bord;
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, WROOK, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_white_rook(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_white_rook(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check white rook on square: " << i;
+        testResultTrue(bitmap_white_rook(i,&bord) == rookMoves[i],formattedString.str());
+    }
+
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, BROOK, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_black_rook(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_black_rook(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check black rook on square: " << i;
+        testResultTrue(bitmap_black_rook(i,&bord) == rookMoves[i],formattedString.str());
+    }
+    //TODO add blocked tests
+}
+
+void TestRunner::bischopMovesGenerator() {
+    Board bord;
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, WBISCHOP, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_white_bishop(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_white_bishop(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check white bischop on square: " << i;
+        testResultTrue(bitmap_white_bishop(i,&bord) == bischopMoves[i],formattedString.str());
+    }
+
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, BBISCHOP, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_black_bishop(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_black_bishop(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check black bischop on square: " << i;
+        testResultTrue(bitmap_black_bishop(i,&bord) == bischopMoves[i],formattedString.str());
+    }
+    //TODO add blocked tests
+}
+
+void TestRunner::queenMovesGenerator() {
+    Board bord;
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, WQUEEN, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_white_queen(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_white_queen(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check white queen on square: " << i;
+        testResultTrue(bitmap_white_queen(i,&bord) == queenMoves[i],formattedString.str());
+    }
+
+    for (int i = 0; i < 64; i++) {
+        setupEmpty(&bord);
+        addPiece(&bord, BQUEEN, (Square)i);
+        //printBoard(&bord);
+        //printBitBoard(bitmap_black_queen(i, &bord), "");
+        //cout << std::bitset<64>(bitmap_black_queen(i, &bord)) << endl;
+        std::ostringstream formattedString;
+        formattedString << "check black queen on square: " << i;
+        testResultTrue(bitmap_black_queen(i,&bord) == queenMoves[i],formattedString.str());
+    }
+    //TODO add blocked tests
+}
+
 int TestRunner::runAutomatedTestCases() {
     // Run the tests
     kingMovesGenerator();
     knightMovesGenerator();
+    rookMovesGenerator();
+    bischopMovesGenerator();
+    queenMovesGenerator();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;

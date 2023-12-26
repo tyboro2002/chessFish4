@@ -22,6 +22,9 @@ private:
     /* test cases */
     void kingMovesGenerator();
     void knightMovesGenerator();
+    void rookMovesGenerator();
+    void bischopMovesGenerator();
+    void queenMovesGenerator();
 };
 
 void king_danger_squares_test();

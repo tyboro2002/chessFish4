@@ -5,17 +5,37 @@
 #include "timing.h"
 #include <limits>
 #include "chessFish4Game.h"
+#include "GUIEngineGame.h"
 
 using namespace std;
 
 #define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
+//#define DRAW // Define this macro to run draw
 
 int main() {
 #ifdef RUN_TESTS
     TestRunner testRunner = TestRunner(false);
     testRunner.runAutomatedTestCases();
-    //king_danger_squares_test();
+#endif
+
+#ifdef DRAW
+    ChessFishVisualiserUI ui;
+    if (ui.Construct(1920*SCREEN_SIZE, 1080*SCREEN_SIZE, 1, 1, true))
+        ui.Start();
+    return 0;
+#endif
+
+#ifdef RUN_GAME
+    runGame();
+#endif
+
+    return 0;
+}
+
+
+/*
+ //king_danger_squares_test();
     //path_test();
     //checking_test();
     //time_code();
@@ -36,11 +56,4 @@ int main() {
     //knightMovesGenerator();
 
     //randomTest();
-#endif
-
-#ifdef RUN_GAME
-    runGame();
-#endif
-
-    return 0;
-}
+ */
