@@ -27,7 +27,8 @@ public:
     bool OnUserCreate() override {
         for (int i = 0; i < 64; ++i) {
             //moves[i] = queenMoves[i];
-            moves[i] = bishop_attacks_on_the_fly(i,blocks);
+            //moves[i] = bishop_attacks_on_the_fly(i,blocks);
+            moves[i] = get_bishop_attacks(i,blocks);
             //moves[i] = blocks;
         }
         return true;

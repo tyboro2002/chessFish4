@@ -1,6 +1,40 @@
 #pragma once
 typedef unsigned long long U64;
 
+// bishop attacks table [square][occupancies]
+extern U64 bishop_attacks[64][512];
+
+// rook attacks rable [square][occupancies]
+extern U64 rook_attacks[64][4096];
+
+// rook magic numbers
+extern U64 rook_magic_numbers[64];
+
+// bishop magic numbers
+extern U64 bishop_magic_numbers[64];
+
+const int bischopRelevantBits[64] = {
+        6,5,5,5,5,5,5,6,
+        5,5,5,5,5,5,5,5,
+        5,5,7,7,7,7,5,5,
+        5,5,7,9,9,7,5,5,
+        5,5,7,9,9,7,5,5,
+        5,5,7,7,7,7,5,5,
+        5,5,5,5,5,5,5,5,
+        6,5,5,5,5,5,5,6,
+};
+
+const int rookRelevantBits[64] = {
+        12,11,11,11,11,11,11,12,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        11,10,10,10,10,10,10,11,
+        12,11,11,11,11,11,11,12,
+};
+
 constexpr U64 kingMoves[64] = {
         0b0100000011000000000000000000000000000000000000000000000000000000,
         0b1010000011100000000000000000000000000000000000000000000000000000,
@@ -410,3 +444,8 @@ constexpr U64 h1_mask = 0b000000000000000000000000000000000000000000000000000000
 
 U64 rook_attacks_on_the_fly(int square, U64 block);
 U64 bishop_attacks_on_the_fly(int square, U64 block);
+
+U64 get_rook_attacks(int square, U64 occupancy);
+U64 get_bishop_attacks(int square, U64 occupancy);
+
+void init_sliders_attacks(bool bishop);

@@ -397,46 +397,6 @@ U64 bitmap_all_black_king(Board* bord, int diepte) {	// TODO test of het gewoon 
     }
 }
 
-/*
-// Function to generate a bitboard representing all squares a rook can attack from a given position (0 to 63)
-U64 bitmap_white_rook(int position, Board* bord) {
-	U64 occupied = bord->white | bord->black;
-	U64 rookAttacks = 0ULL;
-	int row = position / 8;
-	int col = position % 8;
-
-	// Generate attacks along the same row (horizontal)
-	U64 horizontalMask = eightRow >> (8 * row);
-	U64 horizontalAttacks = horizontalMask & ~((1ULL << 63) >> position);
-
-	// Remove the squares that are blocked by other pieces along the row to the right of the rook
-	U64 rightOccupied = occupied & (horizontalMask >> (col + 1));
-	U64 rightClearMask = rightOccupied - 1ULL;
-	horizontalAttacks ^= (horizontalAttacks & rightOccupied) & (horizontalAttacks ^ rightClearMask);
-
-	// Remove the squares that are blocked by other pieces along the row to the left of the rook
-	U64 leftOccupied = occupied & (horizontalMask << (8 - col));
-	U64 leftClearMask = (leftOccupied - 1ULL) << 1ULL;
-	horizontalAttacks ^= (horizontalAttacks & leftOccupied) & (horizontalAttacks ^ leftClearMask);
-
-	// Generate attacks along the same column (vertical)
-	U64 verticalMask = A >> col;
-	U64 verticalAttacks = verticalMask & ~((1ULL << 63) >> position);
-
-	// Remove the squares that are blocked by other pieces along the column above the rook
-	U64 upOccupied = occupied & (verticalMask >> (row + 1));
-	U64 upClearMask = rightOccupied - 1ULL;
-	verticalAttacks ^= (verticalAttacks & upOccupied) & (verticalAttacks ^ upClearMask);
-
-	// Remove the squares that are blocked by other pieces along the column below the rook
-	U64 downOccupied = occupied & (verticalMask << (8 - row));
-	U64 downClearMask = (leftOccupied - 1ULL) << 1ULL;
-	verticalAttacks ^= (verticalAttacks & downOccupied) & (verticalAttacks ^ downClearMask);
-
-	rookAttacks = horizontalAttacks | verticalAttacks;
-	return rookAttacks;
-*/
-
 U64 bitmap_white_pawns(int position, Board* bord) {
     U64 wpawns = ((1ULL << 63) >> position); // the square given
     U64 doublePawns = (wpawns & twoRow) & ~((bord->white|bord->black) >> 8); // all positions of white pawns able to move 2
@@ -445,6 +405,7 @@ U64 bitmap_white_pawns(int position, Board* bord) {
     U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
     return (nonCaptures | (captures & bord->black) | (enPassent & captures));
 }
+
 U64 bitmap_black_pawns(int position, Board* bord) {
     U64 bpawns = ((1ULL << 63) >> position); // the square given
     U64 doublePawns = (bpawns & sevenRow) & ~((bord->white | bord->black) << 8); // all positions of black pawns able to move 2
@@ -464,6 +425,7 @@ U64 bitmap_white_king(int position, Board* bord) {
     }
     return ret & (~bord->white);
 }
+
 U64 bitmap_black_king(int position, Board* bord) { //TODO use map lookup
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
@@ -477,233 +439,23 @@ U64 bitmap_black_king(int position, Board* bord) { //TODO use map lookup
 
 // rook attacks
 U64 bitmap_white_rook(int square, Board* bord){
-    square = 63 - square;
-    U64 block = bord->white | bord->black;
-    // attacks bitboard
-    U64 attacks = 0ULL;
-
-    // init files & ranks
-    int f, r;
-
-    // init target files & ranks
-    int tr = square / 8;
-    int tf = square % 8;
-
-    // generate attacks
-    for (r = tr + 1; r <= 7; r++)
-    {
-        attacks |= (1ULL << (r * 8 + tf));
-        if (block & (1ULL << (r * 8 + tf))) break;
-    }
-
-    for (r = tr - 1; r >= 0; r--)
-    {
-        attacks |= (1ULL << (r * 8 + tf));
-        if (block & (1ULL << (r * 8 + tf))) break;
-    }
-
-    for (f = tf + 1; f <= 7; f++)
-    {
-        attacks |= (1ULL << (tr * 8 + f));
-        if (block & (1ULL << (tr * 8 + f))) break;
-    }
-
-    for (f = tf - 1; f >= 0; f--)
-    {
-        attacks |= (1ULL << (tr * 8 + f));
-        if (block & (1ULL << (tr * 8 + f))) break;
-    }
-
-    // return attack map for bishop on a given square
-    return attacks & (~bord->white);
+    return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
 }
 
 // rook attacks
 U64 bitmap_black_rook(int square, Board* bord){
-    square = 63 - square;
-    U64 block = bord->white | bord->black;
-    // attacks bitboard
-    U64 attacks = 0ULL;
-
-    // init files & ranks
-    int f, r;
-
-    // init target files & ranks
-    int tr = square / 8;
-    int tf = square % 8;
-
-    // generate attacks
-    for (r = tr + 1; r <= 7; r++)
-    {
-        attacks |= (1ULL << (r * 8 + tf));
-        if (block & (1ULL << (r * 8 + tf))) break;
-    }
-
-    for (r = tr - 1; r >= 0; r--)
-    {
-        attacks |= (1ULL << (r * 8 + tf));
-        if (block & (1ULL << (r * 8 + tf))) break;
-    }
-
-    for (f = tf + 1; f <= 7; f++)
-    {
-        attacks |= (1ULL << (tr * 8 + f));
-        if (block & (1ULL << (tr * 8 + f))) break;
-    }
-
-    for (f = tf - 1; f >= 0; f--)
-    {
-        attacks |= (1ULL << (tr * 8 + f));
-        if (block & (1ULL << (tr * 8 + f))) break;
-    }
-
-    // return attack map for bishop on a given square
-    return attacks & (~bord->black);
+    return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
 }
 
 // bishop attacks
 U64 bitmap_white_bishop(int square, Board* bord){
-
-    square = 63 - square;
-    U64 block = bord->white | bord->black;
-    // attack bitboard
-    U64 attacks = 0;
-
-    // init files & ranks
-    int f, r;
-
-    // init target files & ranks
-    int tr = square / 8;
-    int tf = square % 8;
-
-    // generate attacks
-    for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr + 1, f = tf - 1; r <= 7 && f >= 0; r++, f--)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr - 1, f = tf + 1; r >= 0 && f <= 7; r--, f++)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr - 1, f = tf - 1; r >= 0 && f >= 0; r--, f--)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    // return attack map for bishop on a given square
-    return attacks & (~bord->white);
+    return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
 }
 
 // bishop attacks
 U64 bitmap_black_bishop(int square, Board* bord){
-
-
-    square = 63 - square;
-    U64 block = bord->white | bord->black;
-    // attack bitboard
-    U64 attacks = 0;
-
-    // init files & ranks
-    int f, r;
-
-    // init target files & ranks
-    int tr = square / 8;
-    int tf = square % 8;
-
-    // generate attacks
-    for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr + 1, f = tf - 1; r <= 7 && f >= 0; r++, f--)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr - 1, f = tf + 1; r >= 0 && f <= 7; r--, f++)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    for (r = tr - 1, f = tf - 1; r >= 0 && f >= 0; r--, f--)
-    {
-        attacks |= (1ULL << (r * 8 + f));
-        if (block & (1ULL << (r * 8 + f))) break;
-    }
-
-    // return attack map for bishop on a given square
-    return attacks & (~bord->black);
+    return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
 }
-
-/*
-// mask knight attacks
-U64 bitmap_white_knight (int square, Board* bord){
-
-	square = 63 - square;
-	// attack bitboard
-	U64 attacks = 0;
-
-	// piece bitboard
-	U64 bitboard = 0ULL;//bord->knight & bord->white ;
-	// set piece on bitboard
-	set_bit(bitboard, square);
-
-	// generate knight
-	if ((bitboard ) & (~H)) attacks |= (bitboard >> 17); //under right
-	if ((bitboard ) & (~A)) attacks |= (bitboard >> 15); //under left
-	if ((bitboard ) & (~(H|G))) attacks |= (bitboard >> 10); //right under
-	if ((bitboard ) & (~(A | B))) attacks |= (bitboard >> 6); //left under
-	if ((bitboard ) & (~A)) attacks |= (bitboard << 17); //top left
-	if ((bitboard ) & (~H)) attacks |= (bitboard << 15); //top right
-	if ((bitboard ) & (~(A | B))) attacks |= (bitboard << 10); //left top
-	if ((bitboard ) & (~(H | G))) attacks |= (bitboard << 6); //right top
-
-	// return attack map for knight on a given square
-	return attacks & (~bord->white);
-}
-*/
-/*
-// mask knight attacks
-U64 bitmap_black_knight(int square, Board* bord) {
-
-	square = 63 - square;
-	// attack bitboard
-	U64 attacks = 0;
-
-	// piece bitboard
-	U64 bitboard = 0ULL;//bord->knight & bord->white ;
-	// set piece on bitboard
-	set_bit(bitboard, square);
-
-	// generate knight
-	if ((bitboard) & (~H)) attacks |= (bitboard >> 17); //under right
-	if ((bitboard) & (~A)) attacks |= (bitboard >> 15); //under left
-	if ((bitboard) & (~(H | G))) attacks |= (bitboard >> 10); //right under
-	if ((bitboard) & (~(A | B))) attacks |= (bitboard >> 6); //left under
-	if ((bitboard) & (~A)) attacks |= (bitboard << 17); //top left
-	if ((bitboard) & (~H)) attacks |= (bitboard << 15); //top right
-	if ((bitboard) & (~(A | B))) attacks |= (bitboard << 10); //left top
-	if ((bitboard) & (~(H | G))) attacks |= (bitboard << 6); //right top
-
-	// return attack map for knight on a given square
-	return attacks & (~bord->black);
-}
-*/
 
 // mask knight attacks
 U64 bitmap_white_knight(int square, Board* bord) {
