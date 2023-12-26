@@ -5,7 +5,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <iostream>
+#include <bitset>
+#include <sstream> // For std::ostringstream
+
+//#include "game.h"
+#include "engine.h"
+//#include "moves.h"
+#include "testMoves.h"
 
 class TestRunner {
     int passedTests = 0;
@@ -46,7 +52,3 @@ bool inCheckTest();
 bool mateInOneTest();
 bool mateInTwoTest();
 bool mateInThreeTest();
-
-void knightMovesGenerator();
-
-void randomTest();

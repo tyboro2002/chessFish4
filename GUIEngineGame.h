@@ -3,6 +3,8 @@
 #include <optional>
 #include "moves.h"
 
+#include "MagicsTester.h"
+
 #define CHESS_SIZE 8
 
 
@@ -25,7 +27,7 @@ public:
 public:
     bool OnUserCreate() override {
         for (int i = 0; i < 64; ++i) {
-            moves[i] = queenMoves[i];
+            moves[i] = bishop_attacks_on_the_fly(i,50ULL);
         }
         return true;
     }
@@ -40,8 +42,11 @@ public:
         // Draw the counter value
         DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, std::to_string(bitb));
 
+        // Optional: Provide a list of squares to mark with a purple dot
+        std::vector<int> purpleSquares = { 1, 4, 5};
+
         // Called once per frame, draws random coloured pixels
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb]);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares);
 
         // Check for button click
         if (GetMouse(0).bPressed){
@@ -64,7 +69,7 @@ private:
     U64 moves[64];
 
     // Function to draw a chessboard
-    void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt){
+    void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt){
         for (int i = 0; i < size; ++i){
             for (int j = 0; j < size; ++j){
                 // Alternate between white and black cells
@@ -77,9 +82,16 @@ private:
                     color = ((bitboard.value() >> squareIndex) & 1) ? olc::Pixel(color.r + INTENSITY, color.g, color.b) : olc::Pixel(color.r, color.g, color.b + INTENSITY);
                 }
 
-
                 // Draw a rectangle for each cell
                 FillRect(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, cellSize, cellSize, color);
+
+                // If purpleSquares is provided, check if the current square index is in the list
+                if (purpleSquares.has_value()) {
+                    int squareIndex = i * size + j;
+                    if (std::find(purpleSquares.value().begin(), purpleSquares.value().end(), squareIndex) != purpleSquares.value().end()) {
+                        FillCircle(TOP_LEFT_X_FIELD + (j + 0.5) * cellSize, TOP_LEFT_y_FIELD + (i + 0.5) * cellSize, cellSize / 4, olc::MAGENTA);
+                    }
+                }
             }
         }
     }

@@ -1,8 +1,4 @@
 #include "timing.h"
-#include "tests.h"
-#include "game.h"
-#include "engine.h"
-#include <chrono>
 
 using namespace std;
 

@@ -2,9 +2,6 @@
 //
 
 #include "game.h"
-#include "moves.h"
-#include <bitset>
-#include <chrono>
 
 constexpr U64 oneRow   = 0b0000000000000000000000000000000000000000000000000000000011111111; // oneRow
 constexpr U64 twoRow   = 0b0000000000000000000000000000000000000000000000001111111100000000; // oneRow << 8

@@ -7,6 +7,10 @@
 #include <unordered_map>
 #include <algorithm>
 #include <vector>
+#include <bitset>
+#include <chrono>
+
+#include "moves.h"
 
 typedef unsigned long long U64;
 
@@ -15,7 +19,6 @@ typedef unsigned long long U64;
 //[Q   2*B    2*R    2*N   K   8*P] +  [3*Q]
 //             ^                         ^
 //[calculated practical maximum   ] + [margin]
-
 
 // TODO: Reference additional headers your program requires here.
 struct Board {

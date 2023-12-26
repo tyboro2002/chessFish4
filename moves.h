@@ -1,4 +1,9 @@
-#pragma once
+#ifndef MOVES_H
+#define MOVES_H
+
+#include "MagicsTester.h"
+typedef unsigned long long U64;
+
 constexpr U64 kingMoves[64] = {
         0b0100000011000000000000000000000000000000000000000000000000000000,
         0b1010000011100000000000000000000000000000000000000000000000000000,
@@ -334,6 +339,27 @@ constexpr U64 queenMoves[64] = {
         0b1000000101000001001000010001000100001001000001010000001111111110,
 };
 
+// bishop attack masks
+U64 bishop_masks[64];
+
+// rook attack masks
+U64 rook_masks[64];
+
+// bishop attacks table [square][occupancies]
+U64 bishop_attacks[64][512];
+
+// rook attacks rable [square][occupancies]
+U64 rook_attacks[64][4096];
+
+// init slider piece's attack tables
+void init_sliders_attacks(bool bishop);
+
+// get bishop attacks
+U64 get_bishop_attacks(int square, U64 occupancy);
+// get rook attacks
+U64 get_rook_attacks(int square, U64 occupancy);
+
+
 constexpr U64 a8_mask = 0b1000000000000000000000000000000000000000000000000000000000000000;
 constexpr U64 b8_mask = 0b0100000000000000000000000000000000000000000000000000000000000000;
 constexpr U64 c8_mask = 0b0010000000000000000000000000000000000000000000000000000000000000;
@@ -405,3 +431,5 @@ constexpr U64 e1_mask = 0b000000000000000000000000000000000000000000000000000000
 constexpr U64 f1_mask = 0b0000000000000000000000000000000000000000000000000000000000000100;
 constexpr U64 g1_mask = 0b0000000000000000000000000000000000000000000000000000000000000010;
 constexpr U64 h1_mask = 0b0000000000000000000000000000000000000000000000000000000000000001;
+
+#endif //MOVES_H
