@@ -1,147 +1,175 @@
 #include "MagicsTester.h"
 
 U64 rook_magic_numbers[64] = {
-        0x4409008012ULL,
-        0x8000000800a400ULL,
-        0x9002041009000030ULL,
-        0x10480100226009a8ULL,
-        0x801a0105000424ULL,
-        0x5000500208000008ULL,
-        0x4441004002904008ULL,
-        0x40801910d4004ULL,
-        0x40002148012c000ULL,
-        0x1410000000715000ULL,
-        0x1915500080810013ULL,
-        0x10001004000518ULL,
-        0x8000020400881001ULL,
-        0x800604200081161ULL,
-        0xc0018c1000262001ULL,
-        0x82c3002408000005ULL,
-        0x4050008210040800ULL,
-        0x1001040003ULL,
-        0x2010020000000002ULL,
-        0x810a228058600ULL,
-        0x280000a0000ULL,
-        0x1010088000040040ULL,
-        0x4908002040042210ULL,
-        0x5020008400082300ULL,
-        0x100e400a8048002ULL,
-        0x808210004088418ULL,
-        0x800000005310000ULL,
-        0x1180400041012202ULL,
-        0x10001000300080ULL,
-        0xa00880900000eaULL,
-        0x8043008480200818ULL,
-        0x80012018004004ULL,
-        0x1800200000200004ULL,
-        0x800044c12000020ULL,
-        0x1445008c10040001ULL,
-        0x7000000009018ULL,
-        0x1520040030002800ULL,
-        0x1100008020014ULL,
-        0x1001064a2250000ULL,
-        0x2000820300180020ULL,
-        0x8b00000824002080ULL,
-        0x200044000e020008ULL,
-        0x1400063040000ULL,
-        0x400000003100082ULL,
-        0x880208001804ULL,
-        0x504010a040410720ULL,
-        0xa0800302128a0ULL,
-        0x620020000348940ULL,
-        0x8080108000000108ULL,
-        0xa442200000080ULL,
-        0x20004403000010ULL,
-        0x80300000020830ULL,
-        0x2001800040001402ULL,
-        0x240200288000022ULL,
-        0x400c802211420200ULL,
-        0x4000001000d2000ULL,
-        0x8024012001002108ULL,
-        0xa09540042500000ULL,
-        0x1080c804200ULL,
-        0x10088143a0022000ULL,
-        0x4408500080104806ULL,
-        0x2014020042200700ULL,
-        0x1100004024821800ULL,
-        0xa08830040080400ULL,
+        0x40040844404084ULL,
+        0x2004208a004208ULL,
+        0x10190041080202ULL,
+        0x108060845042010ULL,
+        0x581104180800210ULL,
+        0x2112080446200010ULL,
+        0x1080820820060210ULL,
+        0x3c0808410220200ULL,
+        0x4050404440404ULL,
+        0x21001420088ULL,
+        0x24d0080801082102ULL,
+        0x1020a0a020400ULL,
+        0x40308200402ULL,
+        0x4011002100800ULL,
+        0x401484104104005ULL,
+        0x801010402020200ULL,
+        0x400210c3880100ULL,
+        0x404022024108200ULL,
+        0x810018200204102ULL,
+        0x4002801a02003ULL,
+        0x85040820080400ULL,
+        0x810102c808880400ULL,
+        0xe900410884800ULL,
+        0x8002020480840102ULL,
+        0x220200865090201ULL,
+        0x2010100a02021202ULL,
+        0x152048408022401ULL,
+        0x20080002081110ULL,
+        0x4001001021004000ULL,
+        0x800040400a011002ULL,
+        0xe4004081011002ULL,
+        0x1c004001012080ULL,
+        0x8004200962a00220ULL,
+        0x8422100208500202ULL,
+        0x2000402200300c08ULL,
+        0x8646020080080080ULL,
+        0x80020a0200100808ULL,
+        0x2010004880111000ULL,
+        0x623000a080011400ULL,
+        0x42008c0340209202ULL,
+        0x209188240001000ULL,
+        0x400408a884001800ULL,
+        0x110400a6080400ULL,
+        0x1840060a44020800ULL,
+        0x90080104000041ULL,
+        0x201011000808101ULL,
+        0x1a2208080504f080ULL,
+        0x8012020600211212ULL,
+        0x500861011240000ULL,
+        0x180806108200800ULL,
+        0x4000020e01040044ULL,
+        0x300000261044000aULL,
+        0x802241102020002ULL,
+        0x20906061210001ULL,
+        0x5a84841004010310ULL,
+        0x4010801011c04ULL,
+        0xa010109502200ULL,
+        0x4a02012000ULL,
+        0x500201010098b028ULL,
+        0x8040002811040900ULL,
+        0x28000010020204ULL,
+        0x6000020202d0240ULL,
+        0x8918844842082200ULL,
+        0x4010011029020020ULL
 };
 
 U64 bishop_magic_numbers[64] = {
-        0x231002a00084088ULL,
-        0x8400802000004ULL,
-        0x44501200012088c4ULL,
-        0x2008028800020000ULL,
-        0x2c08401405280000ULL,
-        0x2000084044001401ULL,
-        0x8048000026000ULL,
-        0x246110002400008ULL,
-        0x800420008018010ULL,
-        0x40a40004400009ULL,
-        0xa880088c00104ULL,
-        0x68800000810c008ULL,
-        0x901200010220040ULL,
-        0x2042a2000030a080ULL,
-        0x8300108200000ULL,
-        0x5010040002558250ULL,
-        0x501a000400000402ULL,
-        0xc8100001000000ULL,
-        0x580040000010100ULL,
-        0x4004010048ULL,
-        0x30000400040a0000ULL,
-        0x9084040000000ULL,
-        0x8080402200800239ULL,
-        0x8a0002a190600110ULL,
-        0x1042004421004200ULL,
-        0x9001250008210008ULL,
-        0x85a480900000120ULL,
-        0x6004000100001004ULL,
-        0x8110888004010ULL,
-        0x800020010400200ULL,
-        0x1881080240228b44ULL,
-        0x4004001080834ULL,
-        0x8009005282000428ULL,
-        0x1000028000480020ULL,
-        0x400060a400a0412ULL,
-        0x162100108220002ULL,
-        0x241102000008124ULL,
-        0x4401014040008100ULL,
-        0x880200102070ULL,
-        0x802013810442b200ULL,
-        0x220300804080420ULL,
-        0xa40020019001000ULL,
-        0x400009201000210ULL,
-        0x8100010800102200ULL,
-        0x48c0001020044ULL,
-        0x422008180c1020ULL,
-        0x8004000302200012ULL,
-        0x82000240403950ULL,
-        0x20011410048ULL,
-        0x901200524402a00ULL,
-        0x1a02002820002020ULL,
-        0xd002108011480004ULL,
-        0x80900000ULL,
-        0x510000894120410ULL,
-        0x9480800100080200ULL,
-        0x201020660000502ULL,
-        0x2018a80200021000ULL,
-        0x2000100042400ULL,
-        0x2a2340004809080ULL,
-        0x200100280521010ULL,
-        0x4812001860831201ULL,
-        0x6580400009003001ULL,
-        0x8080024009001042ULL,
-        0x4000010004104144ULL,
+        54045411736421449ul,
+        3467949876944314368ul,
+        1170054334914564ul,
+        9386668213868429344ul,
+        2612653001713909776ul,
+        143074487959556ul,
+        144405463509778640ul,
+        2314868913337286662ul,
+        1161933171206914308ul,
+        5102013192899726ul,
+        2306410683698270464ul,
+        2343024120192851072ul,
+        75437501641129984ul,
+        8942543438848ul,
+        576498144559498370ul,
+        9313461918075293712ul,
+        18041957234770120ul,
+        9007906867522064ul,
+        18577417326039296ul,
+        72198365919854592ul,
+        291045211837106176ul,
+        4728814801970530308ul,
+        70385941350476ul,
+        72199439661474050ul,
+        1227301284920249602ul,
+        4904472908247872790ul,
+        149533851001120ul,
+        576746625460996128ul,
+        4686136700865880064ul,
+        92330389433092353ul,
+        23648296635597120ul,
+        1232552543291392ul,
+        2348574017462305ul,
+        74311661594870048ul,
+        13835098222891107329ul,
+        2201179652224ul,
+        1152992149307130112ul,
+        144397766860079688ul,
+        1299994464869172242ul,
+        2306124761249416192ul,
+        23089753846974488ul,
+        7512568235569455104ul,
+        18579548627011656ul,
+        1126038738339843ul,
+        672935777931282ul,
+        2323875584167379009ul,
+        51793734359057408ul,
+        2594777699881387520ul,
+        1139147805032960ul,
+        4683780038219268372ul,
+        1161232523493384ul,
+        72706313822208ul,
+        653022014721892608ul,
+        10408980038721605632ul,
+        18070782873796608ul,
+        4972541478955057216ul,
+        10151825236041728ul,
+        8521389665689600ul,
+        14992505291550049312ul,
+        290271107551376ul,
+        2594076822951969037ul,
+        270224911207891468ul,
+        22817078453010948ul,
+        153157608243496480ul
 };
 
-U64 reverse_bitboard(U64 bb) {
-    U64 result = 0ULL;
-    for (int i = 0; i < 64; i++) {
-        if (bb & (1ULL << i)) {
-            result |= (1ULL << (63 - i));
+// Function to check if magic number produces the same result as on-the-fly function
+bool MagicsTester::check_magic_number(int square, U64 magic_number, bool bishop) {
+    const int num_tests = 1000; // You can adjust the number of random tests
+
+    for (int i = 0; i < num_tests; ++i) {
+        // Generate a random occupancy
+        U64 random_occupancy = magicNumberGenerator.get_random_U64_number();
+
+        // Get the result from on-the-fly function
+        U64 on_the_fly_result = bishop ? bishop_attacks_on_the_fly(square, random_occupancy) :
+                                rook_attacks_on_the_fly(square, random_occupancy);
+
+        U64 magic_number_result;
+        // Get the result using the magic number
+        if(bishop){
+            // get bishop attacks assuming current board occupancy
+            random_occupancy &= bischopMoves[square];
+            random_occupancy *= magic_number;
+            random_occupancy >>= 64 - bischopRelevantBits[square];
+
+            magic_number_result = bishop_attacks[square][random_occupancy];
+        }else{
+            // get bishop attacks assuming current board occupancy
+            random_occupancy &= rookMoves[square];
+            random_occupancy *= magic_number;
+            random_occupancy >>= 64 - rookRelevantBits[square];
+
+            magic_number_result = rook_attacks[square][random_occupancy];
+        }
+
+        // Compare the results
+        if (on_the_fly_result != magic_number_result) {
+            return false;
         }
     }
-    return result;
+    return true;
 }
 
 U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) {
@@ -161,8 +189,7 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
     int occupancy_indicies = 1 << relevant_bits;
 
     // loop over occupancy indicies
-    for (int index = 0; index < occupancy_indicies; index++)
-    {
+    for (int index = 0; index < occupancy_indicies; index++){
         // init occupancies
         occupancies[index] = set_occupancy(index, relevant_bits, attack_mask);
 
@@ -183,11 +210,11 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
         memset(used_attacks, 0ULL, sizeof(used_attacks));
 
         // init index & fail flag
-        int index, fail;
+        int index;
+        bool fail;
 
         // test magic index loop
-        for (index = 0, fail = 0; !fail && index < occupancy_indicies; index++)
-        {
+        for (index = 0, fail = false; !fail && index < occupancy_indicies; index++){
             // init magic index
             int magic_index = (int)((occupancies[index] * magic_number) >> (64 - relevant_bits));
 
@@ -199,13 +226,18 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
                 // otherwise
             else if (used_attacks[magic_index] != attacks[index])
                 // magic index doesn't work
-                fail = 1;
+                fail = true;
         }
 
         // if magic number works
-        if (!fail)
+        if (!fail) {
             // return it
-            return magic_number;
+            //return magic_number;
+           //if (check_magic_number(square, magic_number, bishop)) {
+                // return it
+                return magic_number;
+            //}
+        }
     }
 
     // if magic number doesn't work
@@ -219,15 +251,17 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
 void MagicsTester::init_magic_numbers()
 {
     // loop over 64 board squares
-    for (int square = 0; square < 64; square++)
+    for (int square = 0; square < 64; square++) {
         // init rook magic numbers
-        //printf("0x%llxULL,\n",find_magic_number(square, rookRelevantBits[square], false));
+        printf("0x%llxULL,\n",find_magic_number(square, rookRelevantBits[square], false));
         rook_magic_numbers[square] = find_magic_number(square, rookRelevantBits[square], false);
+    }
 
     printf("\n\n\n");
     // loop over 64 board squares
-    for (int square = 0; square < 64; square++)
+    for (int square = 0; square < 64; square++) {
         // init bishop magic numbers
-        //printf("0x%llxULL,\n",find_magic_number(square, bischopRelevantBits[square], true));
+        printf("0x%llxULL,\n",find_magic_number(square, bischopRelevantBits[square], true));
         bishop_magic_numbers[square] = find_magic_number(square, bischopRelevantBits[square], true);
+    }
 }

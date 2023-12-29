@@ -13,7 +13,7 @@ using namespace std;
 #define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
 #define DRAW // Define this macro to run draw
-#define MAGIC // Define this macro to run the initialisation of the magic numbers
+//#define MAGIC // Define this macro to run the initialisation of the magic numbers
 
 int main() {
 #ifdef RUN_TESTS
