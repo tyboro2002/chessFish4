@@ -20,11 +20,7 @@ int count_bits(U64 bitboard){
 
 // Function to get the index of the least significant 1-bit
 static inline int get_ls1b_index(U64 bitboard){
-    if(bitboard){
-        return count_bits((bitboard & ~bitboard)-1);
-    }else{
-        return -1;
-    }
+    return bitboard ? __builtin_ctzll(bitboard) : -1;
 }
 
 U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask){
@@ -38,7 +34,6 @@ U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask){
             occupancy |= (1ULL << square);
         }
     }
-
     return occupancy;
 }
 
@@ -56,26 +51,22 @@ U64 bishop_attacks_on_the_fly(int square, U64 block){
     int tf = square % 8;
 
     // generate bishop atacks
-    for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++)
-    {
+    for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++){
         attacks |= (1ULL << (r * 8 + f));
         if ((1ULL << (r * 8 + f)) & block) break;
     }
 
-    for (r = tr - 1, f = tf + 1; r >= 0 && f <= 7; r--, f++)
-    {
+    for (r = tr - 1, f = tf + 1; r >= 0 && f <= 7; r--, f++){
         attacks |= (1ULL << (r * 8 + f));
         if ((1ULL << (r * 8 + f)) & block) break;
     }
 
-    for (r = tr + 1, f = tf - 1; r <= 7 && f >= 0; r++, f--)
-    {
+    for (r = tr + 1, f = tf - 1; r <= 7 && f >= 0; r++, f--){
         attacks |= (1ULL << (r * 8 + f));
         if ((1ULL << (r * 8 + f)) & block) break;
     }
 
-    for (r = tr - 1, f = tf - 1; r >= 0 && f >= 0; r--, f--)
-    {
+    for (r = tr - 1, f = tf - 1; r >= 0 && f >= 0; r--, f--){
         attacks |= (1ULL << (r * 8 + f));
         if ((1ULL << (r * 8 + f)) & block) break;
     }
@@ -98,26 +89,22 @@ U64 rook_attacks_on_the_fly(int square, U64 block){
     int tf = square % 8;
 
     // generate rook attacks
-    for (r = tr + 1; r <= 7; r++)
-    {
+    for (r = tr + 1; r <= 7; r++){
         attacks |= (1ULL << (r * 8 + tf));
         if ((1ULL << (r * 8 + tf)) & block) break;
     }
 
-    for (r = tr - 1; r >= 0; r--)
-    {
+    for (r = tr - 1; r >= 0; r--){
         attacks |= (1ULL << (r * 8 + tf));
         if ((1ULL << (r * 8 + tf)) & block) break;
     }
 
-    for (f = tf + 1; f <= 7; f++)
-    {
+    for (f = tf + 1; f <= 7; f++){
         attacks |= (1ULL << (tr * 8 + f));
         if ((1ULL << (tr * 8 + f)) & block) break;
     }
 
-    for (f = tf - 1; f >= 0; f--)
-    {
+    for (f = tf - 1; f >= 0; f--){
         attacks |= (1ULL << (tr * 8 + f));
         if ((1ULL << (tr * 8 + f)) & block) break;
     }
@@ -129,8 +116,7 @@ U64 rook_attacks_on_the_fly(int square, U64 block){
 // init slider piece's attack tables
 void init_sliders_attacks(bool bishop){
     // loop over 64 board squares
-    for (int square = 0; square < 64; square++)
-    {
+    for (int square = 0; square < 64; square++){
         // init current mask
         U64 attack_mask = bishop ? bischopMoves[square] : rookMoves[square];
 
@@ -141,11 +127,9 @@ void init_sliders_attacks(bool bishop){
         int occupancy_indicies = (1 << relevant_bits_count);
 
         // loop over occupancy indicies
-        for (int index = 0; index < occupancy_indicies; index++)
-        {
+        for (int index = 0; index < occupancy_indicies; index++){
             // bishop
-            if (bishop)
-            {
+            if (bishop){
                 // init current occupancy variation
                 U64 occupancy = set_occupancy(index, relevant_bits_count, attack_mask);
 
@@ -155,10 +139,8 @@ void init_sliders_attacks(bool bishop){
                 // init bishop attacks
                 bishop_attacks[square][magic_index] = bishop_attacks_on_the_fly(square, occupancy);
             }
-
-                // rook
-            else
-            {
+            // rook
+            else{
                 // init current occupancy variation
                 U64 occupancy = set_occupancy(index, relevant_bits_count, attack_mask);
 

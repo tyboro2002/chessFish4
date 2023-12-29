@@ -449,3 +449,6 @@ U64 get_rook_attacks(int square, U64 occupancy);
 U64 get_bishop_attacks(int square, U64 occupancy);
 
 void init_sliders_attacks(bool bishop);
+
+int count_bits(U64 bitboard);
+U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask);

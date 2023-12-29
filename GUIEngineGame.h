@@ -2,9 +2,13 @@
 #include "GUIEngine.h"
 #include <optional>
 #include "moves.h"
+#include "MagicsTester.h"
 
+//#define LOOP
+#define LOOP_FRAMES 100
 
 #define CHESS_SIZE 8
+#define BITMAPS 64
 
 
 #define CELL_SIZE 100
@@ -25,10 +29,11 @@ public:
 
 public:
     bool OnUserCreate() override {
-        for (int i = 0; i < 64; ++i) {
+        for (int i = 0; i < BITMAPS; ++i) {
             //moves[i] = queenMoves[i];
             //moves[i] = bishop_attacks_on_the_fly(i,blocks);
             moves[i] = get_bishop_attacks(i,blocks);
+            //moves[i] = bishop_attacks[D4][i];
             //moves[i] = blocks;
         }
         return true;
@@ -37,7 +42,14 @@ public:
     bool OnUserUpdate(float fElapsedTime) override {
         // Clear the screen
         Clear(olc::BLACK);
-
+#ifdef LOOP
+        loopNumber++;
+        if(LOOP_FRAMES < loopNumber) {
+            loopNumber %= LOOP_FRAMES;
+            bitb++;
+            bitb %= BITMAPS;
+        }
+#endif
         // Draw the button
         DrawButton("next bitboard!", ScreenWidth() / 2 - 50, ScreenHeight() / 2 - 25, 150, 50, olc::WHITE, olc::DARK_GREY);
 
@@ -47,8 +59,11 @@ public:
         // Optional: Provide a list of squares to mark with a purple dot
         std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
 
+        // Optional: Provide a list of squares to mark with a purple dot
+        std::vector<int> greenSquares = { 63-1, 63-3, 63-4,63-6,63-9,63-10,63-11, 63-13,63-14,63-15, 63-21,63-22,63-24,63-28,63-32};
+
         // Called once per frame, draws random coloured pixels
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
 
         // Check for button click
         if (GetMouse(0).bPressed){
@@ -60,19 +75,20 @@ public:
             if (GetMouseX() >= buttonX && GetMouseX() <= buttonX + buttonWidth &&
                 GetMouseY() >= buttonY && GetMouseY() <= buttonY + buttonHeight){
                 // Button clicked, increase the counter
-                bitb = (bitb+1)%64;
+                bitb = (bitb+1)%BITMAPS;
             }
         }
         return true;
     }
 
 private:
+    U64 loopNumber = 0;
     int bitb = 0;
-    U64 moves[64];
+    U64 moves[BITMAPS];
     U64 blocks = 4586532442ULL;
 
     // Function to draw a chessboard
-    void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt){
+    void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){
         for (int i = 0; i < size; ++i){
             for (int j = 0; j < size; ++j){
                 // Alternate between white and black cells
@@ -94,6 +110,14 @@ private:
                     int squareIndex = i * size + j;
                     if (std::find(purpleSquares.value().begin(), purpleSquares.value().end(), squareIndex) != purpleSquares.value().end()) {
                         FillCircle(TOP_LEFT_X_FIELD + (j + 0.5) * cellSize, TOP_LEFT_y_FIELD + (i + 0.5) * cellSize, cellSize / 4, olc::MAGENTA);
+                    }
+                }
+
+                // If purpleSquares is provided, check if the current square index is in the list
+                if (greenSquares.has_value()) {
+                    int squareIndex = i * size + j;
+                    if (std::find(greenSquares.value().begin(), greenSquares.value().end(), squareIndex) != greenSquares.value().end()) {
+                        FillCircle(TOP_LEFT_X_FIELD + (j + 0.5) * cellSize, TOP_LEFT_y_FIELD + (i + 0.5) * cellSize, cellSize / 4, olc::GREEN);
                     }
                 }
             }

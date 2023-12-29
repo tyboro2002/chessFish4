@@ -5,9 +5,6 @@
 #include "MagicNumberGenerator.h"
 #include "moves.h"
 
-int count_bits(U64 bitboard);
-U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask);
-
 class MagicsTester {
     MagicNumberGenerator magicNumberGenerator;
 public:

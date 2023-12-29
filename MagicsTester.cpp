@@ -134,44 +134,6 @@ U64 bishop_magic_numbers[64] = {
         153157608243496480ul
 };
 
-// Function to check if magic number produces the same result as on-the-fly function
-bool MagicsTester::check_magic_number(int square, U64 magic_number, bool bishop) {
-    const int num_tests = 1000; // You can adjust the number of random tests
-
-    for (int i = 0; i < num_tests; ++i) {
-        // Generate a random occupancy
-        U64 random_occupancy = magicNumberGenerator.get_random_U64_number();
-
-        // Get the result from on-the-fly function
-        U64 on_the_fly_result = bishop ? bishop_attacks_on_the_fly(square, random_occupancy) :
-                                rook_attacks_on_the_fly(square, random_occupancy);
-
-        U64 magic_number_result;
-        // Get the result using the magic number
-        if(bishop){
-            // get bishop attacks assuming current board occupancy
-            random_occupancy &= bischopMoves[square];
-            random_occupancy *= magic_number;
-            random_occupancy >>= 64 - bischopRelevantBits[square];
-
-            magic_number_result = bishop_attacks[square][random_occupancy];
-        }else{
-            // get bishop attacks assuming current board occupancy
-            random_occupancy &= rookMoves[square];
-            random_occupancy *= magic_number;
-            random_occupancy >>= 64 - rookRelevantBits[square];
-
-            magic_number_result = rook_attacks[square][random_occupancy];
-        }
-
-        // Compare the results
-        if (on_the_fly_result != magic_number_result) {
-            return false;
-        }
-    }
-    return true;
-}
-
 U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) {
     // init occupancies
     U64 occupancies[4096];
@@ -204,7 +166,7 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
         U64 magic_number = magicNumberGenerator.generate_magic_number_canidate();
 
         // skip inappropriate magic numbers
-        if (count_bits((attack_mask * magic_number) & 0xFF00000000000000) < 6) continue;
+        //if (count_bits((attack_mask * magic_number) & 0xFF00000000000000) < 6) continue;
 
         // init used attacks
         memset(used_attacks, 0ULL, sizeof(used_attacks));
@@ -219,25 +181,14 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
             int magic_index = (int)((occupancies[index] * magic_number) >> (64 - relevant_bits));
 
             // if magic index works
-            if (used_attacks[magic_index] == 0ULL)
-                // init used attacks
-                used_attacks[magic_index] = attacks[index];
-
-                // otherwise
-            else if (used_attacks[magic_index] != attacks[index])
-                // magic index doesn't work
-                fail = true;
+            if(magic_index < (bishop ? 512 : 4096)){
+                if (used_attacks[magic_index] == 0ULL) used_attacks[magic_index] = attacks[index]; // init used attacks
+                else if (used_attacks[magic_index] != attacks[index]) fail = true; // magic index doesn't work
+            }
         }
 
         // if magic number works
-        if (!fail) {
-            // return it
-            //return magic_number;
-           //if (check_magic_number(square, magic_number, bishop)) {
-                // return it
-                return magic_number;
-            //}
-        }
+        if (!fail) return magic_number; // return it
     }
 
     // if magic number doesn't work
