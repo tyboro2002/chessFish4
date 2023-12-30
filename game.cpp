@@ -419,18 +419,16 @@ U64 bitmap_white_king(int position, Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E1) {
-        //castel = ((((wkcastle & empty) == 6) & bord->whiteKingsideCastle) << 1) | (((wqcastle & empty) == 112) & bord->whiteQueensideCastle) << 5;//| ((bord->extra >> 15) & 1) | ((bord->extra >> 14) & 1);
         if ((wkcastle & empty) == 6 && bord->whiteKingsideCastle && (h1_mask & (bord->white & bord->rook))) ret |= g1_mask;
         if ((wqcastle & empty) == 112 && bord->whiteQueensideCastle && (a1_mask & (bord->white & bord->rook))) ret |= c1_mask;
     }
     return ret & (~bord->white);
 }
 
-U64 bitmap_black_king(int position, Board* bord) { //TODO use map lookup
+U64 bitmap_black_king(int position, Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E8) {
-        //castel = ((((bkcastle & empty) == 432345564227567616) & bord->blackKingsideCastle) << 57) | ((((bqcastle & empty) == 8070450532247928832) & bord->blackQueensideCastle) << 61);
         if ((bkcastle & empty) == 432345564227567616 && bord->blackKingsideCastle && (h8_mask & (bord->black & bord->rook))) ret |= g8_mask;
         if ((bqcastle & empty) == 8070450532247928832 && bord->blackQueensideCastle && (a8_mask & (bord->black & bord->rook))) ret |= c8_mask;
     }

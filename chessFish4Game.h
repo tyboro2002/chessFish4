@@ -1,7 +1,3 @@
-//
-// Created by Gebruiker on 25/12/2023.
-//
-
 #ifndef CHESSFISH4_CHESSFISH4GAME_H
 #define CHESSFISH4_CHESSFISH4GAME_H
 

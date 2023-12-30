@@ -12,23 +12,23 @@ using namespace std;
 
 #define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
-#define DRAW // Define this macro to run draw
-#define MAGIC // Define this macro to run the initialisation of the magic numbers
+//#define DRAW // Define this macro to run draw
+//#define MAGIC // Define this macro to run the initialisation of the magic numbers
 
 int main() {
-#ifdef RUN_TESTS
-    TestRunner testRunner = TestRunner(false);
-    testRunner.runAutomatedTestCases();
-#endif
-
 #ifdef MAGIC
     MagicsTester magicsTester;
     magicsTester.init_magic_numbers();
 #endif
 
+    init_all_sliders_attacks();
+
+#ifdef RUN_TESTS
+    TestRunner testRunner = TestRunner(false);
+    testRunner.runAutomatedTestCases();
+#endif
+
 #ifdef DRAW
-    init_sliders_attacks(true);
-    init_sliders_attacks(false);
     ChessFishVisualiserUI ui;
     if (ui.Construct(1920*SCREEN_SIZE, 1080*SCREEN_SIZE, 1, 1, true))
         ui.Start();

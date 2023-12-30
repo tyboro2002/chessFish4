@@ -4,8 +4,8 @@
 #include "moves.h"
 #include "MagicsTester.h"
 
-//#define LOOP
-#define LOOP_FRAMES 100
+#define LOOP
+#define LOOP_FRAMES 30
 
 #define CHESS_SIZE 8
 #define BITMAPS 64
@@ -16,7 +16,7 @@
 #define TOP_LEFT_y_FIELD 100
 #define INTENSITY 150
 
-#define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen apear this amount larger
+#define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen appear this amount larger
 
 
 class ChessFishVisualiserUI : public olc::PixelGameEngine {
@@ -32,8 +32,10 @@ public:
         for (int i = 0; i < BITMAPS; ++i) {
             //moves[i] = queenMoves[i];
             //moves[i] = bishop_attacks_on_the_fly(i,blocks);
-            moves[i] = get_bishop_attacks(i,blocks);
-            //moves[i] = bishop_attacks[D4][i];
+            //moves[i] = rook_attacks_on_the_fly(i,blocks);
+            //moves[i] = get_bishop_attacks(i,blocks);
+            moves[i] = get_rook_attacks(i,blocks);
+            //moves[i] = blackPawnAttacks[i];
             //moves[i] = blocks;
         }
         return true;
@@ -60,10 +62,10 @@ public:
         std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
 
         // Optional: Provide a list of squares to mark with a purple dot
-        std::vector<int> greenSquares = { 63-1, 63-3, 63-4,63-6,63-9,63-10,63-11, 63-13,63-14,63-15, 63-21,63-22,63-24,63-28,63-32};
+        //std::vector<int> greenSquares = { 63-1, 63-3, 63-4,63-6,63-9,63-10,63-11, 63-13,63-14,63-15, 63-21,63-22,63-24,63-28,63-32};
 
         // Called once per frame, draws random coloured pixels
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares/*, greenSquares*/);
 
         // Check for button click
         if (GetMouse(0).bPressed){
