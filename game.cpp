@@ -1,38 +1,7 @@
-// game.cpp : Defines the entry point for the application.
-//
-
 #include "game.h"
 #include "moves.h"
 #include <bitset>
 #include <chrono>
-
-constexpr U64 oneRow   = 0b0000000000000000000000000000000000000000000000000000000011111111; // oneRow
-constexpr U64 twoRow   = 0b0000000000000000000000000000000000000000000000001111111100000000; // oneRow << 8
-constexpr U64 threeRow = 0b0000000000000000000000000000000000000000111111110000000000000000; // oneRow << 16
-constexpr U64 fourRow  = 0b0000000000000000000000000000000011111111000000000000000000000000; // oneRow << 24
-constexpr U64 fiveRow  = 0b0000000000000000000000001111111100000000000000000000000000000000; // oneRow << 32
-constexpr U64 sixRow   = 0b0000000000000000111111110000000000000000000000000000000000000000; // oneRow << 40
-constexpr U64 sevenRow = 0b0000000011111111000000000000000000000000000000000000000000000000; // oneRow << 48
-constexpr U64 eightRow = 0b1111111100000000000000000000000000000000000000000000000000000000; // oneRow << 56
-
-constexpr U64 A        = 0b1000000010000000100000001000000010000000100000001000000010000000; // A
-constexpr U64 B        = 0b0100000001000000010000000100000001000000010000000100000001000000; // A >> 1
-constexpr U64 C        = 0b0010000000100000001000000010000000100000001000000010000000100000; // A >> 2
-constexpr U64 D        = 0b0001000000010000000100000001000000010000000100000001000000010000; // A >> 3
-constexpr U64 E        = 0b0000100000001000000010000000100000001000000010000000100000001000; // A >> 4
-constexpr U64 F        = 0b0000010000000100000001000000010000000100000001000000010000000100; // A >> 5
-constexpr U64 G        = 0b0000001000000010000000100000001000000010000000100000001000000010; // A >> 6
-constexpr U64 H        = 0b0000000100000001000000010000000100000001000000010000000100000001; // A >> 7
-
-constexpr U64 all      = 0b1111111111111111111111111111111111111111111111111111111111111111; // << 8 move row up, >> 8 move row down (left right imposible)
-constexpr U64 nothing  = 0b0000000000000000000000000000000000000000000000000000000000000000;
-constexpr U64 border   = 0b1111111110000001100000011000000110000001100000011000000111111111; // the border of the field
-constexpr U64 corners  = 0b1000000100000000000000000000000000000000000000000000000010000001;
-constexpr U64 wkcastle = 0b0000000000000000000000000000000000000000000000000000000000000110;
-constexpr U64 wqcastle = 0b0000000000000000000000000000000000000000000000000000000001110000;
-constexpr U64 bkcastle = 0b0000011000000000000000000000000000000000000000000000000000000000;
-constexpr U64 bqcastle = 0b0111000000000000000000000000000000000000000000000000000000000000;
-
 
 #define en_passent_target(bord) (((1ULL<<63) >> (bord->enPassantTarget)) & (bord->enPassentValid ? UINT64_MAX : 0))
 #define white_plays(bord) (bord->whiteToPlay == 1)
@@ -47,9 +16,7 @@ constexpr U64 bqcastle = 0b01110000000000000000000000000000000000000000000000000
 
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
-    if (!bordIn || !bordOut) {
-        return; // Handle nullptr input
-    }
+    if (!bordIn || !bordOut) return; // Handle nullptr input
 
     // Copy the members from bordIn to bordOut
     bordOut->rook = bordIn->rook;
@@ -90,140 +57,6 @@ U64 incrementByOne(U64 number) {
     number |= mask;     // Set the first cleared bit
     return number;
 }
-
-constexpr U64 rook_magics[64] = {
-        0x8a80104000800020ULL,
-        0x140002000100040ULL,
-        0x2801880a0017001ULL,
-        0x100081001000420ULL,
-        0x200020010080420ULL,
-        0x3001c0002010008ULL,
-        0x8480008002000100ULL,
-        0x2080088004402900ULL,
-        0x800098204000ULL,
-        0x2024401000200040ULL,
-        0x100802000801000ULL,
-        0x120800800801000ULL,
-        0x208808088000400ULL,
-        0x2802200800400ULL,
-        0x2200800100020080ULL,
-        0x801000060821100ULL,
-        0x80044006422000ULL,
-        0x100808020004000ULL,
-        0x12108a0010204200ULL,
-        0x140848010000802ULL,
-        0x481828014002800ULL,
-        0x8094004002004100ULL,
-        0x4010040010010802ULL,
-        0x20008806104ULL,
-        0x100400080208000ULL,
-        0x2040002120081000ULL,
-        0x21200680100081ULL,
-        0x20100080080080ULL,
-        0x2000a00200410ULL,
-        0x20080800400ULL,
-        0x80088400100102ULL,
-        0x80004600042881ULL,
-        0x4040008040800020ULL,
-        0x440003000200801ULL,
-        0x4200011004500ULL,
-        0x188020010100100ULL,
-        0x14800401802800ULL,
-        0x2080040080800200ULL,
-        0x124080204001001ULL,
-        0x200046502000484ULL,
-        0x480400080088020ULL,
-        0x1000422010034000ULL,
-        0x30200100110040ULL,
-        0x100021010009ULL,
-        0x2002080100110004ULL,
-        0x202008004008002ULL,
-        0x20020004010100ULL,
-        0x2048440040820001ULL,
-        0x101002200408200ULL,
-        0x40802000401080ULL,
-        0x4008142004410100ULL,
-        0x2060820c0120200ULL,
-        0x1001004080100ULL,
-        0x20c020080040080ULL,
-        0x2935610830022400ULL,
-        0x44440041009200ULL,
-        0x280001040802101ULL,
-        0x2100190040002085ULL,
-        0x80c0084100102001ULL,
-        0x4024081001000421ULL,
-        0x20030a0244872ULL,
-        0x12001008414402ULL,
-        0x2006104900a0804ULL,
-        0x1004081002402ULL,
-};
-
-constexpr U64 bishop_magics[64] = {
-        0x40040844404084ULL,
-        0x2004208a004208ULL,
-        0x10190041080202ULL,
-        0x108060845042010ULL,
-        0x581104180800210ULL,
-        0x2112080446200010ULL,
-        0x1080820820060210ULL,
-        0x3c0808410220200ULL,
-        0x4050404440404ULL,
-        0x21001420088ULL,
-        0x24d0080801082102ULL,
-        0x1020a0a020400ULL,
-        0x40308200402ULL,
-        0x4011002100800ULL,
-        0x401484104104005ULL,
-        0x801010402020200ULL,
-        0x400210c3880100ULL,
-        0x404022024108200ULL,
-        0x810018200204102ULL,
-        0x4002801a02003ULL,
-        0x85040820080400ULL,
-        0x810102c808880400ULL,
-        0xe900410884800ULL,
-        0x8002020480840102ULL,
-        0x220200865090201ULL,
-        0x2010100a02021202ULL,
-        0x152048408022401ULL,
-        0x20080002081110ULL,
-        0x4001001021004000ULL,
-        0x800040400a011002ULL,
-        0xe4004081011002ULL,
-        0x1c004001012080ULL,
-        0x8004200962a00220ULL,
-        0x8422100208500202ULL,
-        0x2000402200300c08ULL,
-        0x8646020080080080ULL,
-        0x80020a0200100808ULL,
-        0x2010004880111000ULL,
-        0x623000a080011400ULL,
-        0x42008c0340209202ULL,
-        0x209188240001000ULL,
-        0x400408a884001800ULL,
-        0x110400a6080400ULL,
-        0x1840060a44020800ULL,
-        0x90080104000041ULL,
-        0x201011000808101ULL,
-        0x1a2208080504f080ULL,
-        0x8012020600211212ULL,
-        0x500861011240000ULL,
-        0x180806108200800ULL,
-        0x4000020e01040044ULL,
-        0x300000261044000aULL,
-        0x802241102020002ULL,
-        0x20906061210001ULL,
-        0x5a84841004010310ULL,
-        0x4010801011c04ULL,
-        0xa010109502200ULL,
-        0x4a02012000ULL,
-        0x500201010098b028ULL,
-        0x8040002811040900ULL,
-        0x28000010020204ULL,
-        0x6000020202d0240ULL,
-        0x8918844842082200ULL,
-        0x4010011029020020ULL,
-};
 
 //TODO define constexpr for diagonal moves
 constexpr U64 Right(U64 num) {
@@ -345,92 +178,33 @@ U64 bitmap_all_black_pawns(Board* bord) {
     return (nonCaptures | (captures & bord->white) | (enPassent & captures));
 }
 
-U64 bitmap_white_king_danger_squares(int position, Board* bord) {
-    clearSquare(bord, position);
-    U64 white_king_danger_squares = all_black_attacks(bord);
-    addPiece(bord, WKING, position);
-    return white_king_danger_squares;
+
+U64 bitmap_white_pawn(int position, Board* bord) {
+    //U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
+    return get_white_pawn_attacks(position, bord->white,bord->black); //TODO en passent
 }
 
-U64 bitmap_black_king_danger_squares(int position, Board* bord) {
-    clearSquare(bord, position);
-    U64 black_king_danger_squares = all_white_attacks(bord);
-    addPiece(bord, BKING, position);
-    return black_king_danger_squares;
+U64 bitmap_black_pawn(int position, Board* bord) {
+    //U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
+    return get_black_pawn_attacks(position, bord->white,bord->black); //TODO en passent
 }
 
-U64 bitmap_all_white_king(Board* bord, int diepte) { // TODO test of het gewoon pseudo legal moves gebruiken nie backfired
-    U64 wkings = bord->king & bord->white; // the square given
-    U64 wkings_not_on_border = wkings & (~border);
-    U64 all_dirs_non_border = Down(wkings_not_on_border) | Up(wkings_not_on_border) | Left(wkings_not_on_border) | Right(wkings_not_on_border) | Down(Left(wkings_not_on_border)) | Down(Right(wkings_not_on_border)) | Up(Left(wkings_not_on_border)) | Up(Right(wkings_not_on_border));
-    U64 all_dirs_non_corner = Right(wkings & A) | Up(wkings & A) | Down(wkings & A) | Left(wkings & H) | Up(wkings & H) | Down(wkings & H) | Up(wkings & oneRow) | Left(wkings & oneRow) | Right(wkings & oneRow) | Down(wkings & eightRow) | Left(wkings & eightRow) | Right(wkings & eightRow);
-    U64 empty = ~(bord->white | bord->black);
-    U64 castel = nothing;
-    if (countTrailingZeros(wkings) == (63-E8)) {
-        castel = ((((wkcastle & empty) == 6) & bord->whiteKingsideCastle) << 1) | ((((wqcastle & empty) == 112) & bord->whiteQueensideCastle) << 5);
-    }
-    if (diepte) {
-        return (((all_dirs_non_border | all_dirs_non_corner) & (~bord->white)) | castel);//& (~bitmap_white_king_danger_squares(63 - countTrailingZeros(wkings), bord));
-    }
-    else {
-        return (((all_dirs_non_border | all_dirs_non_corner) & (~bord->white)) | castel) & (~bitmap_white_king_danger_squares(63 - countTrailingZeros(wkings), bord));
-    }
-}
-
-U64 bitmap_all_black_king(Board* bord, int diepte) {	// TODO test of het gewoon pseudo legal moves gebruiken nie backfired
-    U64 bkings = bord->king & bord->black; // the square given
-    U64 bkings_not_on_border = bkings & (~border);
-    U64 all_dirs_non_border = Down(bkings_not_on_border) | Up(bkings_not_on_border) | Left(bkings_not_on_border) | Right(bkings_not_on_border) | Down(Left(bkings_not_on_border)) | Down(Right(bkings_not_on_border)) | Up(Left(bkings_not_on_border)) | Up(Right(bkings_not_on_border));
-    U64 all_dirs_non_corner = Right(bkings & A) | Up(bkings & A) | Down(bkings & A) | Left(bkings & H) | Up(bkings & H) | Down(bkings & H) | Up(bkings & oneRow) | Left(bkings & oneRow) | Right(bkings & oneRow) | Down(bkings & eightRow) | Left(bkings & eightRow) | Right(bkings & eightRow);
-    U64 empty = ~(bord->white | bord->black);
-    U64 castel = nothing;
-    if (countTrailingZeros(bkings) == (63 - E1)) {
-        castel = (((((bkcastle & empty) == 432345564227567616) & bord->blackKingsideCastle) << 57)) | (((((bqcastle & empty) == 8070450532247928832) & bord->blackQueensideCastle) << 61));
-    }
-    if (diepte) {
-        return (((all_dirs_non_border | all_dirs_non_corner) & (~bord->black)) | castel);// &(~bitmap_black_king_danger_squares(63 - countTrailingZeros(bkings), bord));
-
-    }
-    else {
-        return (((all_dirs_non_border | all_dirs_non_corner) & (~bord->black)) | castel) &(~bitmap_black_king_danger_squares(63 - countTrailingZeros(bkings), bord));
-
-    }
-}
-
-U64 bitmap_white_pawns(int position, Board* bord) {
-    U64 wpawns = ((1ULL << 63) >> position); // the square given
-    U64 doublePawns = (wpawns & twoRow) & ~((bord->white|bord->black) >> 8); // all positions of white pawns able to move 2
-    U64 nonCaptures = (((doublePawns << 8) | (doublePawns << 16) | (wpawns << 8)) & (~(bord->white | bord->black))); // all non capturing moves a pawn can do
-    U64 captures = ((wpawns & (~border)) << 7 | (wpawns & (~border)) << 9 | (wpawns & H) << 9 | (wpawns & A) << 7); // all capturing moves a pawn can do
-    U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
-    return (nonCaptures | (captures & bord->black) | (enPassent & captures));
-}
-
-U64 bitmap_black_pawns(int position, Board* bord) {
-    U64 bpawns = ((1ULL << 63) >> position); // the square given
-    U64 doublePawns = (bpawns & sevenRow) & ~((bord->white | bord->black) << 8); // all positions of black pawns able to move 2
-    U64 nonCaptures = (((doublePawns >> 8) | (doublePawns >> 16) | (bpawns >> 8)) & (~(bord->white | bord->black))); // all non capturing moves a pawn can do
-    U64 captures = ((bpawns & (~border)) >> 7 | (bpawns & (~border)) >> 9 | (bpawns & H) >> 7 | (bpawns & A) >> 9); // all capturing moves a pawn can do
-    U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
-    return (nonCaptures | (captures & bord->white) | (enPassent & captures));
-}
-
-U64 bitmap_white_king(int position, Board* bord) {
+U64 bitmap_white_king(int position, Board* bord) { //TODO king in check
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E1) {
-        if ((wkcastle & empty) == 6 && bord->whiteKingsideCastle && (h1_mask & (bord->white & bord->rook))) ret |= g1_mask;
-        if ((wqcastle & empty) == 112 && bord->whiteQueensideCastle && (a1_mask & (bord->white & bord->rook))) ret |= c1_mask;
+        if ((wkcastle & empty) == wkcastle && bord->whiteKingsideCastle  && (h1_mask & (bord->white & bord->rook))) ret |= g1_mask;
+        if ((wqcastle & empty) == wqcastle && bord->whiteQueensideCastle && (a1_mask & (bord->white & bord->rook))) ret |= c1_mask;
     }
     return ret & (~bord->white);
 }
 
-U64 bitmap_black_king(int position, Board* bord) {
+U64 bitmap_black_king(int position, Board* bord) { //TODO king in check
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E8) {
-        if ((bkcastle & empty) == 432345564227567616 && bord->blackKingsideCastle && (h8_mask & (bord->black & bord->rook))) ret |= g8_mask;
-        if ((bqcastle & empty) == 8070450532247928832 && bord->blackQueensideCastle && (a8_mask & (bord->black & bord->rook))) ret |= c8_mask;
+        if ((bkcastle & empty) == bkcastle && bord->blackKingsideCastle  && (h8_mask & (bord->black & bord->rook))) ret |= g8_mask;
+        if ((bqcastle & empty) == bqcastle && bord->blackQueensideCastle && (a8_mask & (bord->black & bord->rook))) ret |= c8_mask;
     }
     return ret & (~bord->black);
 }
@@ -447,12 +221,14 @@ U64 bitmap_black_rook(int square, Board* bord){
 
 // bishop attacks
 U64 bitmap_white_bishop(int square, Board* bord){
-    return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
+    //return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
+    return get_bishop_attacks(square, bord->white | bord->black) & (~bord->white);
 }
 
 // bishop attacks
 U64 bitmap_black_bishop(int square, Board* bord){
-    return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
+    //return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
+    return get_bishop_attacks(square, bord->white | bord->black) & (~bord->black);
 }
 
 // mask knight attacks
@@ -483,7 +259,7 @@ U64 white_checking_pieces(Board* bord) {
     attackers |= bitmap_white_knight(king_position, bord) & (bord->knight & bord->black);
     attackers |= bitmap_white_bishop(king_position, bord) & (bord->bishop & bord->black);
     attackers |= bitmap_white_queen(king_position, bord) & (bord->queen & bord->black);
-    attackers |= bitmap_white_pawns(king_position, bord) & (bord->pawn & bord->black);
+    attackers |= bitmap_white_pawn(king_position, bord) & (bord->pawn & bord->black);
     return attackers;
 }
 
@@ -497,7 +273,7 @@ U64 black_checking_pieces(Board* bord) {
     attackers |= bitmap_black_knight(king_position, bord) & (bord->knight & bord->white);
     attackers |= bitmap_black_bishop(king_position, bord) & (bord->bishop & bord->white);
     attackers |= bitmap_black_queen(king_position, bord) & (bord->queen & bord->white);
-    attackers |= bitmap_black_pawns(king_position, bord) & (bord->pawn & bord->white);
+    attackers |= bitmap_black_pawn(king_position, bord) & (bord->pawn & bord->white);
     return attackers;
 }
 
@@ -694,7 +470,7 @@ U64 all_black_attacks(Board* bord) {
 * all moves generating and putting them in a movelist
 */
 void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
-    U64 destinations = bitmap_white_pawns(position, bord);// &white_checking_bitmap(bord);
+    U64 destinations = bitmap_white_pawn(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & eightRow) {
         int bitIndex = countTrailingZeros(destinations); // Get the index of the least significant set bit
@@ -772,7 +548,7 @@ void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
 }
 
 void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
-    U64 destinations = bitmap_black_pawns(position, bord);// &black_checking_bitmap(bord);
+    U64 destinations = bitmap_black_pawn(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & oneRow) {
         int bitIndex = countTrailingZeros(destinations); // Get the index of the least significant set bit
@@ -1535,275 +1311,140 @@ void clearSquare(Board* bord, int square) {
     bord->black &= placeBit;
 }
 
-Pieces pieceAt(int square, Board* bord) {
-    U64 sq = ((1ULL << 63) >> square);
-    if (bord->white & sq) {
-        if (bord->rook & sq) {
-            return WROOK;
-        }else if (bord->knight & sq) {
-            return WKNIGHT;
-        }else if (bord->bishop & sq) {
-            return WBISCHOP;
-        }else if (bord->queen & sq) {
-            return WQUEEN;
-        }else if (bord->king & sq) {
-            return WKING;
-        }else if (bord->pawn & sq) {
-            return WPAWN;
-        }
+Pieces pieceAt(int square, Board* board) {
+    U64 sq = 1ULL << (63 - square);  // Calculate the bit corresponding to the square
+
+    // Check for white pieces
+    if (board->white & sq) {
+        if (board->rook & sq) return WROOK;
+        if (board->knight & sq) return WKNIGHT;
+        if (board->bishop & sq) return WBISCHOP;
+        if (board->queen & sq) return WQUEEN;
+        if (board->king & sq) return WKING;
+        if (board->pawn & sq) return WPAWN;
     }
-    else if (bord->black & sq) {
-        if (bord->rook & sq) {
-            return BROOK;
-        }
-        else if (bord->knight & sq) {
-            return BKNIGHT;
-        }
-        else if (bord->bishop & sq) {
-            return BBISCHOP;
-        }
-        else if (bord->queen & sq) {
-            return BQUEEN;
-        }
-        else if (bord->king & sq) {
-            return BKING;
-        }
-        else if (bord->pawn & sq) {
-            return BPAWN;
-        }
+        // Check for black pieces
+    else if (board->black & sq) {
+        if (board->rook & sq) return BROOK;
+        if (board->knight & sq) return BKNIGHT;
+        if (board->bishop & sq) return BBISCHOP;
+        if (board->queen & sq) return BQUEEN;
+        if (board->king & sq) return BKING;
+        if (board->pawn & sq) return BPAWN;
     }
+
     return NOPIECE;
-}
+    }
 
 Square stringToSquare(std::string inp) {
-    if (inp == "a8") {
-        return A8;
-    }
-    else if (inp == "a7") {
-        return A7;
-    }
-    else if (inp == "a6") {
-        return A6;
-    }
-    else if (inp == "a5") {
-        return A5;
-    }
-    else if (inp == "a4") {
-        return A4;
-    }
-    else if (inp == "a3") {
-        return A3;
-    }
-    else if (inp == "a2") {
-        return A2;
-    }
-    else if (inp == "a1") {
-        return A1;
-    }
-    else if (inp == "b8") {
-        return B8;
-    }
-    else if (inp == "b7") {
-        return B7;
-    }
-    else if (inp == "b6") {
-        return B6;
-    }
-    else if (inp == "b5") {
-        return B5;
-    }
-    else if (inp == "b4") {
-        return B4;
-    }
-    else if (inp == "b3") {
-        return B3;
-    }
-    else if (inp == "b2") {
-        return B2;
-    }
-    else if (inp == "b1") {
-        return B1;
-    }else if (inp == "c8") {
-        return C8;
-    }
-    else if (inp == "c7") {
-        return C7;
-    }
-    else if (inp == "c6") {
-        return C6;
-    }
-    else if (inp == "c5") {
-        return C5;
-    }
-    else if (inp == "c4") {
-        return C4;
-    }
-    else if (inp == "c3") {
-        return C3;
-    }
-    else if (inp == "c2") {
-        return C2;
-    }
-    else if (inp == "c1") {
-        return C1;
-    }else if (inp == "d8") {
-        return D8;
-    }
-    else if (inp == "d7") {
-        return D7;
-    }
-    else if (inp == "d6") {
-        return D6;
-    }
-    else if (inp == "d5") {
-        return D5;
-    }
-    else if (inp == "d4") {
-        return D4;
-    }
-    else if (inp == "d3") {
-        return D3;
-    }
-    else if (inp == "d2") {
-        return D2;
-    }
-    else if (inp == "d1") {
-        return D1;
-    }else if (inp == "e8") {
-        return E8;
-    }
-    else if (inp == "e7") {
-        return E7;
-    }
-    else if (inp == "e6") {
-        return E6;
-    }
-    else if (inp == "e5") {
-        return E5;
-    }
-    else if (inp == "e4") {
-        return E4;
-    }
-    else if (inp == "e3") {
-        return E3;
-    }
-    else if (inp == "e2") {
-        return E2;
-    }
-    else if (inp == "e1") {
-        return E1;
-    }else if (inp == "f8") {
-        return F8;
-    }
-    else if (inp == "f7") {
-        return F7;
-    }
-    else if (inp == "f6") {
-        return F6;
-    }
-    else if (inp == "f5") {
-        return F5;
-    }
-    else if (inp == "f4") {
-        return F4;
-    }
-    else if (inp == "f3") {
-        return F3;
-    }
-    else if (inp == "f2") {
-        return F2;
-    }
-    else if (inp == "f1") {
-        return F1;
-    }else if (inp == "g8") {
-        return G8;
-    }
-    else if (inp == "g7") {
-        return G7;
-    }
-    else if (inp == "g6") {
-        return G6;
-    }
-    else if (inp == "g5") {
-        return G5;
-    }
-    else if (inp == "g4") {
-        return G4;
-    }
-    else if (inp == "g3") {
-        return G3;
-    }
-    else if (inp == "g2") {
-        return G2;
-    }
-    else if (inp == "g1") {
-        return G1;
-    }else if (inp == "h8_mask") {
-        return H8;
-    }
-    else if (inp == "h7") {
-        return H7;
-    }
-    else if (inp == "h6") {
-        return H6;
-    }
-    else if (inp == "h5") {
-        return H5;
-    }
-    else if (inp == "h4") {
-        return H4;
-    }
-    else if (inp == "h3") {
-        return H3;
-    }
-    else if (inp == "h2") {
-        return H2;
-    }
-    else if (inp == "h1") {
-        return H1;
-    }
-    return A8;
+    static const std::unordered_map<std::string, Square> squareMap = {
+            {"a8", A8},
+            {"a7", A7},
+            {"a6", A6},
+            {"a5", A5},
+            {"a4", A4},
+            {"a3", A3},
+            {"a2", A2},
+            {"a1", A1},
+            {"b8", B8},
+            {"b7", B7},
+            {"b6", B6},
+            {"b5", B5},
+            {"b4", B4},
+            {"b3", B3},
+            {"b2", B2},
+            {"b1", B1},
+            {"c8", C8},
+            {"c7", C7},
+            {"c6", C6},
+            {"c5", C5},
+            {"c4", C4},
+            {"c3", C3},
+            {"c2", C2},
+            {"c1", C1},
+            {"d8", D8},
+            {"d7", D7},
+            {"d6", D6},
+            {"d5", D5},
+            {"d4", D4},
+            {"d3", D3},
+            {"d2", D2},
+            {"d1", D1},
+            {"e8", E8},
+            {"e7", E7},
+            {"e6", E6},
+            {"e5", E5},
+            {"e4", E4},
+            {"e3", E3},
+            {"e2", E2},
+            {"e1", E1},
+            {"f8", F8},
+            {"f7", F7},
+            {"f6", F6},
+            {"f5", F5},
+            {"f4", F4},
+            {"f3", F3},
+            {"f2", F2},
+            {"f1", F1},
+            {"g8", G8},
+            {"g7", G7},
+            {"g6", G6},
+            {"g5", G5},
+            {"g4", G4},
+            {"g3", G3},
+            {"g2", G2},
+            {"g1", G1},
+            {"h8", H8},
+            {"h7", H7},
+            {"h6", H6},
+            {"h5", H5},
+            {"h4", H4},
+            {"h3", H3},
+            {"h2", H2},
+            {"h1", H1}
+    };
+
+    auto it = squareMap.find(inp);
+    return (it != squareMap.end()) ? it->second : A8;
 }
 
 std::string specialToString(SPECIAL special) {
-    if (special == NOT_SPECIAL) {
-        return "";
-    }
-    else if (special == SPECIAL_WK_CASTLING) {
-        return "White is kingside casteling";
-    }
-    else if (special == SPECIAL_BK_CASTLING) {
-        return "Black is kingside casteling";
-    }
-    else if (special == SPECIAL_WQ_CASTLING) {
-        return "White is queenside casteling";
-    }
-    else if (special == SPECIAL_BQ_CASTLING) {
-        return "Black is queenside casteling";
-    }
-    else if (special == SPECIAL_PROMOTION_QUEEN) {
-        return "Promotes a pawn to a Queen";
-    }
-    else if (special == SPECIAL_PROMOTION_ROOK) {
-        return "Promotes a pawn to a Rook";
-    }
-    else if (special == SPECIAL_PROMOTION_BISHOP) {
-        return "Promotes a pawn to a Bishop";
-    }
-    else if (special == SPECIAL_PROMOTION_KNIGHT) {
-        return "Promotes a pawn to a Knight";
-    }
-    else if (special == SPECIAL_WPAWN_2SQUARES) {
-        return "Moves a White pawn 2 squares";
-    }
-    else if (special == SPECIAL_BPAWN_2SQUARES) {
-        return "Moves a black pawn 2 squares";
-    }
-    else if (special == SPECIAL_WEN_PASSANT) {
-        return "White captures en passent";
-    }
-    else if (special == SPECIAL_BEN_PASSANT) {
-        return "Black captures en passent";
+    static const std::unordered_map<SPECIAL, std::string> specialStrings = {
+            {NOT_SPECIAL, ""},
+            {SPECIAL_WK_CASTLING, "White is kingside castling"},
+            {SPECIAL_BK_CASTLING, "Black is kingside castling"},
+            {SPECIAL_WQ_CASTLING, "White is queenside castling"},
+            {SPECIAL_BQ_CASTLING, "Black is queenside castling"},
+            {SPECIAL_PROMOTION_QUEEN, "Promotes a pawn to a Queen"},
+            {SPECIAL_PROMOTION_ROOK, "Promotes a pawn to a Rook"},
+            {SPECIAL_PROMOTION_BISHOP, "Promotes a pawn to a Bishop"},
+            {SPECIAL_PROMOTION_KNIGHT, "Promotes a pawn to a Knight"},
+            {SPECIAL_WPAWN_2SQUARES, "Moves a White pawn 2 squares"},
+            {SPECIAL_BPAWN_2SQUARES, "Moves a black pawn 2 squares"},
+            {SPECIAL_WEN_PASSANT, "White captures en passant"},
+            {SPECIAL_BEN_PASSANT, "Black captures en passant"}
+    };
+
+    auto it = specialStrings.find(special);
+    return (it != specialStrings.end()) ? it->second : "";
+}
+
+// Helper function to map characters to piece enums
+Pieces charToPiece(char c) {
+    switch (std::toupper(c)) {
+        case 'R': return WROOK;
+        case 'N': return WKNIGHT;
+        case 'B': return WBISCHOP;
+        case 'Q': return WQUEEN;
+        case 'K': return WKING;
+        case 'P': return WPAWN;
+        case 'r': return BROOK;
+        case 'n': return BKNIGHT;
+        case 'b': return BBISCHOP;
+        case 'q': return BQUEEN;
+        case 'k': return BKING;
+        case 'p': return BPAWN;
+        default: return NOPIECE;
     }
 }
 
@@ -1814,38 +1455,9 @@ void readInFen(Board* bord, std::string* fen) {
     int index = -1;
     for (char c : *fen) {
         if (c != ' ') {
-            if (std::isdigit(c)) {
-                index += (c - '0');
-            }
-            else {
-                index += 1;
-            }
-            //std::cout << c << " at " << index << endl;
-            if (c == 'r') {
-                addPiece(bord, BROOK, index);
-            }else if (c == 'n') {
-                addPiece(bord, BKNIGHT, index);
-            }else if (c == 'b') {
-                addPiece(bord, BBISCHOP, index);
-            }else if (c == 'q') {
-                addPiece(bord, BQUEEN, index);
-            }else if (c == 'k') {
-                addPiece(bord, BKING, index);
-            }else if (c == 'p') {
-                addPiece(bord, BPAWN, index);
-            }else if (c == 'R') {
-                addPiece(bord, WROOK, index);
-            }else if (c == 'N') {
-                addPiece(bord, WKNIGHT, index);
-            }else if (c == 'B') {
-                addPiece(bord, WBISCHOP, index);
-            }else if (c == 'Q') {
-                addPiece(bord, WQUEEN, index);
-            }else if (c == 'K') {
-                addPiece(bord, WKING, index);
-            }else if (c == 'P') {
-                addPiece(bord, WPAWN, index);
-            }
+            if (std::isdigit(c)) index += (c - '0');
+            else index += 1;
+            addPiece(bord, charToPiece(c), index);
         }
         else {
             //printBoard(bord);

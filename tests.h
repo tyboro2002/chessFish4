@@ -20,7 +20,7 @@ class TestRunner {
     std::vector<std::string> failedTests;
     bool printPassed = true;
 public:
-    TestRunner(bool printPassedArg = true) : printPassed(printPassedArg) {}
+    explicit TestRunner(bool printPassedArg = true) : printPassed(printPassedArg) {}
     int runAutomatedTestCases();
 private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
@@ -32,6 +32,7 @@ private:
     void rookMovesGenerator();
     void bischopMovesGenerator();
     void queenMovesGenerator();
+    void pawnMovesGenerator();
 };
 
 void king_danger_squares_test();
