@@ -266,7 +266,22 @@ void TestRunner::rookMovesGenerator() {
         formattedString << "check black rook nowhere to move on square: " << i;
         testResultTrue(bitmap_black_rook(i,&bord) == 0ULL,formattedString.str());
     }
-    //TODO add blocked tests
+
+    for (int i=0; i<64; i++){
+        U64 mask = rookMoves[i];
+        setupEmpty(&bord);
+        int bits_in_mask = count_bits(mask);
+        U64 amount_of_tests = 1 << bits_in_mask;
+        for (int test = 0; test<amount_of_tests;test++) {
+            U64 occ_test = set_occupancy(test, bits_in_mask, mask);
+            bord.black = occ_test;
+            U64 fly = rook_attacks_on_the_fly(i, occ_test);
+            U64 testMap = bitmap_white_rook(i, &bord);
+            std::ostringstream formattedString;
+            formattedString << "check rook on square: " << i << " with bitmap: 0b" << std::bitset<64>(occ_test);
+            testResultTrue(fly==testMap,formattedString.str());
+        }
+    }
 }
 
 void TestRunner::bischopMovesGenerator() {
@@ -311,7 +326,22 @@ void TestRunner::bischopMovesGenerator() {
         formattedString << "check black bischop nowhere to move on square: " << i;
         testResultTrue(bitmap_black_bishop(i,&bord) == 0ULL,formattedString.str());
     }
-    //TODO add blocked tests
+
+    for (int i=0; i<64; i++){
+        U64 mask = bischopMoves[i];
+        setupEmpty(&bord);
+        int bits_in_mask = count_bits(mask);
+        U64 amount_of_tests = 1 << bits_in_mask;
+        for (int test = 0; test<amount_of_tests;test++) {
+            U64 occ_test = set_occupancy(test, bits_in_mask, mask);
+            bord.black = occ_test;
+            U64 fly = bishop_attacks_on_the_fly(i, occ_test);
+            U64 testMap = bitmap_white_bishop(i, &bord);
+            std::ostringstream formattedString;
+            formattedString << "check bishop on square: " << i << " with bitmap: 0b" << std::bitset<64>(occ_test);
+            testResultTrue(fly==testMap,formattedString.str());
+        }
+    }
 }
 
 void TestRunner::queenMovesGenerator() {
@@ -356,12 +386,28 @@ void TestRunner::queenMovesGenerator() {
         formattedString << "check black queen nowhere to move on square: " << i;
         testResultTrue(bitmap_black_queen(i,&bord) == 0ULL,formattedString.str());
     }
-    //TODO add blocked tests
+
+    for (int i=0; i<64; i++){
+        //U64 mask = queenMoves[i];
+        U64 mask = rookMovesONE_OFF[i] | bischopMovesONE_OFF[i];
+        setupEmpty(&bord);
+        int bits_in_mask = count_bits(mask);
+        U64 amount_of_tests = 1 << bits_in_mask;
+        for (int test = 0; test<amount_of_tests;test++) {
+            U64 occ_test = set_occupancy(test, bits_in_mask, mask);
+            bord.black = occ_test;
+            U64 fly = bishop_attacks_on_the_fly(i, occ_test)| rook_attacks_on_the_fly(i,occ_test);
+            U64 testMap = bitmap_white_queen(i, &bord);
+            std::ostringstream formattedString;
+            formattedString << "check queen on square: " << i << " with bitmap: 0b" << std::bitset<64>(occ_test);
+            testResultTrue(fly==testMap,formattedString.str());
+        }
+    }
 }
 
 void TestRunner::pawnMovesGenerator() {
     Board bord;
-    //test white queen
+    //test white pawn
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WPAWN, (Square)i);
@@ -372,7 +418,7 @@ void TestRunner::pawnMovesGenerator() {
         formattedString << "check white pawn all empty on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == whitePawnMovesAllEmpty[i], formattedString.str());
     }
-    //test black queen
+    //test black pawn
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BPAWN, (Square)i);
@@ -396,7 +442,7 @@ void TestRunner::pawnMovesGenerator() {
         formattedString << "check white pawn on a board with all black pawns on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == whitePawnAttacks[i], formattedString.str());
     }
-    //test black queen on a board with all white pawns
+    //test black pawn on a board with all white pawns
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, WPAWN, (Square)j);
@@ -422,7 +468,7 @@ void TestRunner::pawnMovesGenerator() {
         formattedString << "check white pawn on a board with all white pawns on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == 0ULL, formattedString.str());
     }
-    //test black queen on a board with all black pawns
+    //test black pawn on a board with all black pawns
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, BPAWN, (Square)j);
@@ -459,6 +505,42 @@ int TestRunner::runAutomatedTestCases() {
     return 0;
 }
 
+/*
+bool testMagicNumber(int square,bool bischop){
+    //printf("testing magic number: %llu for square: %d: for piece: %s\n",bischop ? bishop_magic_numbers[square] : rook_magic_numbers[square], square, bischop ? "bischop" : "rook");
+    U64 mask = bischop ? bischopMovesONE_OFF[square] : rookMovesONE_OFF[square];
+    int bits_in_mask = count_bits(mask);
+    U64 amount_of_tests = 1 << bits_in_mask;
+    //printf("bits in mask: %d giving %llu occupancys\n", bits_in_mask, amount_of_tests);
+    for (int i = 0; i<amount_of_tests;i++){
+        U64 occ_test = set_occupancy(i,bits_in_mask,mask);
+        if(bischop){
+            U64 fly = bishop_attacks_on_the_fly(square,occ_test);
+            U64 magic = get_bishop_attacks(square, occ_test);
+
+            //std::cout << std::bitset<64>(occ_test) << " " << i << std::endl;
+            //std::cout << std::bitset<64>(fly) << std::endl;
+            //std::cout << std::bitset<64>(magic) << std::endl << std::endl;
+
+            //printBitBoard(fly, "fly");
+            //printBitBoard(magic, "magic");
+            if(fly != magic){
+                return false;
+            }
+        }else{
+            U64 fly = rook_attacks_on_the_fly(square,occ_test);
+            U64 magic = get_rook_attacks(square, occ_test);
+            if(fly != magic){
+                std::cout << std::bitset<64>(occ_test) << " " << i  << " failed, needed: " << amount_of_tests << " (magic number:  " << rook_magic_numbers[square] << " )" << std::endl;
+                std::cout << std::bitset<64>(fly) << std::endl;
+                std::cout << std::bitset<64>(magic) << std::endl << std::endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+ */
 /**************************
  * old tests
  * below
