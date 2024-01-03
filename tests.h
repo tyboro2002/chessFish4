@@ -54,7 +54,3 @@ bool inCheckTest();
 bool mateInOneTest();
 bool mateInTwoTest();
 bool mateInThreeTest();
-
-void knightMovesGenerator();
-
-void randomTest();

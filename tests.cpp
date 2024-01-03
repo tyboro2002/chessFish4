@@ -1,6 +1,5 @@
 #include "tests.h"
 
-
 using namespace std;
 
 // Utility function to check and report test results
@@ -916,34 +915,4 @@ bool runAutomatedTestsSilent() {
         return false;
     }
     return true;
-}
-
-void randomTest() {
-    /*
-    U64 test = 0;
-    for (int i = 0; i < 1000000000; i++) {
-        test = incrementByOne(test);
-        if (!test == (i + 1)) {
-            cout << "failed at: " << i + 1 << endl;
-            return;
-        }
-    }
-    cout << "succeed" << endl;
-    */
-    Board bord;
-    Move move;
-    MOVELIST moveList;
-    TranspositionTable transpositionTable;
-    PositionTracker positionTracker;
-    moveList.count = 0;
-    setupEmpty(&bord);
-    std::string fen = "8/5p2/8/2p5/5K2/2k5/3pp2p/5N2 b - - 0 1";
-    readInFen(&bord, &fen);
-    printBoard(&bord);
-    //printBitBoard(bitmap_black_queen(F6, &bord), "black queen");
-    black_moves(&moveList,&bord);
-    printMoveList(&moveList);
-    cout << endl;
-    //printBitBoard(bitmap_white_king(E1, &bord), "white king");
-    //printBitBoard(bitmap_black_king(E8, &bord), "black king");
 }

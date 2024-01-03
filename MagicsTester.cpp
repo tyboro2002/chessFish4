@@ -197,7 +197,6 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
 }
 
 
-
 // init magic numbers
 void MagicsTester::init_magic_numbers(){
     //printf("%u\n",magicNumberGenerator.getState());

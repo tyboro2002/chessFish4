@@ -7,6 +7,8 @@
 //#define LOOP
 #define LOOP_FRAMES 30
 
+#include "MagicsTester.h"
+
 #define CHESS_SIZE 8
 #define BITMAPS 64
 
@@ -105,7 +107,6 @@ private:
                     color = ((bitboard.value() >> squareIndex) & 1) ? olc::Pixel(color.r + INTENSITY, color.g, color.b) : olc::Pixel(color.r, color.g, color.b + INTENSITY);
                 }
 
-
                 // Draw a rectangle for each cell
                 FillRect(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, cellSize, cellSize, color);
 
@@ -116,7 +117,6 @@ private:
                         FillCircle(TOP_LEFT_X_FIELD + (j + 0.5) * cellSize, TOP_LEFT_y_FIELD + (i + 0.5) * cellSize, cellSize / 4, olc::MAGENTA);
                     }
                 }
-
                 // If purpleSquares is provided, check if the current square index is in the list
                 if (greenSquares.has_value()) {
                     int squareIndex = 63-(i * size + j);

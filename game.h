@@ -17,7 +17,6 @@ typedef unsigned long long U64;
 //             ^                         ^
 //[calculated practical maximum   ] + [margin]
 
-
 struct Board {
     // pieces
     U64 rook;

@@ -1,7 +1,4 @@
 #include "game.h"
-#include "moves.h"
-#include <bitset>
-#include <chrono>
 
 #define en_passent_target(bord) (((1ULL<<63) >> (bord->enPassantTarget)) & (bord->enPassentValid ? UINT64_MAX : 0))
 #define white_plays(bord) (bord->whiteToPlay == 1)

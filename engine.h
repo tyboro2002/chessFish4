@@ -4,9 +4,15 @@
 #pragma once
 
 #include <iostream>
-#include "game.h"
+#include <random>
+#include <map>
+#include <chrono>
+#include <array>
+#include <vector>
+#include <thread>
+#include <mutex>
 
-// TODO: Reference additional headers your program requires here.
+#include "game.h"
 
 void askForMove(Board* bord, Move* move, MOVELIST* moveList);
 void printEngines();
