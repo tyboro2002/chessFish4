@@ -32,7 +32,7 @@ void time_code() {
     // Calculate the duration in microseconds (change to other duration units as needed)
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
-    cout << "first aproach needed:" << endl;
+    cout << "first approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 
 
@@ -56,7 +56,7 @@ void time_code() {
     // Calculate the duration in microseconds (change to other duration units as needed)
     duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
-    cout << "second aproach needed:" << endl;
+    cout << "second approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 }
 
@@ -76,7 +76,7 @@ void time_parralel_evaluation() {
     // Calculate the duration in microseconds (change to other duration units as needed)
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
     printMoveList(&moveList);
-    cout << "first aproach needed:" << endl;
+    cout << "first approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 
     GenLegalMoveList(&moveList, &bord, &positionTracker);
@@ -91,7 +91,7 @@ void time_parralel_evaluation() {
     duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
     printMoveList(&moveList);
-    cout << "second aproach needed:" << endl;
+    cout << "second approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 }
 
@@ -161,6 +161,7 @@ void time_mate_test_code() {
 
 // Function to time and calculate mean and variation
 U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const char* description) {
+    totalTests++;
     std::cout << "timing: " << description << std::endl;
     std::vector<U64> run_times;
     U64 total_time = 0;
@@ -183,7 +184,7 @@ U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const cha
     double variation = std::sqrt(sum_squared_diff / (num_runs-1));
 
     std::cout << "Mean time: " << mean_time << " nanoseconds" << endl;
-    std::cout << "per call time: " << mean_time*1'000'000/itterations << " femtosecond  " << endl;
+    std::cout << "per call time: " << mean_time*1'000'000/itterations << " femtosecondes  " << endl;
     std::cout << "Variation: " << variation << " nanoseconds" << endl << endl;
     return mean_time;
 }
@@ -193,13 +194,21 @@ int TimerRunner::runAutomatedTimerCases() {
     totalTime += timeFunction([this] { return time_king_moves(); },num_runs, "king function");
     totalTime += timeFunction([this] { return time_queen_moves(); },num_runs, "queen function");
     totalTime += timeFunction([this] { return time_rook_moves(); },num_runs, "rook function");
-    totalTime += timeFunction([this] { return time_bischop_moves(); },num_runs, "bischop function");
+    totalTime += timeFunction([this] { return time_bischop_moves(); },num_runs, "bishop function");
     totalTime += timeFunction([this] { return time_pawn_moves(); },num_runs, "pawn function");
-    totalTime += timeFunction([this] { return time_bischop_moves_on_the_fly(); },num_runs, "bischop moves on the fly function");
+    /*
+    totalTime += timeFunction([this] { return time_bischop_moves_on_the_fly(); },num_runs, "bishop moves on the fly function");
     totalTime += timeFunction([this] { return time_rook_moves_on_the_fly(); },num_runs, "rook moves on the fly function");
-    totalTime += timeFunction([this] { return time_bischop_moves_magic(); },num_runs, "bischop moves magic number function");
+    totalTime += timeFunction([this] { return time_queen_moves_on_the_fly(); },num_runs, "queen moves on the fly function");
+    */
+    /*
+    totalTime += timeFunction([this] { return time_bischop_moves_magic(); },num_runs, "bishop moves magic number function");
     totalTime += timeFunction([this] { return time_rook_moves_magic(); },num_runs, "rook moves magic number function");
+    totalTime += timeFunction([this] { return time_queen_moves_magic(); },num_runs, "queen moves magic number function");
+    */
     std::cout << "all test cases runned in: " << totalTime << " nanoseconds" << std::endl;
+    std::cout << "mean amount of time per function: " << totalTime/totalTests << " nanoseconds" << std::endl;
+    std::cout << "mean amount of time per bitmap: " << ((totalTime/totalTests)*1'000'000/itterations) << " femtosecondes" << std::endl;
 
     auto resolution = std::chrono::high_resolution_clock::period::num /
                       static_cast<double>(std::chrono::high_resolution_clock::period::den);
@@ -331,6 +340,20 @@ U64 TimerRunner::time_bischop_moves_on_the_fly() {
     return duration;
 }
 
+U64 TimerRunner::time_queen_moves_on_the_fly() {
+    Board bord;
+    setup(&bord);
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0;i<itterations;i++) {
+        dummy_var = bishop_attacks_on_the_fly(i&63,bord.white|bord.black) | rook_attacks_on_the_fly(i&63,bord.white|bord.black);
+    }
+    // Get the ending timestamp
+    auto endTime = std::chrono::high_resolution_clock::now();
+    // Calculate the duration in microseconds (change to other duration units as needed)
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+    return duration;
+}
+
 U64 TimerRunner::time_rook_moves_magic() {
     Board bord;
     setup(&bord);
@@ -351,6 +374,20 @@ U64 TimerRunner::time_bischop_moves_magic() {
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {
         dummy_var = get_bishop_attacks(i&63,bord.white|bord.black);
+    }
+    // Get the ending timestamp
+    auto endTime = std::chrono::high_resolution_clock::now();
+    // Calculate the duration in microseconds (change to other duration units as needed)
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+    return duration;
+}
+
+U64 TimerRunner::time_queen_moves_magic() {
+    Board bord;
+    setup(&bord);
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0;i<itterations;i++) {
+        dummy_var = get_queen_attacks(i&63,bord.white|bord.black);
     }
     // Get the ending timestamp
     auto endTime = std::chrono::high_resolution_clock::now();

@@ -211,23 +211,23 @@ U64 bitmap_black_king(int position, Board* bord) { //TODO king in check
 
 // rook attacks
 U64 bitmap_white_rook(int square, Board* bord){
-    return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
+    //return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
+    return get_rook_attacks(square, bord->white | bord->black) & (~bord->white);
 }
 
 // rook attacks
 U64 bitmap_black_rook(int square, Board* bord){
-    return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
+    //return rook_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
+    return get_rook_attacks(square, bord->white | bord->black) & (~bord->black);
 }
 
 // bishop attacks
 U64 bitmap_white_bishop(int square, Board* bord){
-    //return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->white);
     return get_bishop_attacks(square, bord->white | bord->black) & (~bord->white);
 }
 
 // bishop attacks
 U64 bitmap_black_bishop(int square, Board* bord){
-    //return bishop_attacks_on_the_fly(square, bord->white | bord->black) & (~bord->black);
     return get_bishop_attacks(square, bord->white | bord->black) & (~bord->black);
 }
 
@@ -242,11 +242,14 @@ U64 bitmap_black_knight(int square, Board* bord) {
 }
 
 U64 bitmap_white_queen(int square, Board* bord) {
-    return bitmap_white_rook(square, bord) | bitmap_white_bishop(square, bord);
+    //return bitmap_white_rook(square, bord) | bitmap_white_bishop(square, bord);
+    return (get_bishop_attacks(square, bord->white | bord->black) | get_rook_attacks(square, bord->white | bord->black)) & (~bord->white);
 }
 
 U64 bitmap_black_queen(int square, Board* bord) {
-    return bitmap_black_rook(square, bord) | bitmap_black_bishop(square, bord);
+    //return bitmap_black_rook(square, bord) | bitmap_black_bishop(square, bord);
+    return (get_bishop_attacks(square, bord->white | bord->black) | get_rook_attacks(square, bord->white | bord->black)) & (~bord->black);
+
 }
 
 /*
@@ -281,7 +284,7 @@ U64 squaresBetweenBitmap(int startSquare, int endSquare) {
     startSquare = 63 - startSquare;
     endSquare = 63 - endSquare;
     U64 result = 0ULL;
-    /* //removed because its faster without and not realy needed (i hope)
+    /* //removed because it's faster without and not really needed (i hope)
     // Ensure valid input range (0-63)
     if (startSquare < 0 || startSquare > 63 || endSquare < 0 || endSquare > 63) {
         return result;
@@ -1039,7 +1042,7 @@ bool OpponentHasMoves(Board* bord) {
 }
 
 /*
-* returns true if we has moves and false otherwise (false also means checkmated of stalemate)
+* returns true if we have moves and false otherwise (false also means checkmated of stalemate)
 */
 bool weHaveMoves(Board* bord) {
     int i, j;

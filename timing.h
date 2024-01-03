@@ -36,8 +36,10 @@ private:
     U64 time_pawn_moves();
     U64 time_rook_moves_on_the_fly();
     U64 time_bischop_moves_on_the_fly();
+    U64 time_queen_moves_on_the_fly();
     U64 time_rook_moves_magic();
     U64 time_bischop_moves_magic();
+    U64 time_queen_moves_magic();
     U64 timeFunction(std::function<U64()> func, U64 num_runs, const char* description);
 };
 

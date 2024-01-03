@@ -4,7 +4,7 @@
 #include "moves.h"
 #include "MagicsTester.h"
 
-#define LOOP
+//#define LOOP
 #define LOOP_FRAMES 30
 
 #define CHESS_SIZE 8
@@ -30,11 +30,12 @@ public:
     bool OnUserCreate() override {
         for (int i = 0; i < BITMAPS; i++) {
             //moves[i] = a1_mask;
-            //moves[i] = blackPawnAttacks[i];
+            //moves[i] = bischopMovesONE_OFF[i];
             //moves[i] = bishop_attacks_on_the_fly(i,blocks);
             //moves[i] = rook_attacks_on_the_fly(i,blocks);
             moves[i] = get_bishop_attacks(i,blocks);
             //moves[i] = get_rook_attacks(i,blocks);
+            //moves[i] = get_queen_attacks(i,blocks);
             //moves[i] = get_white_pawn_attacks(i,0ULL,all);
             //moves[i] = whitePawnAttacks[i];
             //moves[i] = 1ULL << i;

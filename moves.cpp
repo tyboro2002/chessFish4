@@ -9,8 +9,8 @@
 #include "game.h"
 
 // Definitions for bishop_attacks and rook_attacks
-U64 bishop_attacks[64][512];
-U64 rook_attacks[64][4096];
+U64 bishop_attacks[64][BISHOP_ATTACKS];
+U64 rook_attacks[64][ROOK_ATTACKS];
 
 #define set_bit(bitboard, square) (bitboard |= (1ULL << square))
 #define get_bit(bitboard, square) (bitboard & (1ULL << square))
@@ -121,7 +121,7 @@ U64 rook_attacks_on_the_fly(int square, U64 block){
 
 bool testMagicNumber(int square,bool bischop){
     //printf("testing magic number: %llu for square: %d: for piece: %s\n",bischop ? bishop_magic_numbers[square] : rook_magic_numbers[square], square, bischop ? "bischop" : "rook");
-    U64 mask = bischop ? bischopMoves[square] : rookMoves[square];
+    U64 mask = bischop ? bischopMovesONE_OFF[square] : rookMovesONE_OFF[square];
     int bits_in_mask = count_bits(mask);
     U64 amount_of_tests = 1 << bits_in_mask;
     //printf("bits in mask: %d giving %llu occupancys\n", bits_in_mask, amount_of_tests);
@@ -144,7 +144,7 @@ bool testMagicNumber(int square,bool bischop){
             U64 fly = rook_attacks_on_the_fly(square,occ_test);
             U64 magic = get_rook_attacks(square, occ_test);
             if(fly != magic){
-                std::cout << std::bitset<64>(occ_test) << " " << i  << " failed, needed: " << amount_of_tests << std::endl;
+                std::cout << std::bitset<64>(occ_test) << " " << i  << " failed, needed: " << amount_of_tests << " (magic number:  " << rook_magic_numbers[square] << " )" << std::endl;
                 std::cout << std::bitset<64>(fly) << std::endl;
                 std::cout << std::bitset<64>(magic) << std::endl << std::endl;
                 return false;
@@ -204,7 +204,7 @@ void init_all_sliders_attacks(bool testWorking, const char* outputFile, const ch
         i=0;
         output << "rook: " << std::endl;
         outputCondensed << "rook: " << std::endl;
-        tries = 595952; //acount for already done tries
+        tries = 877651; //acount for already done tries
         while(i<64){
             init_sliders_attacks(false);
             if(testMagicNumber(i, false)){
@@ -213,7 +213,7 @@ void init_all_sliders_attacks(bool testWorking, const char* outputFile, const ch
                 i++;
                 tries = 0;
             }else{
-                magicsTester.resetMagicSeed();
+                //magicsTester.resetMagicSeed();
                 rook_magic_numbers[i] = magicsTester.find_magic_number(i, rookRelevantBits[i], false);
                 tries++;
                 std::cout << tries << " for square: " << i << std::endl;
@@ -232,7 +232,7 @@ void init_sliders_attacks(bool bishop){
     // loop over 64 board squares
     for (int square = 0; square < 64; square++){
         // init current mask
-        U64 attack_mask = bishop ? bischopMoves[square] : rookMoves[square];
+        U64 attack_mask = bishop ? bischopMovesONE_OFF[square] : rookMovesONE_OFF[square];
 
         // init relevant occupancy bit count
         int relevant_bits_count = count_bits(attack_mask);
@@ -248,13 +248,13 @@ void init_sliders_attacks(bool bishop){
             if (bishop){
                 // init magic index
                 U64 magic_index = (occupancy * bishop_magic_numbers[square]) >> (64 - bischopRelevantBits[square]);
-                if(magic_index >= 512) {printf("fuck te veel bischop\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                if(magic_index >= BISHOP_ATTACKS) {printf("fuck te veel bischop\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
                 // init bishop attacks
                 bishop_attacks[square][magic_index] = bishop_attacks_on_the_fly(square, occupancy);
             }else{ // rook
                 // init magic index
                 U64 magic_index = (occupancy * rook_magic_numbers[square]) >> (64 - rookRelevantBits[square]);
-                if(magic_index >= 4096) {printf("fuck te veel rook\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                if(magic_index >= ROOK_ATTACKS) {printf("fuck te veel rook\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
                 // init bishop attacks
                 rook_attacks[square][magic_index] = rook_attacks_on_the_fly(square, occupancy);
             }
@@ -265,7 +265,7 @@ void init_sliders_attacks(bool bishop){
 // get bishop attacks
 U64 get_bishop_attacks(int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= bischopMoves[square];
+    occupancy &= bischopMovesONE_OFF[square];
     occupancy *= bishop_magic_numbers[square];
     occupancy >>= 64 - bischopRelevantBits[square];
 
@@ -276,7 +276,7 @@ U64 get_bishop_attacks(int square, U64 occupancy){
 // get rook attacks
 U64 get_rook_attacks(int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= rookMoves[square];
+    occupancy &= rookMovesONE_OFF[square];
     occupancy *= rook_magic_numbers[square];
     occupancy >>= 64 - rookRelevantBits[square];
 
@@ -288,12 +288,12 @@ U64 get_rook_attacks(int square, U64 occupancy){
 U64 get_queen_attacks(int square, U64 occupancy){
     // get rook attacks assuming current board occupancy by calculating the magic index
     U64 magicIndex = occupancy;
-    magicIndex &= rookMoves[square];
+    magicIndex &= rookMovesONE_OFF[square];
     magicIndex *= rook_magic_numbers[square];
     magicIndex >>= 64 - rookRelevantBits[square];
 
     // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= bischopMoves[square];
+    occupancy &= bischopMovesONE_OFF[square];
     occupancy *= bishop_magic_numbers[square];
     occupancy >>= 64 - bischopRelevantBits[square];
 

@@ -1,70 +1,70 @@
 #include "MagicsTester.h"
 
 U64 rook_magic_numbers[64] = {
-        0x4000010062184408ULL,
-        0x3000029002460001ULL,
-        0x2000840001004802ULL,
-        0x1000240068000231ULL,
-        0x2100018400481ULL,
-        0x100088412002ULL,
-        0x814001049421ULL,
-        0x201002041840014ULL,
-        0x10000800200ULL,
-        0x1800400200010101ULL,
-        0x240020521100ULL,
-        0x2000824040048348ULL,
-        0x8001000802100100ULL,
-        0x3300088004080ULL,
-        0x8001004010042100ULL,
-        0x409214090400ULL,
-        0x800080040108000ULL,
-        0x200040500020010ULL,
-        0x211003680100ULL,
-        0x200824024000ULL,
-        0x3002810810001ULL,
-        0x2020041042002000ULL,
-        0x8000208040010004ULL,
-        0xc002208c4008ULL,
-        0x20060800024ULL,
-        0x110200801440ULL,
-        0x400088c412000020ULL,
-        0x80000415331800a1ULL,
-        0x1483103000010ULL,
-        0x8190e3800104ULL,
-        0xa002882005200ULL,
-        0x410066000005ULL,
-        0x6000141040020000ULL,
-        0x14002684000e0082ULL,
-        0x508048200020002ULL,
-        0xa00044a00010421ULL,
-        0x11a20004a008ULL,
-        0x221100040240ULL,
-        0x4024408200200044ULL,
-        0x102083000008eULL,
-        0x4000004100860181ULL,
-        0x21004400080ULL,
-        0x5000080110200000ULL,
-        0x2000404100000809ULL,
-        0xc001010408200025ULL,
-        0x420021021004ULL,
-        0x40c000000100ULL,
-        0x2020453920420ULL,
-        0xc02000441008410ULL,
-        0x2002924018400ULL,
-        0x210400201800ULL,
-        0x101200040801020cULL,
-        0x2002089800091ULL,
-        0x201002000800ULL,
-        0x8000224242004208ULL,
-        0x460020004010ULL,
-        0x200022302008050ULL,
-        0x8400040908108121ULL,
-        0x2000200a4014010ULL,
-        0x200020008051100ULL,
-        0x8500081005000800ULL,
-        0x200081022020000ULL,
-        0x8500104104200000ULL,
-        0x418000a084114400ULL
+        4611864723980305410ULL,
+        281477157749761ULL,
+        1189231811004465153ULL,
+        20829462082625578ULL,
+        153966256128161ULL,
+        2310909593963889186ULL,
+        142111894967329ULL,
+        9226187337452552226ULL,
+        4426018394624ULL,
+        18296363112760576ULL,
+        17771626943364595840ULL,
+        1191202651262486656ULL,
+        580981954854781056ULL,
+        327777748020887936ULL,
+        270849297951490112ULL,
+        617063537021296768ULL,
+        4611989486392442897ULL,
+        498663151632386ULL,
+        360294567326548096ULL,
+        1407684125720592ULL,
+        27311869102424192ULL,
+        2332864813211877408ULL,
+        35253095776256ULL,
+        90072308246413321ULL,
+        9571249827088516ULL,
+        18016666319325185ULL,
+        3377708318852224ULL,
+        4614237985401997312ULL,
+        180289429875732480ULL,
+        8667318289090748416ULL,
+        2305993367437189121ULL,
+        153333495920329760ULL,
+        748123173486740ULL,
+        36040084194068515ULL,
+        4648559279031451654ULL,
+        13854910843678097536ULL,
+        11294466909934080ULL,
+        1445690669057446144ULL,
+        72199443927007520ULL,
+        9295500018964332579ULL,
+        4611723401910845700ULL,
+        576465152515250178ULL,
+        378443656010402304ULL,
+        4740179895118764034ULL,
+        9896158302208ULL,
+        2311050846575677440ULL,
+        14992483434398556160ULL,
+        145685293318144ULL,
+        140810503086720ULL,
+        18295882076390144ULL,
+        1266723302943232ULL,
+        577164474113328130ULL,
+        9223512843071031296ULL,
+        5838354106795705856ULL,
+        577023840861880833ULL,
+        337910744974631040ULL,
+        180145380959199360ULL,
+        14195346661697390848ULL,
+        72066407310950656ULL,
+        5224184363909939330ULL,
+        5260221958582192276ULL,
+        2449978573690372224ULL,
+        18031991232675840ULL,
+        5512406218953752592ULL
 };
 
 U64 bishop_magic_numbers[64] = {
@@ -136,16 +136,16 @@ U64 bishop_magic_numbers[64] = {
 
 U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) {
     // init occupancies
-    U64 occupancies[4096];
+    U64 occupancies[ROOK_ATTACKS];
 
     // init attack tables
-    U64 attacks[4096];
+    U64 attacks[ROOK_ATTACKS];
 
     // init used attacks
-    U64 used_attacks[4096];
+    U64 used_attacks[ROOK_ATTACKS];
 
     // init attack mask for a current piece
-    U64 attack_mask = bishop ? bischopMoves[square] : rookMoves[square];
+    U64 attack_mask = bishop ? bischopMovesONE_OFF[square] : rookMovesONE_OFF[square];
 
     // init occupancy indicies
     int occupancy_indicies = 1 << relevant_bits;
@@ -181,7 +181,7 @@ U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) 
             int magic_index = (int)((occupancies[index] * magic_number) >> (64 - relevant_bits));
 
             // if magic index works
-            if(magic_index < (bishop ? 512 : 4096)){
+            if(magic_index < (bishop ? BISHOP_ATTACKS : ROOK_ATTACKS)){
                 if (used_attacks[magic_index] == 0ULL) used_attacks[magic_index] = attacks[index]; // init used attacks
                 else if (used_attacks[magic_index] != attacks[index]) fail = true; // magic index doesn't work
             }

@@ -18,7 +18,6 @@ typedef unsigned long long U64;
 //[calculated practical maximum   ] + [margin]
 
 
-// TODO: Reference additional headers your program requires here.
 struct Board {
     // pieces
     U64 rook;

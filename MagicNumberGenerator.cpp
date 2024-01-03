@@ -44,7 +44,8 @@ unsigned int MagicNumberGenerator::getState() {
 }
 
 void MagicNumberGenerator::resetState() {
-// Use a random_device to seed the random number generator
+
+    // Use a random_device to seed the random number generator
     std::random_device rd;
 
     // Use the Mersenne Twister engine for randomness
@@ -52,5 +53,6 @@ void MagicNumberGenerator::resetState() {
 
     // Define a uniform distribution for integers in a certain range
     std::uniform_int_distribution<unsigned int> distribution(1, INT32_MAX);
+
     state = distribution(gen);
 }
