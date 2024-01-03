@@ -1,5 +1,17 @@
 #include "MagicNumberGenerator.h"
 
+MagicNumberGenerator::MagicNumberGenerator() {
+    // Use a random_device to seed the random number generator
+    std::random_device rd;
+
+    // Use the Mersenne Twister engine for randomness
+    std::mt19937 gen(rd());
+
+    // Define a uniform distribution for integers in a certain range
+    std::uniform_int_distribution<unsigned int> distribution(1, INT32_MAX);
+    state = distribution(gen);
+}
+
 unsigned int MagicNumberGenerator::get_random_U32_number(){
     unsigned int number = state;
 
@@ -25,4 +37,22 @@ U64 MagicNumberGenerator::get_random_U64_number(){
 
 U64 MagicNumberGenerator::generate_magic_number_canidate(){
     return get_random_U64_number() & get_random_U64_number() & get_random_U64_number();
+}
+
+unsigned int MagicNumberGenerator::getState() {
+    return state;
+}
+
+void MagicNumberGenerator::resetState() {
+
+    // Use a random_device to seed the random number generator
+    std::random_device rd;
+
+    // Use the Mersenne Twister engine for randomness
+    std::mt19937 gen(rd());
+
+    // Define a uniform distribution for integers in a certain range
+    std::uniform_int_distribution<unsigned int> distribution(1, INT32_MAX);
+
+    state = distribution(gen);
 }

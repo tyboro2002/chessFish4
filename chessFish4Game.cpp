@@ -33,7 +33,7 @@ void runGame() {
     cin >> engineNumberB;
     int i = 0;
     int depth;
-    int time; //time in miliseconds
+    int time; //time in milliseconds
     if (engineNumberA == 2 || engineNumberB == 2 || engineNumberA == 3 || engineNumberB == 3) {
         cout << "what depth do you want" << endl;
         cin >> depth;
@@ -42,7 +42,7 @@ void runGame() {
     }
 
     if (engineNumberA == 4 || engineNumberB == 4) {
-        cout << "what time do you wanna give each move (in miliseconds)" << endl;
+        cout << "what time do you wanna give each move (in milliseconds)" << endl;
         cin >> time;
         cout << "what max depth do you want" << endl;
         cin >> depth;
