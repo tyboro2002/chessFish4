@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <vector>
+#include <bitset>
 #include "moves.h"
 
 typedef unsigned long long U64;
