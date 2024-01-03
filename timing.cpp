@@ -190,12 +190,16 @@ U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const cha
 }
 
 int TimerRunner::runAutomatedTimerCases() {
+
+    totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
+    /*
     totalTime += timeFunction([this] { return time_knight_moves(); },num_runs, "knight function");
     totalTime += timeFunction([this] { return time_king_moves(); },num_runs, "king function");
     totalTime += timeFunction([this] { return time_queen_moves(); },num_runs, "queen function");
     totalTime += timeFunction([this] { return time_rook_moves(); },num_runs, "rook function");
     totalTime += timeFunction([this] { return time_bischop_moves(); },num_runs, "bishop function");
     totalTime += timeFunction([this] { return time_pawn_moves(); },num_runs, "pawn function");
+    */
     /*
     totalTime += timeFunction([this] { return time_bischop_moves_on_the_fly(); },num_runs, "bishop moves on the fly function");
     totalTime += timeFunction([this] { return time_rook_moves_on_the_fly(); },num_runs, "rook moves on the fly function");
@@ -388,6 +392,20 @@ U64 TimerRunner::time_queen_moves_magic() {
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {
         dummy_var = get_queen_attacks(i&63,bord.white|bord.black);
+    }
+    // Get the ending timestamp
+    auto endTime = std::chrono::high_resolution_clock::now();
+    // Calculate the duration in microseconds (change to other duration units as needed)
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+    return duration;
+}
+
+U64 TimerRunner::time_all_attackers() {
+    Board bord;
+    setup(&bord);
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0;i<itterations;i++) {
+        dummy_var = all_attacks(&bord);
     }
     // Get the ending timestamp
     auto endTime = std::chrono::high_resolution_clock::now();

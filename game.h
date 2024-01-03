@@ -18,38 +18,6 @@ typedef unsigned long long U64;
 //             ^                         ^
 //[calculated practical maximum   ] + [margin]
 
-struct Board {
-    // pieces
-    U64 rook;
-    U64 knight;
-    U64 bishop;
-    U64 queen;
-    U64 king;
-    U64 pawn;
-    // colors
-    U64 white;
-    U64 black;
-    // extra info (packed in one 64bit number)
-    //U64 extra;
-    U64 whiteToPlay : 1;
-    U64 whiteKingsideCastle : 1;
-    U64 whiteQueensideCastle : 1;
-    U64 blackKingsideCastle : 1;
-    U64 blackQueensideCastle : 1;
-    U64 enPassentValid : 1;
-    U64 enPassantTarget : 6;
-    U64 halfmoveClock : 7;
-    U64 reserved : 45;
-    // extra info consists of 19 bits meaning
-    // 1) white to play
-    // 2) white kingside casteling aviable
-    // 3) white queenside casteling aviable
-    // 4) black kingside casteling aviable
-    // 5) black queenside casteling aviable
-    // 6,7,8,9,10,11,12) posible en passent target (bit 6 displays if data is valid)
-    // 13,14,15,16,17,18,19) halfmove clock (if 100 (dec) its draw)
-};
-
 namespace std {
     template<>
     struct hash<Board> {
@@ -406,3 +374,5 @@ std::string moveToString(Move* move);
 std::string moveToStringShort(Move* move);
 
 U64 incrementByOne(U64 number);
+
+U64 all_attacks(Board* bord);

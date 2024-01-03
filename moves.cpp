@@ -6,7 +6,6 @@
 #include <bitset>
 #include "moves.h"
 #include "MagicsTester.h"
-#include "game.h"
 
 // Definitions for bishop_attacks and rook_attacks
 U64 bishop_attacks[64][BISHOP_ATTACKS];

@@ -1,7 +1,3 @@
-//
-// Created by Gebruiker on 25/12/2023.
-//
-
 #include "chessFish4Game.h"
 
 using namespace std;

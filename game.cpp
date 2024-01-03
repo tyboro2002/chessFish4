@@ -437,7 +437,7 @@ U64 all_black_attacks(Board* bord) {
     U64 bking = bord->black & bord->king;
     U64 bpawn = bord->black & bord->pawn;
     U64 attacks = 0ULL;
-    attacks |= bitmap_black_king(63 - countTrailingZeros(bking), bord);;
+    attacks |= bitmap_black_king(63 - countTrailingZeros(bking), bord);
     if (countSetBits(black_checking_pieces(bord)) > 1) {
         return attacks;
     }
@@ -1170,7 +1170,8 @@ void overlay(std::string* str, U64 bitpattern, char character) {
 void printBitBoard(U64 bitbord, std::string extra) {
     std::cout << endl;
     std::cout << extra << endl;
-    std::string temp = std::bitset<64>(bitbord).to_string();
+    std::string temp;
+    temp = std::bitset<64>(bitbord).to_string();
     std::cout << "8 " << temp.substr(0, 8) << endl;
     std::cout << "7 " << temp.substr(8, 8) << endl;
     std::cout << "6 " << temp.substr(16, 8) << endl;
@@ -1780,203 +1781,80 @@ void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
 
 }
 
-/*
-// Function to remove a move
-void popMove(Board* bord, Move* move) {
-	// Update the pawns bitboard to reflect the move
-	U64 fromBit = ((1ULL << 63) >> move->src);
-	U64 toBit = ((1ULL << 63) >> move->dst);
+U64 all_attacks(Board* bord){
+    U64 att = 0ULL;
+    if(bord->whiteToPlay){
+        U64 wrook = bord->white & bord->rook;
+        U64 wknight = bord->white & bord->knight;
+        U64 wbishop = bord->white & bord->bishop;
+        U64 wqueen = bord->white & bord->queen;
+        U64 wking = bord->white & bord->king;
+        U64 wpawn = bord->white & bord->pawn;
 
-	if ((move->special == NOT_SPECIAL) ||
-		(move->special == SPECIAL_WPAWN_2SQUARES) ||
-		(move->special == SPECIAL_BPAWN_2SQUARES) ||
-		(move->special == SPECIAL_WEN_PASSANT) ||
-		(move->special == SPECIAL_BEN_PASSANT) ||
-		(move->special == SPECIAL_PROMOTION_BISHOP) ||
-		(move->special == SPECIAL_PROMOTION_KNIGHT) ||
-		(move->special == SPECIAL_PROMOTION_QUEEN) ||
-		(move->special == SPECIAL_PROMOTION_ROOK)) {
+        att |= bitmap_white_king(63 - countTrailingZeros(wking), bord);
+        if (countSetBits(white_checking_pieces(bord)) > 1) return att;
 
-		// reset the color bitboards
-		if ((bord->white & toBit) != 0) {
-			bord->white |= fromBit; // set the source square
-			bord->white ^= toBit;   // clear the destination square
-		}
-		else if ((bord->black & toBit) != 0) {
-			bord->black |= fromBit; // set the source square
-			bord->black ^= toBit;   // clear the destination square
-		}
+        while (wrook) {
+            int bitIndex = countTrailingZeros(wrook); // Get the index of the least significant set bit
+            att |= bitmap_white_rook(63 - bitIndex,bord); // get the attacks of the rook at this position
+            wrook &= (wrook - 1); // Clear the least significant set bit
+        }
+        while (wbishop) {
+            int bitIndex = countTrailingZeros(wbishop); // Get the index of the least significant set bit
+            att |= bitmap_white_bishop(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            wbishop &= (wbishop - 1); // Clear the least significant set bit
+        }
+        while (wqueen) {
+            int bitIndex = countTrailingZeros(wqueen); // Get the index of the least significant set bit
+            att |= bitmap_white_queen(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            wqueen &= (wqueen - 1); // Clear the least significant set bit
+        }
+        while (wknight) {
+            int bitIndex = countTrailingZeros(wknight); // Get the index of the least significant set bit
+            att |= bitmap_white_knight(63 - bitIndex,bord); // get the attacks of the knight at this position
+            wknight &= (wknight - 1); // Clear the least significant set bit
+        }
+        while (wpawn) {
+            int bitIndex = countTrailingZeros(wpawn); // Get the index of the least significant set bit
+            att |= bitmap_white_pawn(63 - bitIndex,bord); // get the attacks of the pawn at this position
+            wpawn &= (wpawn - 1); // Clear the least significant set bit
+        }
+    }else{
+        U64 brook = bord->black & bord->rook;
+        U64 bknight = bord->black & bord->knight;
+        U64 bbishop = bord->black & bord->bishop;
+        U64 bqueen = bord->black & bord->queen;
+        U64 bking = bord->black & bord->king;
+        U64 bpawn = bord->black & bord->pawn;
 
+        att |= bitmap_black_king(63 - countTrailingZeros(bking), bord);
+        if (countSetBits(black_checking_pieces(bord)) > 1) return att;
 
-		if ((bord->rook & toBit) != 0) {
-		*/
-/* //TODO
-if ((((1ULL << 63) >> (A8)) & fromBit) != 0) {
-    bord->extra |= (1ULL << 14); // re add white kingside casteling ability
+        while (brook) {
+            int bitIndex = countTrailingZeros(brook); // Get the index of the least significant set bit
+            att |= bitmap_black_rook(63 - bitIndex,bord); // get the attacks of the rook at this position
+            brook &= (brook - 1); // Clear the least significant set bit
+        }
+        while (bbishop) {
+            int bitIndex = countTrailingZeros(bbishop); // Get the index of the least significant set bit
+            att |= bitmap_black_bishop(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            bbishop &= (bbishop - 1); // Clear the least significant set bit
+        }
+        while (bqueen) {
+            int bitIndex = countTrailingZeros(bqueen); // Get the index of the least significant set bit
+            att |= bitmap_black_queen(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            bqueen &= (bqueen - 1); // Clear the least significant set bit
+        }
+        while (bknight) {
+            int bitIndex = countTrailingZeros(bknight); // Get the index of the least significant set bit
+            att |= bitmap_black_knight(63 - bitIndex,bord); // get the attacks of the knight at this position
+            bknight &= (bknight - 1); // Clear the least significant set bit
+        }
+        while (bpawn) {
+            int bitIndex = countTrailingZeros(bpawn); // Get the index of the least significant set bit
+            att |= bitmap_black_pawn(63 - bitIndex,bord); // get the attacks of the pawn at this position
+            bpawn &= (bpawn - 1); // Clear the least significant set bit
+        }
+    }
+    return att;
 }
-else if ((((1ULL << 63) >> (H8)) & fromBit) != 0) {
-    bord->extra |= (1ULL << 15); // re add white queenside casteling ability
-}
-else if ((((1ULL << 63) >> (A1)) & fromBit) != 0) {
-    bord->extra |= (1ULL << 16); // re add black kingside casteling ability
-}
-else if ((((1ULL << 63) >> (H1)) & fromBit) != 0) {
-    bord->extra |= (1ULL << 17); // re add black queenside casteling ability
-}
-*/
-/*
-			bord->rook |= fromBit; // set the source square
-			bord->rook ^= toBit;   // clear the destination square
-		}
-		else if ((bord->knight & toBit) != 0) {
-			bord->knight |= fromBit; // Clear the source square
-			bord->knight ^= toBit;   // Set the destination square
-		}
-		else if ((bord->bishop & toBit) != 0) {
-			bord->bishop |= fromBit; // Clear the source square
-			bord->bishop ^= toBit;   // Set the destination square
-		}
-		else if ((bord->queen & toBit) != 0) {
-			bord->queen |= fromBit; // Clear the source square
-			bord->queen ^= toBit;   // Set the destination square
-		}
-		else if ((bord->king & toBit) != 0) {
-		*/
-/* //TODO
-if ((bord->white & fromBit) != 0) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 16));
-}
-else if ((bord->black & fromBit) != 0) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 14));
-}
-*/
-/*
-			bord->king |= fromBit; // Clear the source square
-			bord->king ^= toBit;   // Set the destination square
-		}
-		else if ((bord->pawn & toBit) != 0) {
-			bord->pawn |= fromBit; // Clear the source square
-			bord->pawn ^= toBit;   // Set the destination square
-		}
-	}
-
-	//bord->extra &= ~((((1ULL << 7) - 1) << 7)); // remove en passent target //TODO
-	if (move->special != NOT_SPECIAL) {
-		if (move->special == SPECIAL_WPAWN_2SQUARES) {
-			bord->extra &= ~((((1ULL << 7) - 1) << 7));
-		}
-		else if (move->special == SPECIAL_BPAWN_2SQUARES) {
-			bord->extra &= ~((((1ULL << 7) - 1) << 7));
-		}
-		*/
-/* //TODO
-else if (move->special == SPECIAL_WEN_PASSANT) {
-    U64 enPassentBit = ((1ULL << 63) >> (move->dst + 8));
-    //clear all bitboards on the to position of the en passant pawn
-    bord->pawn &= ~enPassentBit;
-    bord->white &= ~enPassentBit;
-    bord->black &= ~enPassentBit;
-}
-else if (move->special == SPECIAL_BEN_PASSANT) {
-    U64 enPassentBit = ((1ULL << 63) >> (move->dst - 8));
-    //clear all bitboards on the to position of the en passant pawn
-    bord->pawn &= ~enPassentBit;
-    bord->white &= ~enPassentBit;
-    bord->black &= ~enPassentBit;
-}
-*/
-/* //TODO
-else if (move->special == SPECIAL_WK_CASTLING) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 16));
-    U64 rookSQ = ((1ULL << 63) >> (H1));
-    bord->rook &= ~rookSQ;
-    bord->white &= ~rookSQ;
-    U64 kingSQ = ((1ULL << 63) >> (E1));
-    bord->king &= ~kingSQ;
-    bord->white &= ~kingSQ;
-
-    U64 newRookSQ = ((1ULL << 63) >> (F1));
-    bord->rook |= newRookSQ;
-    bord->white |= newRookSQ;
-    U64 newKingSQ = ((1ULL << 63) >> (G1));
-    bord->king |= newKingSQ;
-    bord->white |= newKingSQ;
-}
-else if (move->special == SPECIAL_BK_CASTLING) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 14));
-    U64 rookSQ = ((1ULL << 63) >> (H8));
-    bord->rook &= ~rookSQ;
-    bord->black &= ~rookSQ;
-    U64 kingSQ = ((1ULL << 63) >> (E8));
-    bord->king &= ~kingSQ;
-    bord->black &= ~kingSQ;
-
-    U64 newRookSQ = ((1ULL << 63) >> (F8));
-    bord->rook |= newRookSQ;
-    bord->black |= newRookSQ;
-    U64 newKingSQ = ((1ULL << 63) >> (G8));
-    bord->king |= newKingSQ;
-    bord->black |= newKingSQ;
-}
-else if (move->special == SPECIAL_WQ_CASTLING) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 16));
-    U64 rookSQ = ((1ULL << 63) >> (A1));
-    bord->rook &= ~rookSQ;
-    bord->white &= ~rookSQ;
-    U64 kingSQ = ((1ULL << 63) >> (E1));
-    bord->king &= ~kingSQ;
-    bord->white &= ~kingSQ;
-
-    U64 newRookSQ = ((1ULL << 63) >> (D1));
-    bord->rook |= newRookSQ;
-    bord->white |= newRookSQ;
-    U64 newKingSQ = ((1ULL << 63) >> (C1));
-    bord->king |= newKingSQ;
-    bord->white |= newKingSQ;
-}
-else if (move->special == SPECIAL_BQ_CASTLING) {
-    bord->extra &= ~((((1ULL << 2) - 1) << 14));
-    U64 rookSQ = ((1ULL << 63) >> (A8));
-    bord->rook &= ~rookSQ;
-    bord->black &= ~rookSQ;
-    U64 kingSQ = ((1ULL << 63) >> (E8));
-    bord->king &= ~kingSQ;
-    bord->black &= ~kingSQ;
-
-    U64 newRookSQ = ((1ULL << 63) >> (D8));
-    bord->rook |= newRookSQ;
-    bord->black |= newRookSQ;
-    U64 newKingSQ = ((1ULL << 63) >> (C8));
-    bord->king |= newKingSQ;
-    bord->black |= newKingSQ;
-}
-*/
-/*
-		else if (move->special == SPECIAL_PROMOTION_BISHOP) {
-			U64 promotionPawn = bord->bishop & ((1ULL << move->dst));
-			bord->pawn |= ((1ULL << move->src));
-			bord->bishop &= ~promotionPawn;
-		}
-		else if (move->special == SPECIAL_PROMOTION_KNIGHT) {
-			U64 promotionPawn = bord->knight & ((1ULL << move->dst));
-			bord->pawn |= ((1ULL << move->src));
-			bord->knight &= ~promotionPawn;
-		}
-		else if (move->special == SPECIAL_PROMOTION_QUEEN) {
-			U64 promotionPawn = bord->queen & ((1ULL << move->dst));
-			bord->pawn |= ((1ULL << move->src));
-			bord->queen &= ~promotionPawn;
-		}
-		else if (move->special == SPECIAL_PROMOTION_ROOK) {
-			U64 promotionPawn = bord->rook & ((1ULL << move->dst));
-			bord->pawn |= ((1ULL << move->src));
-			bord->rook &= ~promotionPawn;
-		}
-	}
-	bord->extra ^= (1ULL << 18); // swap playing player
-	// add captured pieces back
-	if (move->capture) {
-		addPiece(bord, lastCapturedPiece, move->dst);
-	}
-}
-*/

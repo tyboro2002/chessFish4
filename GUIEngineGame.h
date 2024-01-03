@@ -4,7 +4,7 @@
 #include "moves.h"
 #include "MagicsTester.h"
 
-//#define LOOP
+#define LOOP
 #define LOOP_FRAMES 30
 
 #include "MagicsTester.h"
@@ -30,12 +30,16 @@ public:
 
 public:
     bool OnUserCreate() override {
+        spriteSheet = olc::Sprite("../assets/pieces.png");
+        setup(&bord);
+        clearSquare(&bord,B1);
+        clearSquare(&bord,A2);
         for (int i = 0; i < BITMAPS; i++) {
-            //moves[i] = a1_mask;
+            moves[i] = all_attacks(&bord);
             //moves[i] = bischopMovesONE_OFF[i];
             //moves[i] = bishop_attacks_on_the_fly(i,blocks);
             //moves[i] = rook_attacks_on_the_fly(i,blocks);
-            moves[i] = get_bishop_attacks(i,blocks);
+            //moves[i] = get_bishop_attacks(i,blocks);
             //moves[i] = get_rook_attacks(i,blocks);
             //moves[i] = get_queen_attacks(i,blocks);
             //moves[i] = get_white_pawn_attacks(i,0ULL,all);
@@ -70,7 +74,9 @@ public:
         std::vector<int> greenSquares = {63-bitb};
 
         // Called once per frame, draws random coloured pixels
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
+        //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE,  moves[bitb] /*, purpleSquares, greenSquares*/);
+        //DrawSprite(300,200,&spriteSheet);
 
         // Check for button click
         if (GetMouse(0).bPressed){
@@ -93,6 +99,9 @@ private:
     int bitb = 0;
     U64 moves[BITMAPS];
     U64 blocks = 4586532442ULL;
+    Board bord;
+    olc::Sprite spriteSheet;
+    olc::Sprite white_pawn;
 
     // Function to draw a chessboard
     void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){
@@ -101,14 +110,34 @@ private:
                 // Alternate between white and black cells
                 olc::Pixel color = (i + j) % 2 == 0 ? olc::WHITE : olc::BLACK;
 
+                int squareIndex = 63-(i * size + j);
                 // If bitboard is provided, add a bit of blue and red based on the bit value
                 if (bitboard.has_value()){
-                    int squareIndex = 63-(i * size + j);
                     color = ((bitboard.value() >> squareIndex) & 1) ? olc::Pixel(color.r + INTENSITY, color.g, color.b) : olc::Pixel(color.r, color.g, color.b + INTENSITY);
                 }
 
                 // Draw a rectangle for each cell
                 FillRect(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, cellSize, cellSize, color);
+
+                SetPixelMode(olc::Pixel::MASK); // Dont draw pixels which have any transparency
+                // draw white pieces at this square
+                if(((bord.white & bord.king) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, 0,0,CELL_SIZE,CELL_SIZE);
+                if(((bord.white & bord.queen) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE,0,CELL_SIZE,CELL_SIZE);
+                if(((bord.white & bord.bishop) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*2,0,CELL_SIZE,CELL_SIZE);
+                if(((bord.white & bord.knight) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*3,0,CELL_SIZE,CELL_SIZE);
+                if(((bord.white & bord.rook) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*4,0,CELL_SIZE,CELL_SIZE);
+                if(((bord.white & bord.pawn) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*5,0,CELL_SIZE,CELL_SIZE);
+
+                // draw black pieces at this square
+                if(((bord.black & bord.king) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+                if(((bord.black & bord.queen) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+                if(((bord.black & bord.bishop) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*2,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+                if(((bord.black & bord.knight) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*3,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+                if(((bord.black & bord.rook) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*4,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+                if(((bord.black & bord.pawn) >> squareIndex) & 1) DrawPartialSprite(TOP_LEFT_X_FIELD+ j * cellSize,TOP_LEFT_y_FIELD+ i * cellSize, &spriteSheet, CELL_SIZE*5,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+
+
+                SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
                 // If purpleSquares is provided, check if the current square index is in the list
                 if (purpleSquares.has_value()) {
