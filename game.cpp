@@ -96,6 +96,11 @@ int countTrailingZeros(U64 number) {
     return 64; // Return 64 if the input number is 0
 }
 
+// Function to get the index of the least significant 1-bit
+static inline int get_ls1b_index_game(U64 bitboard){
+    return bitboard ? __builtin_ctzll(bitboard) : -1;
+}
+
 int getFirst1BitSquare(U64 number) {
     unsigned long index;
     if (BitScanForward64(index, number)) {
@@ -1791,34 +1796,29 @@ U64 all_attacks(Board* bord){
         U64 wking = bord->white & bord->king;
         U64 wpawn = bord->white & bord->pawn;
 
-        att |= bitmap_white_king(63 - countTrailingZeros(wking), bord);
+        att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
         if (countSetBits(white_checking_pieces(bord)) > 1) return att;
-
         while (wrook) {
-            int bitIndex = countTrailingZeros(wrook); // Get the index of the least significant set bit
-            att |= bitmap_white_rook(63 - bitIndex,bord); // get the attacks of the rook at this position
+            att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
         }
         while (wbishop) {
-            int bitIndex = countTrailingZeros(wbishop); // Get the index of the least significant set bit
-            att |= bitmap_white_bishop(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            att |= bitmap_white_bishop(get_ls1b_index_game(wbishop),bord); // get the attacks of the bishop at this position
             wbishop &= (wbishop - 1); // Clear the least significant set bit
         }
         while (wqueen) {
-            int bitIndex = countTrailingZeros(wqueen); // Get the index of the least significant set bit
-            att |= bitmap_white_queen(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            att |= bitmap_white_queen(get_ls1b_index_game(wqueen),bord); // get the attacks of the bishop at this position
             wqueen &= (wqueen - 1); // Clear the least significant set bit
         }
         while (wknight) {
-            int bitIndex = countTrailingZeros(wknight); // Get the index of the least significant set bit
-            att |= bitmap_white_knight(63 - bitIndex,bord); // get the attacks of the knight at this position
+            att |= bitmap_white_knight(get_ls1b_index_game(wknight),bord); // get the attacks of the knight at this position
             wknight &= (wknight - 1); // Clear the least significant set bit
         }
         while (wpawn) {
-            int bitIndex = countTrailingZeros(wpawn); // Get the index of the least significant set bit
-            att |= bitmap_white_pawn(63 - bitIndex,bord); // get the attacks of the pawn at this position
+            att |= bitmap_white_pawn(get_ls1b_index_game(wpawn),bord); // get the attacks of the pawn at this position
             wpawn &= (wpawn - 1); // Clear the least significant set bit
         }
+        return att;
     }else{
         U64 brook = bord->black & bord->rook;
         U64 bknight = bord->black & bord->knight;
@@ -1827,34 +1827,29 @@ U64 all_attacks(Board* bord){
         U64 bking = bord->black & bord->king;
         U64 bpawn = bord->black & bord->pawn;
 
-        att |= bitmap_black_king(63 - countTrailingZeros(bking), bord);
+        att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
         if (countSetBits(black_checking_pieces(bord)) > 1) return att;
 
         while (brook) {
-            int bitIndex = countTrailingZeros(brook); // Get the index of the least significant set bit
-            att |= bitmap_black_rook(63 - bitIndex,bord); // get the attacks of the rook at this position
+            att |= bitmap_black_rook(get_ls1b_index_game(brook),bord); // get the attacks of the rook at this position
             brook &= (brook - 1); // Clear the least significant set bit
         }
         while (bbishop) {
-            int bitIndex = countTrailingZeros(bbishop); // Get the index of the least significant set bit
-            att |= bitmap_black_bishop(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            att |= bitmap_black_bishop(get_ls1b_index_game(bbishop),bord); // get the attacks of the bishop at this position
             bbishop &= (bbishop - 1); // Clear the least significant set bit
         }
         while (bqueen) {
-            int bitIndex = countTrailingZeros(bqueen); // Get the index of the least significant set bit
-            att |= bitmap_black_queen(63 - bitIndex,bord); // get the attacks of the bishop at this position
+            att |= bitmap_black_queen(get_ls1b_index_game(bqueen),bord); // get the attacks of the bishop at this position
             bqueen &= (bqueen - 1); // Clear the least significant set bit
         }
         while (bknight) {
-            int bitIndex = countTrailingZeros(bknight); // Get the index of the least significant set bit
-            att |= bitmap_black_knight(63 - bitIndex,bord); // get the attacks of the knight at this position
+            att |= bitmap_black_knight(get_ls1b_index_game(bknight),bord); // get the attacks of the knight at this position
             bknight &= (bknight - 1); // Clear the least significant set bit
         }
         while (bpawn) {
-            int bitIndex = countTrailingZeros(bpawn); // Get the index of the least significant set bit
-            att |= bitmap_black_pawn(63 - bitIndex,bord); // get the attacks of the pawn at this position
+            att |= bitmap_black_pawn(get_ls1b_index_game(bpawn),bord); // get the attacks of the pawn at this position
             bpawn &= (bpawn - 1); // Clear the least significant set bit
         }
+        return att;
     }
-    return att;
 }
