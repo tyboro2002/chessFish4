@@ -32,8 +32,9 @@ public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
         setup(&bord);
-        clearSquare(&bord,B1);
-        clearSquare(&bord,A2);
+        //clearSquare(&bord,B1);
+        //clearSquare(&bord,A2);
+        /*
         for (int i = 0; i < BITMAPS; i++) {
             moves[i] = all_attacks(&bord);
             //moves[i] = bischopMovesONE_OFF[i];
@@ -47,6 +48,7 @@ public:
             //moves[i] = 1ULL << i;
             //moves[i] = blocks;
         }
+         */
         return true;
     }
 
@@ -54,54 +56,80 @@ public:
         // Clear the screen
         Clear(olc::BLACK);
 #ifdef LOOP
+        /*
         loopNumber++;
         if(LOOP_FRAMES < loopNumber) {
             loopNumber %= LOOP_FRAMES;
             bitb++;
             bitb %= BITMAPS;
         }
+         */
 #endif
         // Draw the button
-        DrawButton("next bitboard!", ScreenWidth() / 2 - 50, ScreenHeight() / 2 - 25, 150, 50, olc::WHITE, olc::DARK_GREY);
+        //DrawButton("next bitboard!", ScreenWidth() / 2 - 50, ScreenHeight() / 2 - 25, 150, 50, olc::WHITE, olc::DARK_GREY);
 
         // Draw the counter value
-        DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, std::to_string(bitb));
+        //DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, std::to_string(bitb));
 
         // Optional: Provide a list of squares to mark with a purple dot
         std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
 
         // Optional: Provide a list of squares to mark with a purple dot
-        std::vector<int> greenSquares = {63-bitb};
+        //std::vector<int> greenSquares = {63-bitb};
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE,  moves[bitb] /*, purpleSquares, greenSquares*/);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, selectedSquare==-1 ? 0ULL : mask /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
+
 
         // Check for button click
         if (GetMouse(0).bPressed){
-            int buttonX = ScreenWidth() / 2 - 50;
-            int buttonY = ScreenHeight() / 2 - 25;
-            int buttonWidth = 150;
-            int buttonHeight = 50;
+            int x = GetMouseX();
+            int y = GetMouseY();
 
-            if (GetMouseX() >= buttonX && GetMouseX() <= buttonX + buttonWidth &&
-                GetMouseY() >= buttonY && GetMouseY() <= buttonY + buttonHeight){
-                // Button clicked, increase the counter
-                bitb = (bitb+1)%BITMAPS;
+            // Calculate the row and column of the clicked cell
+            int row = (y - TOP_LEFT_y_FIELD) / CELL_SIZE;
+            int col = (x - TOP_LEFT_X_FIELD) / CELL_SIZE;
+
+            // Check if the click is within the chessboard boundaries
+            if (row >= 0 && row < CHESS_SIZE &&
+                col >= 0 && col < CHESS_SIZE) {
+                // The mouse click is within the chessboard
+                // Now, 'row' and 'col' represent the clicked cell
+                int toSq = (63-(row*8+col));
+                if(selectedSquare != -1){
+                    if(selectedSquare != toSq && 1ULL<<toSq & mask ){
+                        Action action = {.src = selectedSquare, .dst = toSq};
+                        movePiece(&bord, &action);
+                    }
+                    selectedSquare = -1;
+                    mask = 0ULL;
+                }else{
+                    selectedSquare = toSq;
+                    mask = is_attacked(selectedSquare,&bord);
+                }
+                message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
+            } else {
+                message = "Clicked outside the chessboard";
             }
+            // The mouse click is outside the chessboard
+            DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
         }
+
         return true;
     }
 
 private:
-    U64 loopNumber = 0;
-    int bitb = 0;
-    U64 moves[BITMAPS];
-    U64 blocks = 4586532442ULL;
+    //U64 loopNumber = 0;
+    //int bitb = 0;
+    //U64 moves[BITMAPS];
+    //U64 blocks = 4586532442ULL;
     Board bord;
     olc::Sprite spriteSheet;
-    olc::Sprite white_pawn;
+    int selectedSquare = -1;
+    std::string message = "";
+    U64 mask = 0ULL;
 
     // Function to draw a chessboard
     void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){

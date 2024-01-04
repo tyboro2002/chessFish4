@@ -376,3 +376,17 @@ std::string moveToStringShort(Move* move);
 U64 incrementByOne(U64 number);
 
 U64 all_attacks(Board* bord);
+U64 is_attacked(int square, Board* bord);
+
+class Action{
+public:
+    // Action is a lightweight type, it is accommodated in only 16 bits
+    int  src : 8;
+    int  dst : 8;
+
+    bool operator ==(const Move& other) const { return(*((int16_t*)this) == *((int16_t*)(&other)));}
+
+    bool operator !=(const Move& other) const { return(*((int16_t*)this) != *((int16_t*)(&other)));}
+};
+
+void movePiece(Board* bord, Action* move);

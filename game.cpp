@@ -98,7 +98,7 @@ int countTrailingZeros(U64 number) {
 
 // Function to get the index of the least significant 1-bit
 static inline int get_ls1b_index_game(U64 bitboard){
-    return bitboard ? __builtin_ctzll(bitboard) : -1;
+    return bitboard ? 63-__builtin_ctzll(bitboard) : -1;
 }
 
 int getFirst1BitSquare(U64 number) {
@@ -1851,5 +1851,144 @@ U64 all_attacks(Board* bord){
             bpawn &= (bpawn - 1); // Clear the least significant set bit
         }
         return att;
+    }
+}
+
+U64 is_attacked(int square, Board *bord) {
+    U64 sq_mask = 1ULL << square;
+    U64 att = 0ULL;
+    if(bord->whiteToPlay){
+        U64 wrook = bord->white & bord->rook & sq_mask;
+        U64 wknight = bord->white & bord->knight & sq_mask;
+        U64 wbishop = bord->white & bord->bishop & sq_mask;
+        U64 wqueen = bord->white & bord->queen & sq_mask;
+        U64 wking = bord->white & bord->king & sq_mask;
+        U64 wpawn = bord->white & bord->pawn & sq_mask;
+
+        att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
+        if (countSetBits(white_checking_pieces(bord)) > 1) return att;
+        while (wrook) {
+            att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
+            wrook &= (wrook - 1); // Clear the least significant set bit
+        }
+        while (wbishop) {
+            att |= bitmap_white_bishop(get_ls1b_index_game(wbishop),bord); // get the attacks of the bishop at this position
+            wbishop &= (wbishop - 1); // Clear the least significant set bit
+        }
+        while (wqueen) {
+            att |= bitmap_white_queen(get_ls1b_index_game(wqueen),bord); // get the attacks of the bishop at this position
+            wqueen &= (wqueen - 1); // Clear the least significant set bit
+        }
+        while (wknight) {
+            att |= bitmap_white_knight(get_ls1b_index_game(wknight),bord); // get the attacks of the knight at this position
+            wknight &= (wknight - 1); // Clear the least significant set bit
+        }
+        while (wpawn) {
+            att |= bitmap_white_pawn(get_ls1b_index_game(wpawn),bord); // get the attacks of the pawn at this position
+            wpawn &= (wpawn - 1); // Clear the least significant set bit
+        }
+        return att;
+    }else{
+        U64 brook = bord->black & bord->rook & sq_mask;
+        U64 bknight = bord->black & bord->knight & sq_mask;
+        U64 bbishop = bord->black & bord->bishop & sq_mask;
+        U64 bqueen = bord->black & bord->queen & sq_mask;
+        U64 bking = bord->black & bord->king & sq_mask;
+        U64 bpawn = bord->black & bord->pawn & sq_mask;
+
+        att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
+        if (countSetBits(black_checking_pieces(bord)) > 1) return att;
+
+        while (brook) {
+            att |= bitmap_black_rook(get_ls1b_index_game(brook),bord); // get the attacks of the rook at this position
+            brook &= (brook - 1); // Clear the least significant set bit
+        }
+        while (bbishop) {
+            att |= bitmap_black_bishop(get_ls1b_index_game(bbishop),bord); // get the attacks of the bishop at this position
+            bbishop &= (bbishop - 1); // Clear the least significant set bit
+        }
+        while (bqueen) {
+            att |= bitmap_black_queen(get_ls1b_index_game(bqueen),bord); // get the attacks of the bishop at this position
+            bqueen &= (bqueen - 1); // Clear the least significant set bit
+        }
+        while (bknight) {
+            att |= bitmap_black_knight(get_ls1b_index_game(bknight),bord); // get the attacks of the knight at this position
+            bknight &= (bknight - 1); // Clear the least significant set bit
+        }
+        while (bpawn) {
+            att |= bitmap_black_pawn(get_ls1b_index_game(bpawn),bord); // get the attacks of the pawn at this position
+            bpawn &= (bpawn - 1); // Clear the least significant set bit
+        }
+        return att;
+    }
+}
+
+void movePiece(Board* bord, Action* move){
+    U64 fromBit = 1ULL <<  move->src;
+    U64 toBit = 1ULL << move->dst;
+    bord->whiteToPlay ^= 1;
+    if (((bord->white | bord->black) & toBit) != 0) {
+        //clear all bitboards on the to position
+        bord->halfmoveClock = 0;
+        bord->rook &= ~toBit;
+        bord->knight &= ~toBit;
+        bord->bishop &= ~toBit;
+        bord->queen &= ~toBit;
+        bord->king &= ~toBit;
+        bord->pawn &= ~toBit;
+        bord->white &= ~toBit;
+        bord->black &= ~toBit;
+    }
+
+    if ((bord->white & fromBit) != 0) {
+        bord->white ^= fromBit; // Clear the source square
+        bord->white |= toBit;   // Set the destination square
+    }else if ((bord->black & fromBit) != 0) {
+        bord->black ^= fromBit; // Clear the source square
+        bord->black |= toBit;   // Set the destination square
+    }
+
+    if ((bord->pawn & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->pawn ^= fromBit; // Clear the source square
+        bord->pawn |= toBit;   // Set the destination square
+        //TODO add en passent
+        return;
+    }
+
+    if ((bord->rook & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->rook ^= fromBit; // Clear the source square
+        bord->rook |= toBit;   // Set the destination square
+        return;
+    }
+
+    if ((bord->bishop & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->bishop ^= fromBit; // Clear the source square
+        bord->bishop |= toBit;   // Set the destination square
+        return;
+    }
+
+    if ((bord->queen & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->queen ^= fromBit; // Clear the source square
+        bord->queen |= toBit;   // Set the destination square
+        return;
+    }
+
+    if ((bord->king & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->king ^= fromBit; // Clear the source square
+        bord->king |= toBit;   // Set the destination square
+        //TODO add casteling
+        return;
+    }
+
+    if ((bord->knight & fromBit) != 0) {
+        bord->halfmoveClock += 1;
+        bord->knight ^= fromBit; // Clear the source square
+        bord->knight |= toBit;   // Set the destination square
+        return;
     }
 }
