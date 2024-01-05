@@ -43,7 +43,6 @@ U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask){
 
 // generate bishop attacks on the fly
 U64 bishop_attacks_on_the_fly(int square, U64 block){
-    square = 63-square;
     // result attacks bitboard
     U64 attacks = 0ULL;
 
@@ -82,7 +81,6 @@ U64 bishop_attacks_on_the_fly(int square, U64 block){
 
 // generate rook attacks on the fly
 U64 rook_attacks_on_the_fly(int square, U64 block){
-    square = 63 - square;
     // result attacks bitboard
     U64 attacks = 0ULL;
 
@@ -203,7 +201,6 @@ void init_all_sliders_attacks(bool testWorking, const char* outputFile, const ch
         i=0;
         output << "rook: " << std::endl;
         outputCondensed << "rook: " << std::endl;
-        tries = 877651; //acount for already done tries
         while(i<64){
             init_sliders_attacks(false);
             if(testMagicNumber(i, false)){
@@ -247,13 +244,13 @@ void init_sliders_attacks(bool bishop){
             if (bishop){
                 // init magic index
                 U64 magic_index = (occupancy * bishop_magic_numbers[square]) >> (64 - bischopRelevantBits[square]);
-                if(magic_index >= BISHOP_ATTACKS) {printf("fuck te veel bischop\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                if(magic_index >= BISHOP_ATTACKS) {printf("fuck %llu is te veel bishop for occupancy: %llu at index: %d for square: %d\n",magic_index, occupancy, index, square); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
                 // init bishop attacks
                 bishop_attacks[square][magic_index] = bishop_attacks_on_the_fly(square, occupancy);
             }else{ // rook
                 // init magic index
-                U64 magic_index = (occupancy * rook_magic_numbers[square]) >> (64 - rookRelevantBits[square]);
-                if(magic_index >= ROOK_ATTACKS) {printf("fuck te veel rook\n"); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                U64 magic_index = (occupancy * rook_magic_numbers[square]) >> (64-rookRelevantBits[square]);
+                if(magic_index >= ROOK_ATTACKS) {printf("fuck %llu is te veel rook for occupancy: %llu at index: %d for square: %d magic number: %llu\n",magic_index, occupancy, index, square,rook_magic_numbers[square]); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
                 // init bishop attacks
                 rook_attacks[square][magic_index] = rook_attacks_on_the_fly(square, occupancy);
             }
@@ -277,7 +274,9 @@ U64 get_rook_attacks(int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= rookMovesONE_OFF[square];
     occupancy *= rook_magic_numbers[square];
-    occupancy >>= 64 - rookRelevantBits[square];
+    occupancy >>= 64-rookRelevantBits[square];
+
+    //printf("%llu occupancy\n", occupancy);
 
     // return rook attacks
     return rook_attacks[square][occupancy];
@@ -304,7 +303,6 @@ U64 get_queen_attacks(int square, U64 occupancy){
 
 U64 get_white_pawn_attacks(int square, U64 white, U64 black){
     U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
-    square = 63-square;
     if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(white|black))){att |= (1ULL<<(square+16));}
     att |= ((1ULL<<(square+8)) & ~(white|black));
     return att & ~oneRow;
@@ -312,7 +310,6 @@ U64 get_white_pawn_attacks(int square, U64 white, U64 black){
 
 U64 get_black_pawn_attacks(int square, U64 white, U64 black){
     U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
-    square = 63-square;
     if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(white|black))){att |= (1ULL<<(square-16));}
     att |= ((1ULL<<(square-8)) & ~(white|black));
     return att & ~eightRow;

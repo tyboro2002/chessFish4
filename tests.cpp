@@ -483,6 +483,20 @@ void TestRunner::pawnMovesGenerator() {
     //TODO add en passent tests
 }
 
+void TestRunner::GenerateActions() {
+    Board bord{};
+    setupEmpty(&bord);
+    addPiece(&bord, WQUEEN, D5);
+    printBoard(&bord);
+    printBitBoard(is_attacked(D5, &bord),"");
+    ActionList actionList{};
+    getMovesAtSquare(&bord,D5,&actionList);
+    std::cout << "amount of moves: " << actionList.count << std::endl;
+    for (int i=0; i<actionList.count;i++){
+        std::cout << "move from: " << squareToString((Square)actionList.moves[i].src) << " to: " << squareToString((Square)actionList.moves[i].dst) << std::endl;
+    }
+}
+
 int TestRunner::runAutomatedTestCases() {
     // Run the tests
     kingMovesGenerator();
@@ -491,6 +505,8 @@ int TestRunner::runAutomatedTestCases() {
     bischopMovesGenerator();
     queenMovesGenerator();
     pawnMovesGenerator();
+
+    //GenerateActions();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;

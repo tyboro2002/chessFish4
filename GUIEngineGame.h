@@ -18,6 +18,11 @@
 #define TOP_LEFT_y_FIELD 100
 #define INTENSITY 150
 
+#define CASTELING_RIGHTS_X (ScreenWidth() / 2 - 10)
+#define CASTELING_RIGHTS_Y (ScreenHeight() / 2 + 60)
+#define CASTELING_RIGHTS_D_TEXT_RIGHTS 30
+#define CASTELING_RIGHTS_DIST_RIGHTS 100
+
 #define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen appear this amount larger
 
 class ChessFishVisualiserUI : public olc::PixelGameEngine {
@@ -54,7 +59,7 @@ public:
 
     bool OnUserUpdate(float fElapsedTime) override {
         // Clear the screen
-        Clear(olc::BLACK);
+        Clear(olc::Pixel(50, 50, 50));
 #ifdef LOOP
         /*
         loopNumber++;
@@ -79,7 +84,11 @@ public:
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, selectedSquare==-1 ? 0ULL : mask /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
+        setupEmpty(&bord);
+        int sq = E2;
+        addPiece(&bord, WPAWN, sq);
+        addPiece(&bord, BPAWN, F3);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, bitmap_white_pawn(sq,&bord) /* selectedSquare==-1 ? 0ULL : mask*/ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
 
 
@@ -111,11 +120,22 @@ public:
                 }
                 message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
             } else {
-                message = "Clicked outside the chessboard";
+                message = "Clicked outside the chessboard"; // The mouse click is outside the chessboard
             }
-            // The mouse click is outside the chessboard
-            DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
         }
+        DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
+        DrawString(CASTELING_RIGHTS_X, CASTELING_RIGHTS_Y, "castling rights:",olc::WHITE,2);
+        SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
+        //draw white king side castling rights
+        if (bord.whiteKingsideCastle) DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,0,CELL_SIZE,CELL_SIZE);
+        //draw white queen side castling rights
+        if (bord.whiteQueensideCastle) DrawPartialSprite(CASTELING_RIGHTS_X+CASTELING_RIGHTS_DIST_RIGHTS,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, CELL_SIZE,0,CELL_SIZE,CELL_SIZE);
+        //draw black king side castling rights
+        if (bord.blackKingsideCastle) DrawPartialSprite(CASTELING_RIGHTS_X+CASTELING_RIGHTS_DIST_RIGHTS*2,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+        //draw black queen side castling rights
+        if (bord.blackQueensideCastle) DrawPartialSprite(CASTELING_RIGHTS_X+CASTELING_RIGHTS_DIST_RIGHTS*3,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, CELL_SIZE,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+        SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
+
 
         return true;
     }

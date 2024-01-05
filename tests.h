@@ -33,6 +33,8 @@ private:
     void bischopMovesGenerator();
     void queenMovesGenerator();
     void pawnMovesGenerator();
+
+    void GenerateActions();
 };
 
 void king_danger_squares_test();

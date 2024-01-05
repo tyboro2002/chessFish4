@@ -119,12 +119,12 @@ int countSetBits(U64 number) {
 }
 
 std::string squareToString(Square square) {
-    std::string file = "ABCDEFGH";
+    std::string file = "HGFEDCBA";
     std::string rank = "12345678";
 
     int index = static_cast<int>(square);
     int fileIndex = index % 8;
-    int rankIndex = 7 - index / 8; // Adjusted for reversed numbering
+    int rankIndex = index / 8;
 
     return std::string(1, file[fileIndex]) + rank[rankIndex];
 }
@@ -1264,7 +1264,7 @@ void setupEmpty(Board* bord) {
 }
 
 void addPiece(Board* bord, Pieces piece, int square) {
-    U64 placeBit = ((1ULL << 63) >> square);
+    U64 placeBit = 1ULL << square;
     if (piece == WROOK) {
         bord->white |= placeBit;
         bord->rook  |= placeBit;
@@ -1944,8 +1944,8 @@ void movePiece(Board* bord, Action* move){
         bord->white ^= fromBit; // Clear the source square
         bord->white |= toBit;   // Set the destination square
     }else if ((bord->black & fromBit) != 0) {
-        bord->black ^= fromBit; // Clear the source square
-        bord->black |= toBit;   // Set the destination square
+        bord->black ^= fromBit;
+        bord->black |= toBit;
     }
 
     if ((bord->pawn & fromBit) != 0) {
@@ -1958,37 +1958,86 @@ void movePiece(Board* bord, Action* move){
 
     if ((bord->rook & fromBit) != 0) {
         bord->halfmoveClock += 1;
-        bord->rook ^= fromBit; // Clear the source square
-        bord->rook |= toBit;   // Set the destination square
-        return;
+        bord->rook ^= fromBit;
+        bord->rook |= toBit;
+        switch (move->src) {
+            case (63-H1):
+                bord->whiteKingsideCastle = 0; //TODO set maybe H1 to the values itself
+                return;
+            case (63-A1):
+                bord->whiteQueensideCastle = 0; //TODO set maybe A1 to the values itself
+                return;
+            case (63-H8):
+                bord->blackKingsideCastle = 0; //TODO set maybe H8 to the values itself
+                return;
+            case (63-A8):
+                bord->blackQueensideCastle = 0; //TODO set maybe A8 to the values itself
+                return;
+            default:
+                return;
+        }
     }
 
     if ((bord->bishop & fromBit) != 0) {
         bord->halfmoveClock += 1;
-        bord->bishop ^= fromBit; // Clear the source square
-        bord->bishop |= toBit;   // Set the destination square
+        bord->bishop ^= fromBit;
+        bord->bishop |= toBit;
         return;
     }
 
     if ((bord->queen & fromBit) != 0) {
         bord->halfmoveClock += 1;
-        bord->queen ^= fromBit; // Clear the source square
-        bord->queen |= toBit;   // Set the destination square
+        bord->queen ^= fromBit;
+        bord->queen |= toBit;
         return;
     }
 
     if ((bord->king & fromBit) != 0) {
         bord->halfmoveClock += 1;
-        bord->king ^= fromBit; // Clear the source square
-        bord->king |= toBit;   // Set the destination square
-        //TODO add casteling
+        bord->king ^= fromBit;
+        bord->king |= toBit;
+        if(!bord->whiteToPlay){ // we already changed the player to play so we need to invert here
+            bord->whiteKingsideCastle = 0;
+            bord->whiteQueensideCastle = 0;
+        }else{
+            bord->blackKingsideCastle = 0;
+            bord->blackQueensideCastle = 0;
+        }
         return;
     }
 
     if ((bord->knight & fromBit) != 0) {
         bord->halfmoveClock += 1;
-        bord->knight ^= fromBit; // Clear the source square
-        bord->knight |= toBit;   // Set the destination square
+        bord->knight ^= fromBit;
+        bord->knight |= toBit;
         return;
     }
+}
+
+bool checkBoard(Board* bord){
+    // check if there are no pawns on first or last row
+    if(bord->pawn & (eightRow | oneRow)) return false;
+    // check if each side has a king
+    if(countSetBits(bord->white & bord->king) != 1) return false;
+    if(countSetBits(bord->black & bord->king) != 1) return false;
+    // TODO check if kings can be taken
+    // check if a side has more pieces than it starts with
+    if(countSetBits(bord->white) > 16) return false;
+    if(countSetBits(bord->black) > 16) return false;
+    // check if a side has more pawns than it starts with
+    if(countSetBits(bord->white & bord->pawn) > 8) return false;
+    if(countSetBits(bord->black & bord->pawn) > 8) return false;
+    return true;
+}
+
+void getMovesAtSquare(Board* bord, int square, ActionList* actionList){
+    U64 attacks = is_attacked(square,bord);
+    Action actie;
+    actie.src = square;
+    while(attacks){
+        actie.dst = __builtin_ctzll(attacks);
+        actionList->moves[actionList->count++] = actie;
+        attacks &= (attacks - 1);
+    }
+    //actionList->count += countSetBits(attacks);
 }

@@ -10,17 +10,21 @@
 
 using namespace std;
 
-//#define RUN_TESTS // Define this macro to run tests
+#define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
 #define DRAW // Define this macro to run draw
 //#define MAGIC // Define this macro to run the initialisation of the magic numbers
 //#define TIME // Define this macro to time the code
 
 int main() {
-    //for (int i = 63; i>= 0; i--){
-    //    std::bitset<64> binaryRepresentation(blackPawnAttacks[i]);
-    //    std::cout << "0b" << binaryRepresentation << ",\n";
-    //}
+    /*
+    std::cout << "moves reversed: " << std::endl << std::endl;
+    for (int i = 63; i>= 0; i--){
+        std::bitset<64> binaryRepresentation(kingMovesBlackBothSide[i]);
+        std::cout << "0b" << binaryRepresentation << ",\n";
+        //std::cout << bischopRelevantBits[i] << " ,";
+    }
+     */
 #ifdef MAGIC
     MagicsTester magicsTester;
     magicsTester.init_magic_numbers();
