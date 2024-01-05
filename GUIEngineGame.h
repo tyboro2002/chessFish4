@@ -84,11 +84,7 @@ public:
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        setupEmpty(&bord);
-        int sq = E2;
-        addPiece(&bord, WPAWN, sq);
-        addPiece(&bord, BPAWN, F3);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, bitmap_white_pawn(sq,&bord) /* selectedSquare==-1 ? 0ULL : mask*/ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, selectedSquare==-1 ? 0ULL : mask /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
 
 
