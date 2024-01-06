@@ -35,10 +35,6 @@ void TestRunner::kingMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_white_king(i,&bord)) << endl;
-        //cout << bitmap_white_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check white King on square: " << i;
         testResultTrue(bitmap_white_king(i,&bord) == kingMoves[i],formattedString.str());
@@ -48,10 +44,6 @@ void TestRunner::kingMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_black_king(i,&bord)) << endl;
-        //cout << bitmap_black_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check black King on square: " << i;
         testResultTrue(bitmap_black_king(i,&bord) == kingMoves[i],formattedString.str());
@@ -62,10 +54,6 @@ void TestRunner::kingMovesGenerator() {
         setupEmpty(&bord);
         addPiece(&bord, WROOK, A1);
         addPiece(&bord, WKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_white_king(i,&bord)) << endl;
-        //cout << std::bitset<64>(kingMovesWhiteQueenSide[i]) << endl;
         std::ostringstream formattedString;
         formattedString << "check white King queenside castle on square: " << i;
         testResultTrue(bitmap_white_king(i,&bord) == kingMovesWhiteQueenSide[i],formattedString.str());
@@ -76,10 +64,6 @@ void TestRunner::kingMovesGenerator() {
         setupEmpty(&bord);
         addPiece(&bord, BROOK, A8);
         addPiece(&bord, BKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_black_king(i,&bord)) << endl;
-        //cout << bitmap_black_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check black King queenside castle on square: " << i;
         testResultTrue(bitmap_black_king(i,&bord) == kingMovesBlackQueenSide[i],formattedString.str());
@@ -90,10 +74,6 @@ void TestRunner::kingMovesGenerator() {
         setupEmpty(&bord);
         addPiece(&bord, WROOK, H1);
         addPiece(&bord, WKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_white_king(i,&bord)) << endl;
-        //cout << bitmap_white_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check white King kingside castle on square: " << i;
         testResultTrue(bitmap_white_king(i,&bord) == kingMovesWhiteKingSide[i],formattedString.str());
@@ -104,10 +84,6 @@ void TestRunner::kingMovesGenerator() {
         setupEmpty(&bord);
         addPiece(&bord, BROOK, H8);
         addPiece(&bord, BKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_black_king(i,&bord)) << endl;
-        //cout << bitmap_black_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check black King kingside castle on square: " << i;
         testResultTrue(bitmap_black_king(i,&bord) == kingMovesBlackKingSide[i],formattedString.str());
@@ -119,10 +95,6 @@ void TestRunner::kingMovesGenerator() {
         addPiece(&bord, WROOK, H1);
         addPiece(&bord, WROOK, A1);
         addPiece(&bord, WKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_white_king(i,&bord)) << endl;
-        //cout << bitmap_white_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check white King both castle on square: " << i;
         testResultTrue(bitmap_white_king(i,&bord) == kingMovesWhiteBothSide[i],formattedString.str());
@@ -134,10 +106,6 @@ void TestRunner::kingMovesGenerator() {
         addPiece(&bord, BROOK, H8);
         addPiece(&bord, BROOK, A8);
         addPiece(&bord, BKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_black_king(i,&bord)) << endl;
-        //cout << bitmap_black_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check black King both castle on square: " << i;
         testResultTrue(bitmap_black_king(i,&bord) == kingMovesBlackBothSide[i],formattedString.str());
@@ -151,10 +119,6 @@ void TestRunner::kingMovesGenerator() {
         addPiece(&bord, WKNIGHT, B1);
         addPiece(&bord, WKNIGHT, G1);
         addPiece(&bord, WKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_white_king(i,&bord)) << endl;
-        //cout << std::bitset<64>(kingMoves[i]) << endl;
         std::ostringstream formattedString;
         formattedString << "check white King both blocked castle on square: " << i;
         testResultTrue(bitmap_white_king(i,&bord) == (kingMoves[i] & (~b1_mask) & (~a1_mask) & (~g1_mask) & (~h1_mask)),formattedString.str());
@@ -168,10 +132,6 @@ void TestRunner::kingMovesGenerator() {
         addPiece(&bord, BKNIGHT, B8);
         addPiece(&bord, BKNIGHT, G8);
         addPiece(&bord, BKING, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_king(i, &bord),"");
-        //cout << std::bitset<64>(bitmap_black_king(i,&bord)) << endl;
-        //cout << bitmap_black_king(i,&bord) << endl;
         std::ostringstream formattedString;
         formattedString << "check black King both blocked castle on square: " << i;
         testResultTrue(bitmap_black_king(i,&bord) == (kingMoves[i] & (~b8_mask) & (~a8_mask) & (~g8_mask) & (~h8_mask)),formattedString.str());
@@ -186,9 +146,6 @@ void TestRunner::knightMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WKNIGHT, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_knight(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_white_knight(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check white knight on square: " << i;
         testResultTrue(bitmap_white_knight(i,&bord) == knightMoves[i],formattedString.str());
@@ -197,9 +154,6 @@ void TestRunner::knightMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BKNIGHT, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_knight(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_black_knight(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check black knight on square: " << i;
         testResultTrue(bitmap_black_knight(i,&bord) == knightMoves[i],formattedString.str());
@@ -230,9 +184,6 @@ void TestRunner::rookMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WROOK, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_rook(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_white_rook(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check white rook on square: " << i;
         testResultTrue(bitmap_white_rook(i,&bord) == rookMoves[i],formattedString.str());
@@ -241,9 +192,6 @@ void TestRunner::rookMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BROOK, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_rook(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_black_rook(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check black rook on square: " << i;
         testResultTrue(bitmap_black_rook(i,&bord) == rookMoves[i],formattedString.str());
@@ -290,9 +238,6 @@ void TestRunner::bischopMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WBISCHOP, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_bishop(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_white_bishop(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check white bischop on square: " << i;
         testResultTrue(bitmap_white_bishop(i,&bord) == bischopMoves[i],formattedString.str());
@@ -301,9 +246,6 @@ void TestRunner::bischopMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BBISCHOP, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_bishop(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_black_bishop(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check black bischop on square: " << i;
         testResultTrue(bitmap_black_bishop(i,&bord) == bischopMoves[i],formattedString.str());
@@ -350,9 +292,6 @@ void TestRunner::queenMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WQUEEN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_queen(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_white_queen(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check white queen on square: " << i;
         testResultTrue(bitmap_white_queen(i,&bord) == queenMoves[i],formattedString.str());
@@ -361,9 +300,6 @@ void TestRunner::queenMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BQUEEN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_queen(i, &bord), "");
-        //cout << std::bitset<64>(bitmap_black_queen(i, &bord)) << endl;
         std::ostringstream formattedString;
         formattedString << "check black queen on square: " << i;
         testResultTrue(bitmap_black_queen(i,&bord) == queenMoves[i],formattedString.str());
@@ -411,9 +347,6 @@ void TestRunner::pawnMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, WPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_white_pawn(i, &bord))  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check white pawn all empty on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == whitePawnMovesAllEmpty[i], formattedString.str());
@@ -422,9 +355,6 @@ void TestRunner::pawnMovesGenerator() {
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
         addPiece(&bord, BPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_black_pawn(i, &bord))  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check black pawn all empty on square: " << i;
         testResultTrue(bitmap_black_pawn(i,&bord) == blackPawnMovesAllEmpty[i],formattedString.str());
@@ -434,10 +364,6 @@ void TestRunner::pawnMovesGenerator() {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, BPAWN, (Square)j);
         addPiece(&bord, WPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_white_pawn(i, &bord))  << "," << endl;
-        //cout << "0b" << std::bitset<64>(whitePawnAttacks[i])  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check white pawn on a board with all black pawns on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == whitePawnAttacks[i], formattedString.str());
@@ -447,9 +373,6 @@ void TestRunner::pawnMovesGenerator() {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, WPAWN, (Square)j);
         addPiece(&bord, BPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_black_pawn(i, &bord))  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check black pawn on a board with all white pawns on square: " << i;
         testResultTrue(bitmap_black_pawn(i,&bord) == blackPawnAttacks[i],formattedString.str());
@@ -460,10 +383,6 @@ void TestRunner::pawnMovesGenerator() {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, WPAWN, (Square)j);
         addPiece(&bord, WPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_white_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_white_pawn(i, &bord))  << "," << endl;
-        //cout << "0b" << std::bitset<64>(whitePawnAttacks[i])  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check white pawn on a board with all white pawns on square: " << i;
         testResultTrue(bitmap_white_pawn(i, &bord) == 0ULL, formattedString.str());
@@ -473,9 +392,6 @@ void TestRunner::pawnMovesGenerator() {
         setupEmpty(&bord);
         for (int j = 0; j<64;j++) addPiece(&bord, BPAWN, (Square)j);
         addPiece(&bord, BPAWN, (Square)i);
-        //printBoard(&bord);
-        //printBitBoard(bitmap_black_pawn(i, &bord), "");
-        //cout << "0b" << std::bitset<64>(bitmap_black_pawn(i, &bord))  << "," << endl;
         std::ostringstream formattedString;
         formattedString << "check black pawn on a board with all black pawns on square: " << i;
         testResultTrue(bitmap_black_pawn(i,&bord) == 0ULL,formattedString.str());
@@ -509,11 +425,6 @@ void TestRunner::GenerateActions() {
     setup(&bord);
     ActionList actionList;
     getAllMoves(&bord,&actionList);
-    //std::cout << "amount of moves: " << actionList.count << std::endl;
-    for (int i=0; i<actionList.count;i++){
-        //std::cout << "move from: " << actionList.moves[i].src << " to: " << actionList.moves[i].dst << std::endl;
-        //std::cout << "move from: " << squareToString(actionList.moves[i].src) << " to: " << squareToString(actionList.moves[i].dst) << std::endl;
-    }
     testResultTrue(actionList.count == 20,"correct amount of actions from starting position as white");
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white");
 }
