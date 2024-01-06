@@ -376,6 +376,10 @@ struct ActionList{
     void addMove(int src, int dst) {
         moves[count++] = {src, dst};
     }
+
+    void popMove(){
+        count--;
+    }
 };
 
 /* execute the action given (basicaly moving the piece from src to dst and doing the special needs for this like castling ex) */
@@ -386,3 +390,12 @@ void getMovesAtSquare(Board* bord, int square, ActionList* actionList);
 
 /* calculate all possible moves from a position */
 void getAllMoves(Board* bord, ActionList* actionList);
+
+/* filter all legal moves from the getAllMoves function (this function calls that move itself) */
+void getLegalMoves(Board* bord, ActionList* actionList);
+
+/* calculate a mask of all pieces attacking the king */
+U64 calculateKingDanger(Board* bord);
+
+/* get all the destinations of moves that originate from a square and put them in a bitmap (only use this for drawing this is slow) */
+U64 calculateBitmapFromSquare(int square, ActionList* actionList);

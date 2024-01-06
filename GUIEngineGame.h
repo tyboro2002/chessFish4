@@ -84,7 +84,7 @@ public:
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, selectedSquare==-1 ? 0ULL : mask /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE, /*calculateKingDanger(&bord)*/ selectedSquare==-1 ? 0ULL : mask /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
 
 
@@ -112,7 +112,11 @@ public:
                     mask = 0ULL;
                 }else{
                     selectedSquare = toSq;
-                    mask = is_attacked(selectedSquare,&bord);
+                    //mask = is_attacked(selectedSquare,&bord);
+                    ActionList actionList;
+                    getLegalMoves(&bord, &actionList);
+                    mask = calculateBitmapFromSquare(selectedSquare, &actionList);
+                    actionList.count = 0;
                 }
                 message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
             } else {

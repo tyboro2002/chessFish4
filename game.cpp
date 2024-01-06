@@ -7,6 +7,25 @@
 #define set_bit(bitboard, index) (bitboard |= (1ULL << index))
 #define pop_bit(bitboard, index) (get_bit(bitboard, index) ? bitboard ^= (1ULL << index) : 0)
 
+/* define a board reset function to use in the legal move generation */
+#define resetBoard()                                    \
+    bord->rook = rook;                                  \
+    bord->knight = knight;                              \
+    bord->bishop = bishop;                              \
+    bord->queen = queen;                                \
+    bord->king = king;                                  \
+    bord->pawn = pawn;                                  \
+    bord->white = white;                                \
+    bord->black = black;                                \
+    bord->whiteToPlay = whiteToPlay;                    \
+    bord->whiteKingsideCastle = whiteKingsideCastle;    \
+    bord->whiteQueensideCastle = whiteQueensideCastle;  \
+    bord->blackKingsideCastle = blackKingsideCastle;    \
+    bord->blackQueensideCastle = blackQueensideCastle;  \
+    bord->enPassentValid = enPassentValid;              \
+    bord->enPassantTarget = enPassantTarget;            \
+    bord->halfmoveClock = halfmoveClock;                \
+
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
     if (!bordIn || !bordOut) return; // Handle nullptr input
@@ -104,7 +123,7 @@ U64 bitmap_black_pawn(int position, Board* bord) {
     return get_black_pawn_attacks(position, bord->white,bord->black); //TODO en passent
 }
 
-U64 bitmap_white_king(int position, Board* bord) { //TODO king in check
+U64 bitmap_white_king(int position, Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E1) {
@@ -114,7 +133,7 @@ U64 bitmap_white_king(int position, Board* bord) { //TODO king in check
     return ret & (~bord->white);
 }
 
-U64 bitmap_black_king(int position, Board* bord) { //TODO king in check
+U64 bitmap_black_king(int position, Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E8) {
@@ -1563,6 +1582,38 @@ void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
  *  below is the new code
  * ===================================== */
 
+U64 calculateKingDanger(Board* bord){
+    //TODO looks like there is a problem with blocked pieces but not sure
+    if(bord->whiteToPlay) {
+        /* find the square of the queen */
+        int kingSquare = get_ls1b_index_game(bord->white & bord->king);
+        /* if there are certainly no pieces able to capture the queen return */
+        if((bitmap_black_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_white_queen(kingSquare,bord) & (bord->black & bord->queen);
+        U64 bishop = bitmap_white_bishop(kingSquare,bord) & (bord->black & bord->bishop);
+        U64 rook = bitmap_white_rook(kingSquare,bord) & (bord->black & bord->rook);
+        U64 knight = bitmap_white_knight(kingSquare,bord) & (bord->black & bord->knight);
+        U64 pawn = whitePawnAttacks[kingSquare] & (bord->black & bord->pawn);
+        U64 king = bitmap_white_king(kingSquare,bord) & (bord->black & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+    else{
+        /* find the square of the queen */
+        int kingSquare = get_ls1b_index_game(bord->black & bord->king);
+        /* if there are certainly no pieces able to capture the queen return */
+        if((bitmap_white_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_black_queen(kingSquare,bord) & (bord->white & bord->queen);
+        U64 bishop = bitmap_black_bishop(kingSquare,bord) & (bord->white & bord->bishop);
+        U64 rook = bitmap_black_rook(kingSquare,bord) & (bord->white & bord->rook);
+        U64 knight = bitmap_black_knight(kingSquare,bord) & (bord->white & bord->knight);
+        U64 pawn = blackPawnAttacks[kingSquare] & (bord->white & bord->pawn);
+        U64 king = bitmap_black_king(kingSquare,bord) & (bord->white & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+}
+
 U64 all_attacks(Board* bord){
     U64 att = 0ULL;
     if(bord->whiteToPlay){
@@ -1643,7 +1694,7 @@ U64 is_attacked(int square, Board *bord) {
         U64 wpawn = bord->white & bord->pawn & sq_mask;
 
         att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
-        if (countSetBits(white_checking_pieces(bord)) > 1) return att;
+        if (countSetBits(calculateKingDanger(bord)) > 1) return att;
         while (wrook) {
             att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
@@ -1674,7 +1725,7 @@ U64 is_attacked(int square, Board *bord) {
         U64 bpawn = bord->black & bord->pawn & sq_mask;
 
         att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
-        if (countSetBits(black_checking_pieces(bord)) > 1) return att;
+        if (countSetBits(calculateKingDanger(bord)) > 1) return att;
 
         while (brook) {
             att |= bitmap_black_rook(get_ls1b_index_game(brook),bord);
@@ -1823,4 +1874,46 @@ void getAllMoves(Board* bord, ActionList* actionList){
     for (int i = 0;i<64;i++){
         getMovesAtSquare(bord,i,actionList);
     }
+}
+
+void getLegalMoves(Board* bord, ActionList* legal){
+    ActionList pseudo;
+    getAllMoves(bord, &pseudo);
+
+    /* initiate bitmaps to redo the move */
+    // pieces
+    U64 rook = bord->rook;
+    U64 knight = bord->knight;
+    U64 bishop = bord->bishop;
+    U64 queen = bord->queen;
+    U64 king = bord->king;
+    U64 pawn = bord->pawn;
+    // colors
+    U64 white = bord->white;
+    U64 black = bord->black;
+    // extra info (packed in one 64bit number)
+    U64 whiteToPlay = bord->whiteToPlay;
+    U64 whiteKingsideCastle = bord->whiteKingsideCastle;
+    U64 whiteQueensideCastle = bord->whiteQueensideCastle;
+    U64 blackKingsideCastle = bord->blackKingsideCastle;
+    U64 blackQueensideCastle = bord->blackQueensideCastle;
+    U64 enPassentValid = bord->enPassentValid;
+    U64 enPassantTarget = bord->enPassantTarget;
+    U64 halfmoveClock = bord->halfmoveClock;
+
+    for (int i = 0; i<pseudo.count;i++) {
+        movePiece(bord, &(pseudo.moves[i]));
+        bord->whiteToPlay ^= 1;
+        if (calculateKingDanger(bord) == 0ULL) legal->moves[legal->count++] = pseudo.moves[i];
+        resetBoard();
+    }
+}
+
+U64 calculateBitmapFromSquare(int square, ActionList* actionList){
+    U64 att = 0ULL;
+    for (int i = 0; i<actionList->count; i++){
+        Action action = actionList->moves[i];
+        if(action.src == square) att |= (1ULL << action.dst);
+    }
+    return att;
 }

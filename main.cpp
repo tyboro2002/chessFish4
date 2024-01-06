@@ -20,7 +20,7 @@ int main() {
     /*
     std::cout << "moves reversed: " << std::endl << std::endl;
     for (int i = 63; i>= 0; i--){
-        std::bitset<64> binaryRepresentation(kingMovesBlackBothSide[i]);
+        std::bitset<64> binaryRepresentation(queenMoves[i]);
         std::cout << "0b" << binaryRepresentation << ",\n";
         //std::cout << bischopRelevantBits[i] << " ,";
     }

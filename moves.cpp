@@ -303,14 +303,14 @@ U64 get_queen_attacks(const int square, U64 occupancy){
 
 U64 get_white_pawn_attacks(int square, U64 white, U64 black){
     U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
-    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(white|black))){att |= (1ULL<<(square+16));}
+    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(white|black)) && !((1ULL<<(square+16))&(white|black))){att |= (1ULL<<(square+16));}
     att |= ((1ULL<<(square+8)) & ~(white|black));
     return att & ~oneRow;
 }
 
 U64 get_black_pawn_attacks(int square, U64 white, U64 black){
     U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
-    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(white|black))){att |= (1ULL<<(square-16));}
+    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(white|black)) && !((1ULL<<(square-16))&(white|black))){att |= (1ULL<<(square-16));}
     att |= ((1ULL<<(square-8)) & ~(white|black));
     return att & ~eightRow;
 }
