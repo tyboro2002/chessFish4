@@ -98,7 +98,7 @@ int countTrailingZeros(U64 number) {
 
 // Function to get the index of the least significant 1-bit
 static inline int get_ls1b_index_game(U64 bitboard){
-    return bitboard ? 63-__builtin_ctzll(bitboard) : -1;
+    return bitboard ? __builtin_ctzll(bitboard) : -1;
 }
 
 int getFirst1BitSquare(U64 number) {
@@ -1924,7 +1924,7 @@ U64 is_attacked(int square, Board *bord) {
 }
 
 void movePiece(Board* bord, Action* move){
-    U64 fromBit = 1ULL <<  move->src;
+    U64 fromBit = 1ULL << move->src;
     U64 toBit = 1ULL << move->dst;
     bord->whiteToPlay ^= 1;
     if (((bord->white | bord->black) & toBit) != 0) {
@@ -1961,17 +1961,17 @@ void movePiece(Board* bord, Action* move){
         bord->rook ^= fromBit;
         bord->rook |= toBit;
         switch (move->src) {
-            case (63-H1):
-                bord->whiteKingsideCastle = 0; //TODO set maybe H1 to the values itself
+            case H1:
+                bord->whiteKingsideCastle = 0;
                 return;
-            case (63-A1):
-                bord->whiteQueensideCastle = 0; //TODO set maybe A1 to the values itself
+            case A1:
+                bord->whiteQueensideCastle = 0;
                 return;
-            case (63-H8):
-                bord->blackKingsideCastle = 0; //TODO set maybe H8 to the values itself
+            case H8:
+                bord->blackKingsideCastle = 0;
                 return;
-            case (63-A8):
-                bord->blackQueensideCastle = 0; //TODO set maybe A8 to the values itself
+            case A8:
+                bord->blackQueensideCastle = 0;
                 return;
             default:
                 return;

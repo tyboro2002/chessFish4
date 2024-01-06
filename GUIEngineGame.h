@@ -102,7 +102,7 @@ public:
                 col >= 0 && col < CHESS_SIZE) {
                 // The mouse click is within the chessboard
                 // Now, 'row' and 'col' represent the clicked cell
-                int toSq = (63-(row*8+col));
+                int toSq = 63-(row*8+col);
                 if(selectedSquare != -1){
                     if(selectedSquare != toSq && 1ULL<<toSq & mask ){
                         Action action = {.src = selectedSquare, .dst = toSq};
