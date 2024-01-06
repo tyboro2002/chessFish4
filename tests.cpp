@@ -484,17 +484,38 @@ void TestRunner::pawnMovesGenerator() {
 }
 
 void TestRunner::GenerateActions() {
-    Board bord{};
-    setupEmpty(&bord);
-    addPiece(&bord, WQUEEN, D5);
-    printBoard(&bord);
-    printBitBoard(is_attacked(D5, &bord),"");
-    ActionList actionList{};
-    getMovesAtSquare(&bord,D5,&actionList);
-    std::cout << "amount of moves: " << actionList.count << std::endl;
+    ActionList testActionList;
+    testActionList.addMove(1,16);
+    testActionList.addMove(1,18);
+    testActionList.addMove(6,21);
+    testActionList.addMove(6,23);
+    testActionList.addMove(8,16);
+    testActionList.addMove(8,24);
+    testActionList.addMove(9,17);
+    testActionList.addMove(9,25);
+    testActionList.addMove(10,18);
+    testActionList.addMove(10,26);
+    testActionList.addMove(11,19);
+    testActionList.addMove(11,27);
+    testActionList.addMove(12,20);
+    testActionList.addMove(12,28);
+    testActionList.addMove(13,21);
+    testActionList.addMove(13,29);
+    testActionList.addMove(14,22);
+    testActionList.addMove(14,30);
+    testActionList.addMove(15,31);
+    testActionList.addMove(15,23);
+    Board bord;
+    setup(&bord);
+    ActionList actionList;
+    getAllMoves(&bord,&actionList);
+    //std::cout << "amount of moves: " << actionList.count << std::endl;
     for (int i=0; i<actionList.count;i++){
-        std::cout << "move from: " << squareToString((Square)actionList.moves[i].src) << " to: " << squareToString((Square)actionList.moves[i].dst) << std::endl;
+        //std::cout << "move from: " << actionList.moves[i].src << " to: " << actionList.moves[i].dst << std::endl;
+        //std::cout << "move from: " << squareToString(actionList.moves[i].src) << " to: " << squareToString(actionList.moves[i].dst) << std::endl;
     }
+    testResultTrue(actionList.count == 20,"correct amount of actions from starting position as white");
+    testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white");
 }
 
 int TestRunner::runAutomatedTestCases() {
@@ -506,7 +527,7 @@ int TestRunner::runAutomatedTestCases() {
     queenMovesGenerator();
     pawnMovesGenerator();
 
-    //GenerateActions();
+    GenerateActions();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;
@@ -521,42 +542,13 @@ int TestRunner::runAutomatedTestCases() {
     return 0;
 }
 
-/*
-bool testMagicNumber(int square,bool bischop){
-    //printf("testing magic number: %llu for square: %d: for piece: %s\n",bischop ? bishop_magic_numbers[square] : rook_magic_numbers[square], square, bischop ? "bischop" : "rook");
-    U64 mask = bischop ? bischopMovesONE_OFF[square] : rookMovesONE_OFF[square];
-    int bits_in_mask = count_bits(mask);
-    U64 amount_of_tests = 1 << bits_in_mask;
-    //printf("bits in mask: %d giving %llu occupancys\n", bits_in_mask, amount_of_tests);
-    for (int i = 0; i<amount_of_tests;i++){
-        U64 occ_test = set_occupancy(i,bits_in_mask,mask);
-        if(bischop){
-            U64 fly = bishop_attacks_on_the_fly(square,occ_test);
-            U64 magic = get_bishop_attacks(square, occ_test);
+bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& list2) {
+    // Check if the counts are the same
+    if (list1.count != list2.count) return false;
 
-            //std::cout << std::bitset<64>(occ_test) << " " << i << std::endl;
-            //std::cout << std::bitset<64>(fly) << std::endl;
-            //std::cout << std::bitset<64>(magic) << std::endl << std::endl;
-
-            //printBitBoard(fly, "fly");
-            //printBitBoard(magic, "magic");
-            if(fly != magic){
-                return false;
-            }
-        }else{
-            U64 fly = rook_attacks_on_the_fly(square,occ_test);
-            U64 magic = get_rook_attacks(square, occ_test);
-            if(fly != magic){
-                std::cout << std::bitset<64>(occ_test) << " " << i  << " failed, needed: " << amount_of_tests << " (magic number:  " << rook_magic_numbers[square] << " )" << std::endl;
-                std::cout << std::bitset<64>(fly) << std::endl;
-                std::cout << std::bitset<64>(magic) << std::endl << std::endl;
-                return false;
-            }
-        }
-    }
-    return true;
+    // Check if both sets of moves contain the same elements
+    return std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves);
 }
- */
 /**************************
  * old tests
  * below

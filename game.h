@@ -362,15 +362,20 @@ public:
     int  src : 8;
     int  dst : 8;
 
-    bool operator ==(const Move& other) const { return(*((int16_t*)this) == *((int16_t*)(&other)));}
+    bool operator ==(Action other) const { return(*((int16_t*)this) == *((int16_t*)(&other)));}
 
     bool operator !=(const Move& other) const { return(*((int16_t*)this) != *((int16_t*)(&other)));}
 };
 
 /* a list of actions used to represent everything we can do from a formation */
 struct ActionList{
-    int count;  // number of moves
-    Action moves[MAXMOVES];
+    int count = 0;  // number of moves
+    Action moves[MAXMOVES]{};
+
+    // Function to add a move to the list
+    void addMove(int src, int dst) {
+        moves[count++] = {src, dst};
+    }
 };
 
 /* execute the action given (basicaly moving the piece from src to dst and doing the special needs for this like castling ex) */

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <bitset>
 #include <sstream> // For std::ostringstream
+#include <algorithm>  // for std::is_permutation
 
 #include "game.h"
 #include "engine.h"
@@ -25,6 +26,8 @@ public:
 private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
     void testResultFalse(bool condition, const std::string& testName); // Utility function to check and report test results
+
+    bool areActionListsEqual(const ActionList& list1, const ActionList& list2);
 
     /* test cases */
     void kingMovesGenerator();
