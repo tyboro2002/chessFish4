@@ -259,7 +259,7 @@ void init_sliders_attacks(bool bishop){
 }
 
 // get bishop attacks
-U64 get_bishop_attacks(int square, U64 occupancy){
+U64 get_bishop_attacks(const int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= bischopMovesONE_OFF[square];
     occupancy *= bishop_magic_numbers[square];
@@ -270,7 +270,7 @@ U64 get_bishop_attacks(int square, U64 occupancy){
 }
 
 // get rook attacks
-U64 get_rook_attacks(int square, U64 occupancy){
+U64 get_rook_attacks(const int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= rookMovesONE_OFF[square];
     occupancy *= rook_magic_numbers[square];
@@ -283,7 +283,7 @@ U64 get_rook_attacks(int square, U64 occupancy){
 }
 
 // get queen attacks
-U64 get_queen_attacks(int square, U64 occupancy){
+U64 get_queen_attacks(const int square, U64 occupancy){
     // get rook attacks assuming current board occupancy by calculating the magic index
     U64 magicIndex = occupancy;
     magicIndex &= rookMovesONE_OFF[square];

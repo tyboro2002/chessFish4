@@ -700,6 +700,7 @@ constexpr U64 whitePawnAttacks[64] = {
 //TODO white pawn moves
 //TODO black pawn moves
 
+//TODO check if folowing maps are correctly named
 constexpr U64 a8_mask = 0b1000000000000000000000000000000000000000000000000000000000000000;
 constexpr U64 b8_mask = 0b0100000000000000000000000000000000000000000000000000000000000000;
 constexpr U64 c8_mask = 0b0010000000000000000000000000000000000000000000000000000000000000;
@@ -802,9 +803,9 @@ constexpr U64 bqcastle = 0b01110000000000000000000000000000000000000000000000000
 U64 rook_attacks_on_the_fly(int square, U64 block);
 U64 bishop_attacks_on_the_fly(int square, U64 block);
 
-U64 get_rook_attacks(int square, U64 occupancy);
-U64 get_bishop_attacks(int square, U64 occupancy);
-U64 get_queen_attacks(int square, U64 occupancy);
+U64 get_rook_attacks(const int square, U64 occupancy);
+U64 get_bishop_attacks(const int square, U64 occupancy);
+U64 get_queen_attacks(const int square, U64 occupancy);
 
 U64 get_white_pawn_attacks(int square, U64 white, U64 black);
 U64 get_black_pawn_attacks(int square, U64 white, U64 black);

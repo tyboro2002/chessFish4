@@ -271,20 +271,11 @@ void printPositionRecords(const PositionTracker* tracker);
 void printMoveList(MOVELIST* moveList);
 
 int countSetBits(U64 number);
-int getFirst1BitSquare(U64 number);
 int findMoveIndex(MOVELIST* moveList, Move* targetMove);
 
 Pieces pieceAt(int square, Board* bord);
 
-void setup(Board* bord);
-void setupEmpty(Board* bord);
-void addPiece(Board* bord, Pieces piece, int square);
-void clearSquare(Board* bord, int square);
-
-
-void printBitBoard(U64 bitbord, std::string extra);
 void makeMove(Board* bord, Move* move, PositionTracker* positionTracker);
-void popMove(Board* bord, Move* move);
 
 void white_pawn_moves(int position, MOVELIST* movelist, Board* bord);
 void black_pawn_moves(int position, MOVELIST* movelist, Board* bord);
@@ -301,26 +292,9 @@ void black_king_moves(int position, MOVELIST* movelist, Board* bord);
 void white_moves(MOVELIST* movelist, Board* bord);
 void black_moves(MOVELIST* movelist, Board* bord);
 
-U64 bitmap_all_white_pawns(Board* bord);
-U64 bitmap_all_black_pawns(Board* bord);
-U64 bitmap_all_white_king(Board* bord, int diepte);
-U64 bitmap_all_black_king(Board* bord, int diepte);
 
 U64 white_checking_pieces(Board* bord);
 U64 black_checking_pieces(Board* bord);
-
-U64 bitmap_white_pawn(int position, Board* bord);
-U64 bitmap_black_pawn(int position, Board* bord);
-U64 bitmap_white_king(int position, Board* bord);
-U64 bitmap_black_king(int position, Board* bord);
-U64 bitmap_white_rook(int position, Board* bord);
-U64 bitmap_black_rook(int position, Board* bord);
-U64 bitmap_white_bishop(int square, Board* bord);
-U64 bitmap_black_bishop(int square, Board* bord);
-U64 bitmap_white_knight(int square, Board* bord);
-U64 bitmap_black_knight(int square, Board* bord);
-U64 bitmap_white_queen(int square, Board* bord);
-U64 bitmap_black_queen(int square, Board* bord);
 
 U64 all_white_attacks(Board* bord);
 U64 all_black_attacks(Board* bord);
@@ -340,18 +314,48 @@ U64 black_checking_bitmap(Board* bord);
 void copyBoard(const Board* bordIn, Board* bordOut);
 void readInFen(Board* bord, std::string* fen);
 
-
-std::string squareToString(Square square);
+std::string squareToString(int square);
 std::string specialToString(SPECIAL special);
 std::string moveToString(Move* move);
 std::string moveToStringShort(Move* move);
 
-U64 incrementByOne(U64 number);
 
+/*==========================
+   below is the new code
+ =========================*/
+
+/* add pieces to the board */
+void setup(Board* bord);
+void setupEmpty(Board* bord);
+void addPiece(Board* bord, Pieces piece, int square);
+
+/* print the bitboard with a message */
+void printBitBoard(U64 bitbord, std::string extra);
+
+/* calculate the bitmaps of attacks */
+U64 bitmap_white_pawn(int position, Board* bord);
+U64 bitmap_black_pawn(int position, Board* bord);
+U64 bitmap_white_king(int position, Board* bord);
+U64 bitmap_black_king(int position, Board* bord);
+U64 bitmap_white_rook(int position, Board* bord);
+U64 bitmap_black_rook(int position, Board* bord);
+U64 bitmap_white_bishop(int square, Board* bord);
+U64 bitmap_black_bishop(int square, Board* bord);
+U64 bitmap_white_knight(int square, Board* bord);
+U64 bitmap_black_knight(int square, Board* bord);
+U64 bitmap_white_queen(int square, Board* bord);
+U64 bitmap_black_queen(int square, Board* bord);
+
+/* calculate the bitmap of all squares the current player can move to or attack */
 U64 all_attacks(Board* bord);
+
+/* calculate the bitmap of all squares the current player can move to or attack from that square */
 U64 is_attacked(int square, Board* bord);
+
+/* check if the board is valid (true if it is) */
 bool checkBoard(Board* bord);
 
+/* a type representing the moving of a piece */
 class Action{
 public:
     // Action is a lightweight type, it is accommodated in only 16 bits
@@ -363,12 +367,17 @@ public:
     bool operator !=(const Move& other) const { return(*((int16_t*)this) != *((int16_t*)(&other)));}
 };
 
-// List of moves
+/* a list of actions used to represent everything we can do from a formation */
 struct ActionList{
     int count;  // number of moves
     Action moves[MAXMOVES];
 };
 
+/* execute the action given (basicaly moving the piece from src to dst and doing the special needs for this like castling ex) */
 void movePiece(Board* bord, Action* move);
 
+/* calculate all moves the current player can do from this square and add them to the actionlist */
 void getMovesAtSquare(Board* bord, int square, ActionList* actionList);
+
+/* calculate all possible moves from a position */
+void getAllMoves(Board* bord, ActionList* actionList);
