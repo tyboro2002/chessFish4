@@ -1585,7 +1585,7 @@ void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
 U64 calculateKingDanger(Board* bord){
     //TODO looks like there is a problem with blocked pieces but not sure
     if(bord->whiteToPlay) {
-        /* find the square of the queen */
+        /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->white & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
         if((bitmap_black_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
@@ -1599,7 +1599,7 @@ U64 calculateKingDanger(Board* bord){
         return queen | bishop | rook | knight | pawn | king;
     }
     else{
-        /* find the square of the queen */
+        /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->black & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
         if((bitmap_white_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
