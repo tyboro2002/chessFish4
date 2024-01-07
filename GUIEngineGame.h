@@ -84,7 +84,7 @@ public:
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE, /*calculateKingDanger(&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
 
 
@@ -134,9 +134,10 @@ public:
         if (bord.blackKingsideCastle) DrawPartialSprite(CASTELING_RIGHTS_X+CASTELING_RIGHTS_DIST_RIGHTS*2,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
         //draw black queen side castling rights
         if (bord.blackQueensideCastle) DrawPartialSprite(CASTELING_RIGHTS_X+CASTELING_RIGHTS_DIST_RIGHTS*3,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, CELL_SIZE,CELL_SIZE,CELL_SIZE,CELL_SIZE);
+
+        if (bord.whiteToPlay) DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+4*CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,0,CELL_SIZE,CELL_SIZE);
+        else DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+4*CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
-
-
         return true;
     }
 

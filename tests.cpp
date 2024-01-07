@@ -432,36 +432,79 @@ void TestRunner::GenerateActions() {
 void TestRunner::testGeneralPerftResultst() {
     Board bord;
     setup(&bord);
-    /*
+
     testResultTrue(generalPerft(&bord,0) == 1, "perft depth 0");
     testResultTrue(generalPerft(&bord,1) == 20, "perft depth 1");
     testResultTrue(generalPerft(&bord,2) == 400, "perft depth 2");
     testResultTrue(generalPerft(&bord,3) == 8'902, "perft depth 3");
     testResultTrue(generalPerft(&bord,4) == 197'281, "perft depth 4");
     testResultTrue(generalPerft(&bord,5) == 4'865'609, "perft depth 5");
-    */
-    
-    //testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
+    testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
     //testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
+
     //testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
     //testResultTrue(generalPerft(&bord,9) == 2'439'530'234'167, "perft depth 9");
 
-    /*
+
+    //cout << detailedPerft(&bord,7) << endl;
+
+
     Action action;
-    action.src = E2;
-    action.dst = E4;
+    action.src = G1;
+    action.dst = H3;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,6) << endl;
+
+
+    action.src = B8;
+    action.dst = A6;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,5) << endl;
+
+
+    action.src = G2;
+    action.dst = G3;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,4) << endl;
 
-    action.src = E7;
-    action.dst = E6;
+
+    action.src = A6;
+    action.dst = B4;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,3) << endl;
-     */
+
+
+    action.src = F1;
+    action.dst = G2;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,2) << endl;
+
+
+    action.src = B4;
+    action.dst = D3;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,1) << endl;
+
+
+    action.src = E1;
+    action.dst = G1;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+
+
 }
 
 
@@ -513,12 +556,34 @@ U64 TestRunner::generalPerft(Board *bord, int depth) {
         Board copy;
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
-        moves += generalPerft(&copy, depth-1);
+        moves += perftHelper(&copy, depth-1);
     }
     return moves;
 }
 
 U64 TestRunner::detailedPerft(Board *bord, int depth) {
+    if(depth == 0) return 1;
+    /* generate a list of all legal moves from this position */
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+
+    /* if we are at depth 1 the count of moves is a correct perft for the lower level (stop case) */
+    //if(depth == 1) return actionList.count;
+
+    U64 moves = 0ULL;
+    for (int i = 0; i<actionList.count; i++){
+        Board copy;
+        copyBoard(bord,&copy);
+        movePiece(&copy,&(actionList.moves[i]));
+        U64 movesHere = perftHelper(&copy, depth-1);
+        cout << "move: " << squareToString(actionList.moves[i].src) <<  squareToString(actionList.moves[i].dst) << " found: " << movesHere << " moves" << endl;
+        moves += movesHere;
+    }
+    cout << "total: " << moves << endl;
+    return moves;
+}
+
+U64 TestRunner::perftHelper(Board *bord, int depth) {
     if(depth == 0) return 1;
     /* generate a list of all legal moves from this position */
     ActionList actionList;
@@ -532,11 +597,8 @@ U64 TestRunner::detailedPerft(Board *bord, int depth) {
         Board copy;
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
-        U64 movesHere = generalPerft(&copy, depth-1);
-        cout << "move: from: " << squareToString(actionList.moves[i].src) << " to: " << squareToString(actionList.moves[i].dst) << " found: " << movesHere << " moves" << endl;
-        moves += movesHere;
+        moves += generalPerft(&copy, depth-1);
     }
-    cout << "total: " << moves << endl;
     return moves;
 }
 

@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define en_passent_target(bord) (((1ULL<<63) >> (bord->enPassantTarget)) & (bord->enPassentValid ? UINT64_MAX : 0))
+#define en_passent_target(bord) ((1ULL << bord->enPassantTarget) & (bord->enPassentValid ? UINT64_MAX : 0))
 
 // bit manipulation macros
 #define get_bit(bitboard, index) (bitboard & (1ULL << index))
@@ -130,13 +130,11 @@ void printMoveList(MOVELIST* moveList) {
 }
 
 U64 bitmap_white_pawn(int position, Board* bord) {
-    //U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
-    return get_white_pawn_attacks(position, bord->white,bord->black); //TODO en passent
+    return get_white_pawn_attacks(position, bord->white,bord->black) | (en_passent_target(bord) & whitePawnAttacks[position]);
 }
 
 U64 bitmap_black_pawn(int position, Board* bord) {
-    //U64 enPassent = en_passent_target(bord); // all squares that are able to be en passented
-    return get_black_pawn_attacks(position, bord->white,bord->black); //TODO en passent
+    return get_black_pawn_attacks(position, bord->white,bord->black) | (en_passent_target(bord) & blackPawnAttacks[position]);
 }
 
 U64 bitmap_white_king(int position, Board* bord) {
@@ -1770,7 +1768,9 @@ U64 is_attacked(int square, Board *bord) {
 void movePiece(Board* bord, Action* move){
     U64 fromBit = 1ULL << move->src;
     U64 toBit = 1ULL << move->dst;
+    bool normalCapture = false;
     bord->whiteToPlay ^= 1;
+    bord->enPassentValid = 0;
     if (((bord->white | bord->black) & toBit) != 0) {
         //clear all bitboards on the to position
         bord->halfmoveClock = 0;
@@ -1782,6 +1782,7 @@ void movePiece(Board* bord, Action* move){
         bord->pawn &= ~toBit;
         bord->white &= ~toBit;
         bord->black &= ~toBit;
+        normalCapture = true;
     }
 
     if ((bord->white & fromBit) != 0) {
@@ -1796,7 +1797,34 @@ void movePiece(Board* bord, Action* move){
         bord->halfmoveClock += 1;
         bord->pawn ^= fromBit;
         bord->pawn |= toBit;
-        //TODO add en passent
+        if(bord->whiteToPlay){ /* black is playing */
+            if(move->src-move->dst == 16){
+                bord->enPassentValid = 1;
+                bord->enPassantTarget = move->src-8;
+            }else if (move->src-move->dst != 8 && !normalCapture){
+                U64 enPassented = (1ULL << move->dst) << 8;
+                bord->halfmoveClock = 0;
+                bord->pawn &= ~enPassented;
+                bord->white &= ~enPassented;
+
+                /*
+                if(normalCapture){
+                    bord->rook  |= (1ULL << move->dst);
+                    bord->black |= (1ULL << move->dst);
+                }
+                 */
+            }
+        }else{ /* white is playing */
+            if(move->dst-move->src == 16){
+                bord->enPassentValid = 1;
+                bord->enPassantTarget = move->src+8;
+            }else if (move->dst-move->src != 8 && !normalCapture){
+                U64 enPassented = (1ULL << move->dst) >> 8;
+                bord->halfmoveClock = 0;
+                bord->pawn &= ~enPassented;
+                bord->black &= ~enPassented;
+            }
+        }
         return;
     }
 
@@ -1861,7 +1889,6 @@ void movePiece(Board* bord, Action* move){
                 }
             }
         }
-        // TODO check if a king is casteling and if it is castle it
         return;
     }
 
@@ -1906,7 +1933,7 @@ void getAllMoves(Board* bord, ActionList* actionList){
     }
 }
 
-void getLegalMoves(Board* bord, ActionList* legal){
+void getLegalMoves(Board* bord, ActionList* legal){ //TODO casteling is imposible when in check
     ActionList pseudo;
     getAllMoves(bord, &pseudo);
 

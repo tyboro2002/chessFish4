@@ -7,8 +7,9 @@
 #include <iostream>
 #include <iostream>
 #include <bitset>
-#include <sstream> // For std::ostringstream
+#include <sstream> // for std::ostringstream
 #include <algorithm>  // for std::is_permutation
+#include <thread> // to parallelize perft
 
 #include "game.h"
 #include "engine.h"
@@ -41,6 +42,7 @@ private:
 
     void testGeneralPerftResultst();
 
+    U64 perftHelper(Board* bord, int depth);
     U64 generalPerft(Board* bord, int depth);
     U64 detailedPerft(Board *bord, int depth);
 };
