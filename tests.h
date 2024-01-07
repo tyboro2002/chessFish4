@@ -38,6 +38,11 @@ private:
     void pawnMovesGenerator();
 
     void GenerateActions();
+
+    void testGeneralPerftResultst();
+
+    U64 generalPerft(Board* bord, int depth);
+    U64 detailedPerft(Board *bord, int depth);
 };
 
 void king_danger_squares_test();

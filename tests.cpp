@@ -429,6 +429,42 @@ void TestRunner::GenerateActions() {
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white");
 }
 
+void TestRunner::testGeneralPerftResultst() {
+    Board bord;
+    setup(&bord);
+    /*
+    testResultTrue(generalPerft(&bord,0) == 1, "perft depth 0");
+    testResultTrue(generalPerft(&bord,1) == 20, "perft depth 1");
+    testResultTrue(generalPerft(&bord,2) == 400, "perft depth 2");
+    testResultTrue(generalPerft(&bord,3) == 8'902, "perft depth 3");
+    testResultTrue(generalPerft(&bord,4) == 197'281, "perft depth 4");
+    testResultTrue(generalPerft(&bord,5) == 4'865'609, "perft depth 5");
+    */
+    
+    //testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
+    //testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
+    //testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
+    //testResultTrue(generalPerft(&bord,9) == 2'439'530'234'167, "perft depth 9");
+
+    /*
+    Action action;
+    action.src = E2;
+    action.dst = E4;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,4) << endl;
+
+    action.src = E7;
+    action.dst = E6;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,3) << endl;
+     */
+}
+
+
 int TestRunner::runAutomatedTestCases() {
     // Run the tests
     kingMovesGenerator();
@@ -439,6 +475,8 @@ int TestRunner::runAutomatedTestCases() {
     pawnMovesGenerator();
 
     GenerateActions();
+
+    testGeneralPerftResultst();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;
@@ -460,6 +498,48 @@ bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& 
     // Check if both sets of moves contain the same elements
     return std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves);
 }
+
+U64 TestRunner::generalPerft(Board *bord, int depth) {
+    if(depth == 0) return 1;
+    /* generate a list of all legal moves from this position */
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+
+    /* if we are at depth 1 the count of moves is a correct perft for the lower level (stop case) */
+    if(depth == 1) return actionList.count;
+
+    U64 moves = 0ULL;
+    for (int i = 0; i<actionList.count; i++){
+        Board copy;
+        copyBoard(bord,&copy);
+        movePiece(&copy,&(actionList.moves[i]));
+        moves += generalPerft(&copy, depth-1);
+    }
+    return moves;
+}
+
+U64 TestRunner::detailedPerft(Board *bord, int depth) {
+    if(depth == 0) return 1;
+    /* generate a list of all legal moves from this position */
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+
+    /* if we are at depth 1 the count of moves is a correct perft for the lower level (stop case) */
+    if(depth == 1) return actionList.count;
+
+    U64 moves = 0ULL;
+    for (int i = 0; i<actionList.count; i++){
+        Board copy;
+        copyBoard(bord,&copy);
+        movePiece(&copy,&(actionList.moves[i]));
+        U64 movesHere = generalPerft(&copy, depth-1);
+        cout << "move: from: " << squareToString(actionList.moves[i].src) << " to: " << squareToString(actionList.moves[i].dst) << " found: " << movesHere << " moves" << endl;
+        moves += movesHere;
+    }
+    cout << "total: " << moves << endl;
+    return moves;
+}
+
 /**************************
  * old tests
  * below

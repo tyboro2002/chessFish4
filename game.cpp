@@ -26,6 +26,22 @@
     bord->enPassantTarget = enPassantTarget;            \
     bord->halfmoveClock = halfmoveClock;                \
 
+/* used for white casteling */
+#define MOVE_WHITE_ROOK(srcSquare, dstSquare) \
+    bord->white &= ~(1ULL << (srcSquare)); \
+    bord->rook &= ~(1ULL << (srcSquare)); \
+    \
+    bord->white |= 1ULL << (dstSquare); \
+    bord->rook |= 1ULL << (dstSquare)
+
+/* used for black casteling */
+#define MOVE_BLACK_ROOK(srcSquare, dstSquare) \
+    bord->black &= ~(1ULL << (srcSquare)); \
+    bord->rook &= ~(1ULL << (srcSquare)); \
+    \
+    bord->black |= 1ULL << (dstSquare); \
+    bord->rook |= 1ULL << (dstSquare)
+
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
     if (!bordIn || !bordOut) return; // Handle nullptr input
@@ -1827,9 +1843,51 @@ void movePiece(Board* bord, Action* move){
         if(!bord->whiteToPlay){ // we already changed the player to play so we need to invert here
             bord->whiteKingsideCastle = 0;
             bord->whiteQueensideCastle = 0;
+            if(move->src == E1){
+                if(move->dst == G1){ /* we are king side castling for white */
+                    MOVE_WHITE_ROOK(H1,F1);
+                    /*
+                    bord->white &= ~(1ULL << H1);
+                    bord->rook &= ~(1ULL << H1);
+
+                    bord->white |= 1ULL << F1;
+                    bord->rook |= 1ULL << F1;
+                     */
+                }else if (move->dst == C1){ /* we are queen side castling for white */
+                    MOVE_WHITE_ROOK(A1,D1);
+                    /*
+                    bord->white &= ~(1ULL << A1);
+                    bord->rook &= ~(1ULL << A1);
+
+                    bord->white |= 1ULL << D1;
+                    bord->rook |= 1ULL << D1;
+                     */
+                }
+            }
         }else{
             bord->blackKingsideCastle = 0;
             bord->blackQueensideCastle = 0;
+            if(move->src == E8){
+                if(move->dst == G8){ /* we are king side castling for black */
+                    MOVE_BLACK_ROOK(H8,F8);
+                    /*
+                    bord->black &= ~(1ULL << H8);
+                    bord->rook &= ~(1ULL << H8);
+
+                    bord->black |= 1ULL << F8;
+                    bord->rook |= 1ULL << F8;
+                     */
+                }else if (move->dst == C8){ /* we are queen side castling for black */
+                    MOVE_BLACK_ROOK(A8,D8);
+                    /*
+                    bord->black &= ~(1ULL << A8);
+                    bord->rook &= ~(1ULL << A8);
+
+                    bord->black |= 1ULL << D8;
+                    bord->rook |= 1ULL << D8;
+                    */
+                }
+            }
         }
         // TODO check if a king is casteling and if it is castle it
         return;
