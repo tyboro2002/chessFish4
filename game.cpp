@@ -1846,22 +1846,8 @@ void movePiece(Board* bord, Action* move){
             if(move->src == E1){
                 if(move->dst == G1){ /* we are king side castling for white */
                     MOVE_WHITE_ROOK(H1,F1);
-                    /*
-                    bord->white &= ~(1ULL << H1);
-                    bord->rook &= ~(1ULL << H1);
-
-                    bord->white |= 1ULL << F1;
-                    bord->rook |= 1ULL << F1;
-                     */
                 }else if (move->dst == C1){ /* we are queen side castling for white */
                     MOVE_WHITE_ROOK(A1,D1);
-                    /*
-                    bord->white &= ~(1ULL << A1);
-                    bord->rook &= ~(1ULL << A1);
-
-                    bord->white |= 1ULL << D1;
-                    bord->rook |= 1ULL << D1;
-                     */
                 }
             }
         }else{
@@ -1870,22 +1856,8 @@ void movePiece(Board* bord, Action* move){
             if(move->src == E8){
                 if(move->dst == G8){ /* we are king side castling for black */
                     MOVE_BLACK_ROOK(H8,F8);
-                    /*
-                    bord->black &= ~(1ULL << H8);
-                    bord->rook &= ~(1ULL << H8);
-
-                    bord->black |= 1ULL << F8;
-                    bord->rook |= 1ULL << F8;
-                     */
                 }else if (move->dst == C8){ /* we are queen side castling for black */
                     MOVE_BLACK_ROOK(A8,D8);
-                    /*
-                    bord->black &= ~(1ULL << A8);
-                    bord->rook &= ~(1ULL << A8);
-
-                    bord->black |= 1ULL << D8;
-                    bord->rook |= 1ULL << D8;
-                    */
                 }
             }
         }
