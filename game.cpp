@@ -1597,7 +1597,6 @@ void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
  * ===================================== */
 
 U64 calculateKingDanger(Board* bord){
-    //TODO looks like there is a problem with blocked pieces but not sure
     if(bord->whiteToPlay) {
         /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->white & bord->king);
@@ -1806,13 +1805,6 @@ void movePiece(Board* bord, Action* move){
                 bord->halfmoveClock = 0;
                 bord->pawn &= ~enPassented;
                 bord->white &= ~enPassented;
-
-                /*
-                if(normalCapture){
-                    bord->rook  |= (1ULL << move->dst);
-                    bord->black |= (1ULL << move->dst);
-                }
-                 */
             }
         }else{ /* white is playing */
             if(move->dst-move->src == 16){

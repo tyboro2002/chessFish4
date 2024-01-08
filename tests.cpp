@@ -458,53 +458,58 @@ void TestRunner::testGeneralPerftResultst() {
     cout << detailedPerft(&bord,6) << endl;
 
 
-    action.src = B8;
-    action.dst = A6;
+    action.src = H7;
+    action.dst = H5;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,5) << endl;
 
 
-    action.src = G2;
-    action.dst = G3;
+    action.src = E2;
+    action.dst = E3;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,4) << endl;
 
+    //F7F5 -100
+    //F7F6 -95
 
-    action.src = A6;
-    action.dst = B4;
+    action.src = D7;
+    action.dst = D5;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,3) << endl;
-
+    //F1E2 -29 //
+    //F1D3 -29
+    //F1C4 -30
+    //F1A6 -28
 
     action.src = F1;
-    action.dst = G2;
+    action.dst = E2;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,2) << endl;
 
+    // all 29 instead of 30
 
-    action.src = B4;
-    action.dst = D3;
+    action.src = H5;
+    action.dst = H4;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,1) << endl;
 
-
+    /*
     action.src = E1;
     action.dst = G1;
     movePiece(&bord,&action);
 
     printBoard(&bord);
-
-
+     */
 }
 
 
