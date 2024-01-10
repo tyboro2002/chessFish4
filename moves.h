@@ -800,6 +800,9 @@ constexpr U64 wqcastle = 0b00000000000000000000000000000000000000000000000000000
 constexpr U64 bkcastle = 0b0000011000000000000000000000000000000000000000000000000000000000;
 constexpr U64 bqcastle = 0b0111000000000000000000000000000000000000000000000000000000000000;
 
+constexpr U64 whiteCastles = g1_mask | c1_mask;
+constexpr U64 blackCastles = g8_mask | c8_mask;
+
 U64 rook_attacks_on_the_fly(int square, U64 block);
 U64 bishop_attacks_on_the_fly(int square, U64 block);
 

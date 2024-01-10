@@ -355,12 +355,18 @@ U64 is_attacked(int square, Board* bord);
 /* check if the board is valid (true if it is) */
 bool checkBoard(Board* bord);
 
+enum Exceptional{
+    Non_Exceptional,
+    Castle
+};
+
 /* a type representing the moving of a piece */
 class Action{
 public:
     // Action is a lightweight type, it is accommodated in only 16 bits
-    int  src : 8;
-    int  dst : 8;
+    int  src : 8 = 0;
+    int  dst : 8 = 0;
+    Exceptional special : 8 = Non_Exceptional;
 
     bool operator ==(Action other) const { return(*((int16_t*)this) == *((int16_t*)(&other)));}
 

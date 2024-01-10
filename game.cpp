@@ -42,6 +42,10 @@
     bord->black |= 1ULL << (dstSquare); \
     bord->rook |= 1ULL << (dstSquare)
 
+bool isAttackedByRook(const Board *pBoard, int position);
+
+bool isAttackedByBishop(const Board *pBoard, int position);
+
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
     if (!bordIn || !bordOut) return; // Handle nullptr input
@@ -992,13 +996,7 @@ bool weHaveMoves(Board* bord) {
 }
 
 bool inCheck(Board* bord) {
-    if (bord->whiteToPlay) {
-        return countSetBits(white_checking_pieces(bord)) != 0;
-        //return ((bord->white & bord->king) & all_black_attacks(bord)) != 0;
-    }else {
-        return countSetBits(black_checking_pieces(bord)) != 0;
-        //return ((bord->black & bord->king) & all_white_attacks(bord)) != 0;
-    }
+    return calculateKingDanger(bord);
 }
 
 DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker) {
@@ -1601,7 +1599,7 @@ U64 calculateKingDanger(Board* bord){
         /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->white & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
-        if((bitmap_black_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
+        //if((bitmap_white_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
         U64 queen = bitmap_white_queen(kingSquare,bord) & (bord->black & bord->queen);
         U64 bishop = bitmap_white_bishop(kingSquare,bord) & (bord->black & bord->bishop);
@@ -1615,7 +1613,7 @@ U64 calculateKingDanger(Board* bord){
         /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->black & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
-        if((bitmap_white_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
+        //if((bitmap_black_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
         U64 queen = bitmap_black_queen(kingSquare,bord) & (bord->white & bord->queen);
         U64 bishop = bitmap_black_bishop(kingSquare,bord) & (bord->white & bord->bishop);
@@ -1627,7 +1625,37 @@ U64 calculateKingDanger(Board* bord){
     }
 }
 
+U64 calculateDanger(Board* bord, int square){
+    if(bord->whiteToPlay) {
+        /* find the square of the king */
+        /* if there are certainly no pieces able to capture the queen return */
+        if((bitmap_black_queen(square,bord) & bord->white) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_white_queen(square,bord) & (bord->black & bord->queen);
+        U64 bishop = bitmap_white_bishop(square,bord) & (bord->black & bord->bishop);
+        U64 rook = bitmap_white_rook(square,bord) & (bord->black & bord->rook);
+        U64 knight = bitmap_white_knight(square,bord) & (bord->black & bord->knight);
+        U64 pawn = whitePawnAttacks[square] & (bord->black & bord->pawn);
+        U64 king = bitmap_white_king(square,bord) & (bord->black & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+    else{
+        /* find the square of the king */
+        /* if there are certainly no pieces able to capture the queen return */
+        if((bitmap_white_queen(square,bord) & bord->black) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_black_queen(square,bord) & (bord->white & bord->queen);
+        U64 bishop = bitmap_black_bishop(square,bord) & (bord->white & bord->bishop);
+        U64 rook = bitmap_black_rook(square,bord) & (bord->white & bord->rook);
+        U64 knight = bitmap_black_knight(square,bord) & (bord->white & bord->knight);
+        U64 pawn = blackPawnAttacks[square] & (bord->white & bord->pawn);
+        U64 king = bitmap_black_king(square,bord) & (bord->white & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+}
+
 U64 all_attacks(Board* bord){
+    //TODO update like isatacked
     U64 att = 0ULL;
     if(bord->whiteToPlay){
         U64 wrook = bord->white & bord->rook;
@@ -1707,7 +1735,13 @@ U64 is_attacked(int square, Board *bord) {
         U64 wpawn = bord->white & bord->pawn & sq_mask;
 
         att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
-        if (countSetBits(calculateKingDanger(bord)) > 1) return att;
+        int checks = countSetBits(calculateKingDanger(bord));
+        if (square == E1){
+            if(checks) att &= ~whiteCastles;
+            if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
+            if (calculateDanger(bord, D1) || calculateDanger(bord,C1) || calculateDanger(bord,B1)) att &= ~c1_mask;
+        }
+        if (checks > 1) return att;
         while (wrook) {
             att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
@@ -1738,7 +1772,13 @@ U64 is_attacked(int square, Board *bord) {
         U64 bpawn = bord->black & bord->pawn & sq_mask;
 
         att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
-        if (countSetBits(calculateKingDanger(bord)) > 1) return att;
+        int checks = countSetBits(calculateKingDanger(bord));
+        if (square == E8){
+            if(checks) att &= ~whiteCastles;
+            if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
+            if (calculateDanger(bord, D8) || calculateDanger(bord,C8) || calculateDanger(bord,B8)) att &= ~c8_mask;
+        }
+        if (checks > 1) return att;
 
         while (brook) {
             att |= bitmap_black_rook(get_ls1b_index_game(brook),bord);
@@ -1925,7 +1965,8 @@ void getAllMoves(Board* bord, ActionList* actionList){
     }
 }
 
-void getLegalMoves(Board* bord, ActionList* legal){ //TODO casteling is imposible when in check
+void getLegalMoves(Board* bord, ActionList* legal){
+    //TODO castling is impossible when there is an attack on the path (white king f1,g1)
     ActionList pseudo;
     getAllMoves(bord, &pseudo);
 

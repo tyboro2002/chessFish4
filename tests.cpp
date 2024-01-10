@@ -440,7 +440,7 @@ void TestRunner::testGeneralPerftResultst() {
     testResultTrue(generalPerft(&bord,4) == 197'281, "perft depth 4");
     testResultTrue(generalPerft(&bord,5) == 4'865'609, "perft depth 5");
     testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
-    //testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
+    testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
 
     //testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
     //testResultTrue(generalPerft(&bord,9) == 2'439'530'234'167, "perft depth 9");
@@ -448,68 +448,75 @@ void TestRunner::testGeneralPerftResultst() {
 
     //cout << detailedPerft(&bord,7) << endl;
 
-
+    /*
     Action action;
-    action.src = G1;
-    action.dst = H3;
+    action.src = F2;
+    action.dst = F3;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,6) << endl;
 
+    //G7G5 +2
+    //E7E5 +2
 
-    action.src = H7;
-    action.dst = H5;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,5) << endl;
-
-
-    action.src = E2;
-    action.dst = E3;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,4) << endl;
-
-    //F7F5 -100
-    //F7F6 -95
 
     action.src = D7;
     action.dst = D5;
     movePiece(&bord,&action);
 
     printBoard(&bord);
-    cout << detailedPerft(&bord,3) << endl;
-    //F1E2 -29 //
-    //F1D3 -29
-    //F1C4 -30
-    //F1A6 -28
+    cout << detailedPerft(&bord,5) << endl;
 
-    action.src = F1;
-    action.dst = E2;
+
+    action.src = E1;
+    action.dst = F2;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,4) << endl;
+
+
+    action.src = C8;
+    action.dst = H3;
+    movePiece(&bord,&action);
+
+    printBoard(&bord);
+    cout << detailedPerft(&bord,3) << endl;
+
+
+    action.src = F2;
+    action.dst = G3;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,2) << endl;
 
-    // all 29 instead of 30
 
-    action.src = H5;
-    action.dst = H4;
+    action.src = E7;
+    action.dst = E6;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,1) << endl;
 
-    /*
-    action.src = E1;
-    action.dst = G1;
-    movePiece(&bord,&action);
+    // rn1qkbnr/ppp2ppp/4p3/3p4/8/5PKb/PPPPP1PP/RNBQ1BNR w kq - 0 1
 
+    action.src = G3;
+    action.dst = H4;
+    movePiece(&bord,&action);
+    */
+    /*
+    bord.whiteToPlay ^= 1;
     printBoard(&bord);
+    printBitBoard(calculateKingDanger(&bord),"king danger");
+    printBitBoard(bord.white & bord.king, "index");
+    printBitBoard(bitmap_black_queen(H4,&bord),"bitmap at h4");
+    printBitBoard(bitmap_white_queen(H4,&bord),"bitmap at h4");
+    bord.whiteToPlay ^= 1;
      */
+
+
 }
 
 
