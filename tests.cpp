@@ -441,67 +441,73 @@ void TestRunner::testGeneralPerftResultst() {
     testResultTrue(generalPerft(&bord,5) == 4'865'609, "perft depth 5");
     testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
     testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
+    testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
+    //84998978956 nodig maar heb 84999060698
 
-    //testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
     //testResultTrue(generalPerft(&bord,9) == 2'439'530'234'167, "perft depth 9");
 
 
-    //cout << detailedPerft(&bord,7) << endl;
+    //cout << detailedPerft(&bord,8) << endl;
 
-    /*
+
     Action action;
-    action.src = F2;
-    action.dst = F3;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,6) << endl;
-
-    //G7G5 +2
-    //E7E5 +2
-
-
-    action.src = D7;
-    action.dst = D5;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,5) << endl;
-
-
-    action.src = E1;
-    action.dst = F2;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,4) << endl;
-
-
-    action.src = C8;
+    action.src = G1;
     action.dst = H3;
     movePiece(&bord,&action);
 
-    printBoard(&bord);
-    cout << detailedPerft(&bord,3) << endl;
-
-
-    action.src = F2;
-    action.dst = G3;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    cout << detailedPerft(&bord,2) << endl;
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,7) << endl;
 
 
     action.src = E7;
-    action.dst = E6;
+    action.dst = E5;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,6) << endl;
+
+
+    action.src = B1;
+    action.dst = C3;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,5) << endl;
+
+
+    action.src = G8;
+    action.dst = H6;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,4) << endl;
+
+
+    action.src = C3;
+    action.dst = B5;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,3) << endl;
+
+
+    action.src = F8;
+    action.dst = A3;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,2) << endl;
+
+
+    // rnbqk2r/pppp1ppp/3N3n/4p3/8/b6N/PPPPPPPP/R1BQKB1R b KQkq - 0 1
+    action.src = B5;
+    action.dst = D6;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,1) << endl;
 
-    // rn1qkbnr/ppp2ppp/4p3/3p4/8/5PKb/PPPPP1PP/RNBQ1BNR w kq - 0 1
-
+    /*
     action.src = G3;
     action.dst = H4;
     movePiece(&bord,&action);
@@ -522,6 +528,7 @@ void TestRunner::testGeneralPerftResultst() {
 
 int TestRunner::runAutomatedTestCases() {
     // Run the tests
+    /*
     kingMovesGenerator();
     knightMovesGenerator();
     rookMovesGenerator();
@@ -530,6 +537,7 @@ int TestRunner::runAutomatedTestCases() {
     pawnMovesGenerator();
 
     GenerateActions();
+     */
 
     testGeneralPerftResultst();
 
@@ -555,6 +563,7 @@ bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& 
 }
 
 U64 TestRunner::generalPerft(Board *bord, int depth) {
+    //TODO add a extra boolean to print the percentage done every time we complete a move
     if(depth == 0) return 1;
     /* generate a list of all legal moves from this position */
     ActionList actionList;

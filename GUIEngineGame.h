@@ -36,7 +36,14 @@ public:
 public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
-        setup(&bord);
+        //setup(&bord);
+        //readInFen(&bord, (std::string *)"rnbqk2r/pppp1ppp/3N3n/4p3/8/b6N/PPPPPPPP/R1BQKB1R b KQkq - 0 1");
+        setupEmpty(&bord);
+        bord.whiteToPlay = 0;
+        addPiece(&bord,BKING,E8);
+        addPiece(&bord,WKNIGHT,D6); //D6 standard
+        addPiece(&bord,WKING,E1);
+        printBoard(&bord);
         //clearSquare(&bord,B1);
         //clearSquare(&bord,A2);
         /*
@@ -84,7 +91,7 @@ public:
 
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
-        DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
+        DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ /* is_attacked(E8,&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         //DrawSprite(300,200,&spriteSheet);
 
 
@@ -107,6 +114,7 @@ public:
                     if(selectedSquare != toSq && 1ULL<<toSq & mask ){
                         Action action = {.src = selectedSquare, .dst = toSq};
                         movePiece(&bord, &action);
+                        printBoard(&bord);
                     }
                     selectedSquare = -1;
                     mask = 0ULL;
@@ -114,9 +122,9 @@ public:
                     selectedSquare = toSq;
                     //mask = is_attacked(selectedSquare,&bord);
                     ActionList actionList;
+                    printf("cliked at %d\n",toSq);
                     getLegalMoves(&bord, &actionList);
                     mask = calculateBitmapFromSquare(selectedSquare, &actionList);
-                    actionList.count = 0;
                 }
                 message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
             } else {

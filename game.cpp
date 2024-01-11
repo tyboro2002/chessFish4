@@ -1272,9 +1272,9 @@ void readInFen(Board* bord, std::string* fen) {
     // TODO cleanup
     setupEmpty(bord);
     fen->erase(std::remove(fen->begin(), fen->end(), '/'), fen->end());
-    //cout << *fen << endl;
     int index = -1;
     for (char c : *fen) {
+        cout << *fen << endl;
         if (c != ' ') {
             if (std::isdigit(c)) index += (c - '0');
             else index += 1;
@@ -1629,7 +1629,7 @@ U64 calculateDanger(Board* bord, int square){
     if(bord->whiteToPlay) {
         /* find the square of the king */
         /* if there are certainly no pieces able to capture the queen return */
-        if((bitmap_black_queen(square,bord) & bord->white) == 0ULL) return 0ULL;
+        //if((bitmap_black_queen(square,bord) & bord->white) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
         U64 queen = bitmap_white_queen(square,bord) & (bord->black & bord->queen);
         U64 bishop = bitmap_white_bishop(square,bord) & (bord->black & bord->bishop);
@@ -1642,7 +1642,7 @@ U64 calculateDanger(Board* bord, int square){
     else{
         /* find the square of the king */
         /* if there are certainly no pieces able to capture the queen return */
-        if((bitmap_white_queen(square,bord) & bord->black) == 0ULL) return 0ULL;
+        //if((bitmap_white_queen(square,bord) & bord->black) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
         U64 queen = bitmap_black_queen(square,bord) & (bord->white & bord->queen);
         U64 bishop = bitmap_black_bishop(square,bord) & (bord->white & bord->bishop);
@@ -1655,7 +1655,14 @@ U64 calculateDanger(Board* bord, int square){
 }
 
 U64 all_attacks(Board* bord){
+    /*
     //TODO update like isatacked
+    U64 att = 0ULL;
+    for(int i = 0; i<64;i++){
+        att |= is_attacked(i,bord);
+    }
+    return att;
+    */
     U64 att = 0ULL;
     if(bord->whiteToPlay){
         U64 wrook = bord->white & bord->rook;
@@ -1666,7 +1673,14 @@ U64 all_attacks(Board* bord){
         U64 wpawn = bord->white & bord->pawn;
 
         att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
-        if (countSetBits(white_checking_pieces(bord)) > 1) return att;
+        int checks = countSetBits(calculateKingDanger(bord));
+        if (get_ls1b_index_game(wking) == E1){
+            if(checks) att &= ~whiteCastles;
+            if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
+            if (calculateDanger(bord, D1) || calculateDanger(bord,C1) || calculateDanger(bord,B1)) att &= ~c1_mask;
+        }
+        if (checks > 1) return att;
+
         while (wrook) {
             att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
@@ -1697,7 +1711,13 @@ U64 all_attacks(Board* bord){
         U64 bpawn = bord->black & bord->pawn;
 
         att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
-        if (countSetBits(black_checking_pieces(bord)) > 1) return att;
+        int checks = countSetBits(calculateKingDanger(bord));
+        if (get_ls1b_index_game(bking) == E8){
+            if(checks) att &= ~whiteCastles;
+            if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
+            if (calculateDanger(bord, D8) || calculateDanger(bord,C8) || calculateDanger(bord,B8)) att &= ~c8_mask;
+        }
+        if (checks > 1) return att;
 
         while (brook) {
             att |= bitmap_black_rook(get_ls1b_index_game(brook),bord);
@@ -1735,6 +1755,7 @@ U64 is_attacked(int square, Board *bord) {
         U64 wpawn = bord->white & bord->pawn & sq_mask;
 
         att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
+
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E1){
             if(checks) att &= ~whiteCastles;
@@ -1742,6 +1763,7 @@ U64 is_attacked(int square, Board *bord) {
             if (calculateDanger(bord, D1) || calculateDanger(bord,C1) || calculateDanger(bord,B1)) att &= ~c1_mask;
         }
         if (checks > 1) return att;
+
         while (wrook) {
             att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
@@ -1772,9 +1794,10 @@ U64 is_attacked(int square, Board *bord) {
         U64 bpawn = bord->black & bord->pawn & sq_mask;
 
         att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
+
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E8){
-            if(checks) att &= ~whiteCastles;
+            if(checks) att &= ~blackCastles;
             if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
             if (calculateDanger(bord, D8) || calculateDanger(bord,C8) || calculateDanger(bord,B8)) att &= ~c8_mask;
         }
@@ -1840,7 +1863,7 @@ void movePiece(Board* bord, Action* move){
             if(move->src-move->dst == 16){
                 bord->enPassentValid = 1;
                 bord->enPassantTarget = move->src-8;
-            }else if (move->src-move->dst != 8 && !normalCapture){
+            }else if (move->src-move->dst != 8 && !normalCapture) {
                 U64 enPassented = (1ULL << move->dst) << 8;
                 bord->halfmoveClock = 0;
                 bord->pawn &= ~enPassented;
@@ -1855,6 +1878,26 @@ void movePiece(Board* bord, Action* move){
                 bord->halfmoveClock = 0;
                 bord->pawn &= ~enPassented;
                 bord->black &= ~enPassented;
+            }
+        }
+
+        if(move->special != Non_Exceptional){
+            bord->pawn ^= toBit;
+            switch (move->special) {
+                case Promote_Rook:
+                    bord->rook |= toBit;
+                    return;
+                case Promote_Knight:
+                    bord->knight |= toBit;
+                    return;
+                case Promote_Bishop:
+                    bord->bishop |= toBit;
+                    return;
+                case Promote_Queen:
+                    bord->queen |= toBit;
+                    return;
+                default:
+                    return;
             }
         }
         return;
@@ -1952,10 +1995,30 @@ void getMovesAtSquare(Board* bord, int square, ActionList* actionList){
     U64 attacks = is_attacked(square,bord);
     Action actie;
     actie.src = square;
-    while(attacks){
-        actie.dst = __builtin_ctzll(attacks);
-        actionList->moves[actionList->count++] = actie;
-        attacks &= (attacks - 1);
+    if(((actie.src >= 8 && actie.src <= 15) || (actie.src>= 48 && actie.src <= 55)) && (bord->pawn & (1ULL << actie.src))) {
+        while(attacks){
+            actie.dst = __builtin_ctzll(attacks);
+            if((actie.dst <= 7) || (actie.dst >= 56)){
+                actie.special = Promote_Queen;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Bishop;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Knight;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Rook;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Non_Exceptional;
+            }else{
+                actionList->moves[actionList->count++] = actie;
+            }
+            attacks &= (attacks - 1);
+        }
+    }else{
+        while(attacks){
+            actie.dst = __builtin_ctzll(attacks);
+            actionList->moves[actionList->count++] = actie;
+            attacks &= (attacks - 1);
+        }
     }
 }
 

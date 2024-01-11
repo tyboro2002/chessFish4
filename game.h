@@ -357,7 +357,10 @@ bool checkBoard(Board* bord);
 
 enum Exceptional{
     Non_Exceptional,
-    Castle
+    Promote_Queen,
+    Promote_Rook,
+    Promote_Bishop,
+    Promote_Knight
 };
 
 /* a type representing the moving of a piece */
