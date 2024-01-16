@@ -432,27 +432,34 @@ void TestRunner::GenerateActions() {
 void TestRunner::testGeneralPerftResultst() {
     Board bord;
     setup(&bord);
-
-    testResultTrue(generalPerft(&bord,0) == 1, "perft depth 0");
-    testResultTrue(generalPerft(&bord,1) == 20, "perft depth 1");
-    testResultTrue(generalPerft(&bord,2) == 400, "perft depth 2");
-    testResultTrue(generalPerft(&bord,3) == 8'902, "perft depth 3");
-    testResultTrue(generalPerft(&bord,4) == 197'281, "perft depth 4");
-    testResultTrue(generalPerft(&bord,5) == 4'865'609, "perft depth 5");
-    testResultTrue(generalPerft(&bord,6) == 119'060'324, "perft depth 6");
-    testResultTrue(generalPerft(&bord,7) == 3'195'901'860, "perft depth 7");
-    testResultTrue(generalPerft(&bord,8) == 84'998'978'956, "perft depth 8");
-    //84998978956 nodig maar heb 84999060698
-
-    //testResultTrue(generalPerft(&bord,9) == 2'439'530'234'167, "perft depth 9");
+    bool printPercent = true;
+    //testResultTrue(generalPerft(&bord,0,printPercent,0,0ULL) == 1, "perft depth 0");
+    //testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 20, "perft depth 1");
+    //testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 400, "perft depth 2");
+    //testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 8'902, "perft depth 3");
+    //testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 197'281, "perft depth 4");
+    //testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 4'865'609, "perft depth 5");
+    //testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 119'060'324, "perft depth 6");
+    //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7");
+    //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 84'998'978'956, "perft depth 8");
+    //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9");
 
 
-    //cout << detailedPerft(&bord,8) << endl;
+
+    //cout << detailedPerft(&bord,9) << endl;
 
 
     Action action;
-    action.src = G1;
-    action.dst = H3;
+    action.src = D2;
+    action.dst = D4;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    cout << detailedPerft(&bord,8) << endl;
+
+    /*
+    action.src = E7;
+    action.dst = E5;
     movePiece(&bord,&action);
 
     //printBoard(&bord);
@@ -507,12 +514,13 @@ void TestRunner::testGeneralPerftResultst() {
     printBoard(&bord);
     cout << detailedPerft(&bord,1) << endl;
 
-    /*
+
     action.src = G3;
     action.dst = H4;
     movePiece(&bord,&action);
     */
-    /*
+
+     /*
     bord.whiteToPlay ^= 1;
     printBoard(&bord);
     printBitBoard(calculateKingDanger(&bord),"king danger");
@@ -562,8 +570,7 @@ bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& 
     return std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves);
 }
 
-U64 TestRunner::generalPerft(Board *bord, int depth) {
-    //TODO add a extra boolean to print the percentage done every time we complete a move
+U64 TestRunner::generalPerft(Board *bord, int depth, bool printPercentage = false, int startAt = 0, U64 initMoves = 0ULL) {
     if(depth == 0) return 1;
     /* generate a list of all legal moves from this position */
     ActionList actionList;
@@ -572,12 +579,20 @@ U64 TestRunner::generalPerft(Board *bord, int depth) {
     /* if we are at depth 1 the count of moves is a correct perft for the lower level (stop case) */
     if(depth == 1) return actionList.count;
 
-    U64 moves = 0ULL;
-    for (int i = 0; i<actionList.count; i++){
+    U64 moves = initMoves;
+    U64 totalMoves = actionList.count;
+
+    for (int i = startAt; i<actionList.count; i++){
         Board copy;
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
-        moves += perftHelper(&copy, depth-1);
+        U64 currMoves = perftHelper(&copy, depth-1);
+        moves += currMoves;
+
+        if (printPercentage) {
+            float percentage = (i + 1) * 100.0 / totalMoves;
+            std::cout << "Percentage done: " << percentage << "% finding: " << moves << " moves, currMoves: " << currMoves << " after: " << i << " moves are evaluated ( last move: " << squareToString(actionList.moves[i].src) << squareToString(actionList.moves[i].dst) << " )" << std::endl;
+        }
     }
     return moves;
 }

@@ -43,7 +43,7 @@ private:
     void testGeneralPerftResultst();
 
     U64 perftHelper(Board* bord, int depth);
-    U64 generalPerft(Board* bord, int depth);
+    U64 generalPerft(Board* bord, int depth, bool printPercentage, int startAt, U64 initMoves);
     U64 detailedPerft(Board *bord, int depth);
 };
 
