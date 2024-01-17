@@ -455,23 +455,47 @@ void TestRunner::testGeneralPerftResultst() {
     movePiece(&bord,&action);
 
     //printBoard(&bord);
-    cout << detailedPerft(&bord,8) << endl;
+    //cout << detailedPerft(&bord,8) << endl;
 
-    /*
-    action.src = E7;
-    action.dst = E5;
+
+    action.src = G8;
+    action.dst = F6;
     movePiece(&bord,&action);
 
     //printBoard(&bord);
     //cout << detailedPerft(&bord,7) << endl;
 
 
-    action.src = E7;
-    action.dst = E5;
+    action.src = D1;
+    action.dst = D3;
     movePiece(&bord,&action);
 
     //printBoard(&bord);
     //cout << detailedPerft(&bord,6) << endl;
+
+
+    action.src = F6;
+    action.dst = E4;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,5) << endl;
+
+
+    action.src = C1;
+    action.dst = E3;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,4) << endl;
+
+
+    action.src = E4;
+    action.dst = D2;
+    movePiece(&bord,&action);
+
+    //printBoard(&bord);
+    //cout << detailedPerft(&bord,3) << endl;
 
 
     action.src = B1;
@@ -479,42 +503,17 @@ void TestRunner::testGeneralPerftResultst() {
     movePiece(&bord,&action);
 
     //printBoard(&bord);
-    //cout << detailedPerft(&bord,5) << endl;
-
-
-    action.src = G8;
-    action.dst = H6;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,4) << endl;
-
-
-    action.src = C3;
-    action.dst = B5;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,3) << endl;
-
-
-    action.src = F8;
-    action.dst = A3;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
     //cout << detailedPerft(&bord,2) << endl;
 
 
-    // rnbqk2r/pppp1ppp/3N3n/4p3/8/b6N/PPPPPPPP/R1BQKB1R b KQkq - 0 1
-    action.src = B5;
-    action.dst = D6;
+    action.src = H7;
+    action.dst = H5;
     movePiece(&bord,&action);
 
     printBoard(&bord);
     cout << detailedPerft(&bord,1) << endl;
 
-
+    /*
     action.src = G3;
     action.dst = H4;
     movePiece(&bord,&action);
