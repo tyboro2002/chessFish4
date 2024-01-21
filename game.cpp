@@ -1011,8 +1011,8 @@ DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker) {
 // Function to convert 12 sets of 64-bit numbers to a 64-character string
 std::string convertTo64CharString(U64 rook, U64 knight, U64 bishop, U64 queen, U64 king, U64 pawn, U64 white, U64 black) {
     std::string result;
-    for (int i = 0; i < 64; ++i) {
-        uint64_t bitMask = ((1ULL << 63) >> i);
+    for (int i = 63; i >= 0; i--) {
+        uint64_t bitMask = (1ULL << i);
         char representativeChar = '.'; // Default character
         if ((rook & bitMask) != 0) {
             if ((white & bitMask) != 0) { representativeChar = 'R';}
@@ -1086,6 +1086,44 @@ void printBoard(Board* bord){
     std::cout << "2 " << temp.substr(48,8) << endl;
     std::cout << "1 " << temp.substr(56,8) << endl;
     std::cout << "  abcdefgh" << endl;
+}
+
+void printFancyBoard(Board* bord){
+    std::string temp = convertTo64CharString(bord->rook, bord->knight, bord->bishop, bord->queen, bord->king, bord->pawn, bord->white, bord->black);
+    // Insert '|' between each character
+    for (size_t i = 1; i < temp.length(); i += 2) temp.insert(i, 1, '|');
+    for (size_t i = 1; i < temp.length(); i += 2) temp.insert(i, 1, ' ');
+    // Replace all "." with " "
+    std::replace(temp.begin(), temp.end(), '.', ' ');
+
+    std::cout << endl;
+    if (bord->whiteToPlay) {
+        cout << "white to play:" << endl;
+    }else {
+        cout << "black to play:" << endl;
+    }
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(0,29) << " | 8" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(32,29) << " | 7" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(64,29) << " | 6" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(96,29) << " | 5" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(128,29) << " | 4" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(160,29) << " | 3" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(192,29) << " | 2" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << " | " << temp.substr(224,29) << " | 1" << endl;
+    std::cout << " +---+---+---+---+---+---+---+---+" << std::endl;
+    std::cout << "   a   b   c   d   e   f   g   h" << endl;
+    std::cout << "casteling: " << (bord->whiteKingsideCastle?"K":"-") << (bord->whiteQueensideCastle?"Q":"-") << (bord->blackKingsideCastle?"k":"-") << (bord->blackQueensideCastle?"q":"-") << endl;
+    //std::cout << "Fen: " << generateFEN(bord) << endl;
+    //std::cout << "Key: " << generateZobristKey(bord) << endl;
+    //std::cout << "Checkers: "<< generateCheckers(bord) << endl;
 }
 
 void setup(Board* bord) {
@@ -1268,84 +1306,6 @@ Pieces charToPiece(char c) {
     }
 }
 
-void readInFen(Board* bord, std::string* fen) {
-    // TODO cleanup
-    setupEmpty(bord);
-    fen->erase(std::remove(fen->begin(), fen->end(), '/'), fen->end());
-    int index = -1;
-    for (char c : *fen) {
-        cout << *fen << endl;
-        if (c != ' ') {
-            if (std::isdigit(c)) index += (c - '0');
-            else index += 1;
-            addPiece(bord, charToPiece(c), index);
-        }
-        else {
-            //printBoard(bord);
-            // Find the position of the first space
-            size_t spacePos = fen->find(' ');
-
-            // Extract the substring starting from the character immediately after the space
-            std::string result = fen->substr(spacePos + 1);
-            //bord->extra = 0b0000000000000000000;
-            bord->whiteToPlay = 0;
-            bord->whiteKingsideCastle = 0;
-            bord->whiteQueensideCastle = 0;
-            bord->blackKingsideCastle = 0;
-            bord->blackQueensideCastle = 0;
-            bord->enPassentValid = 0;
-            bord->enPassantTarget = 0;
-            bord->halfmoveClock = 0;
-            bord->reserved = 0;
-            if (result.front() == 'w') {
-                bord->whiteToPlay = 1;
-                //bord->extra |= 0b1000000000000000000;
-            }
-            result.erase(0, 2);
-            if (result.front() == 'K') {
-                result.erase(0, 1);
-                bord->whiteKingsideCastle = 1;
-                //bord->extra |= 0b0100000000000000000;
-            }
-            if (result.front() == 'Q') {
-                result.erase(0, 1);
-                bord->whiteQueensideCastle = 1;
-                //bord->extra |= 0b0010000000000000000;
-            }
-            if (result.front() == 'k') {
-                result.erase(0, 1);
-                bord->blackKingsideCastle = 1;
-                //bord->extra |= 0b0001000000000000000;
-            }
-            if (result.front() == 'q') {
-                result.erase(0, 1);
-                bord->blackQueensideCastle = 1;
-                //bord->extra |= 0b0000100000000000000;
-            }
-            if (result.front() == '-') {
-                result.erase(0, 1);
-            }
-            result.erase(0, 1);
-            if (result.front() != '-') {
-                std::string temp = result.substr(0,2);
-                Square enPassent = stringToSquare(temp);
-                result.erase(0, 3);
-                bord->enPassentValid = 1;
-                bord->enPassantTarget = enPassent;
-                //bord->extra |= 0b0000010000000000000;
-                //bord->extra |= (enPassent << 7);
-            }
-            else {
-                result.erase(0, 2);
-            }
-            std::string halfm = result.substr(0, result.find(' '));
-            int halfmcount = std::stoi(halfm);
-            bord->halfmoveClock = halfmcount;
-            //bord->extra |= (halfmcount);
-            break; // Stop when a space is encountered
-        }
-    }
-}
 
 // Function to make a move
 void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
@@ -1677,7 +1637,7 @@ U64 all_attacks(Board* bord){
         if (get_ls1b_index_game(wking) == E1){
             if(checks) att &= ~whiteCastles;
             if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
-            if (calculateDanger(bord, D1) || calculateDanger(bord,C1) || calculateDanger(bord,B1)) att &= ~c1_mask;
+            if (calculateDanger(bord, D1) || calculateDanger(bord,C1)) att &= ~c1_mask;
         }
         if (checks > 1) return att;
 
@@ -1715,7 +1675,7 @@ U64 all_attacks(Board* bord){
         if (get_ls1b_index_game(bking) == E8){
             if(checks) att &= ~whiteCastles;
             if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
-            if (calculateDanger(bord, D8) || calculateDanger(bord,C8) || calculateDanger(bord,B8)) att &= ~c8_mask;
+            if (calculateDanger(bord, D8) || calculateDanger(bord,C8)) att &= ~c8_mask;
         }
         if (checks > 1) return att;
 
@@ -1760,7 +1720,7 @@ U64 is_attacked(int square, Board *bord) {
         if (square == E1){
             if(checks) att &= ~whiteCastles;
             if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
-            if (calculateDanger(bord, D1) || calculateDanger(bord,C1) || calculateDanger(bord,B1)) att &= ~c1_mask;
+            if (calculateDanger(bord, D1) || calculateDanger(bord,C1)) att &= ~c1_mask;
         }
         if (checks > 1) return att;
 
@@ -1799,7 +1759,7 @@ U64 is_attacked(int square, Board *bord) {
         if (square == E8){
             if(checks) att &= ~blackCastles;
             if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
-            if (calculateDanger(bord, D8) || calculateDanger(bord,C8) || calculateDanger(bord,B8)) att &= ~c8_mask;
+            if (calculateDanger(bord, D8) || calculateDanger(bord,C8)) att &= ~c8_mask;
         }
         if (checks > 1) return att;
 
@@ -2069,4 +2029,125 @@ U64 calculateBitmapFromSquare(int square, ActionList* actionList){
         if(action.src == square) att |= (1ULL << action.dst);
     }
     return att;
+}
+
+void readInFen(Board* bord, char* fen) {
+    int index = 63;
+    while (*fen != ' '){
+        //cout << "'" << fen << "' index: " << index << endl;
+        switch (*fen) {
+            case 'r':
+                bord->black |= 1ULL << index;
+                bord->rook |= 1ULL << index;
+                break;
+            case 'b':
+                bord->black |= 1ULL << index;
+                bord->bishop |= 1ULL << index;
+                break;
+            case 'q':
+                bord->black |= 1ULL << index;
+                bord->queen |= 1ULL << index;
+                break;
+            case 'p':
+                bord->black |= 1ULL << index;
+                bord->pawn |= 1ULL << index;
+                break;
+            case 'n':
+                bord->black |= 1ULL << index;
+                bord->knight |= 1ULL << index;
+                break;
+            case 'k':
+                bord->black |= 1ULL << index;
+                bord->king |= 1ULL << index;
+                break;
+            case '/':
+                index++;
+                break;
+            case 'R':
+                bord->white |= 1ULL << index;
+                bord->rook |= 1ULL << index;
+                break;
+            case 'B':
+                bord->white |= 1ULL << index;
+                bord->bishop |= 1ULL << index;
+                break;
+            case 'Q':
+                bord->white |= 1ULL << index;
+                bord->queen |= 1ULL << index;
+                break;
+            case 'P':
+                bord->white |= 1ULL << index;
+                bord->pawn |= 1ULL << index;
+                break;
+            case 'N':
+                bord->white |= 1ULL << index;
+                bord->knight |= 1ULL << index;
+                break;
+            case 'K':
+                bord->white |= 1ULL << index;
+                bord->king |= 1ULL << index;
+                break;
+            case '1':
+                break;
+            case '2':
+                index -= 1;
+                break;
+            case '3':
+                index -= 2;
+                break;
+            case '4':
+                index -= 3;
+                break;
+            case '5':
+                index -= 4;
+                break;
+            case '6':
+                index -= 5;
+                break;
+            case '7':
+                index -= 6;
+                break;
+            case '8':
+                index -= 7;
+                break;
+            default:
+                std::cerr << "Invalid character in FEN: " << *fen << std::endl;
+                exit(EXIT_FAILURE);
+        }
+        index--;
+        fen++;
+    }
+    //cout << "'" << fen << "' index: " << index << endl;
+    fen++; // parse the space
+    bord->whiteToPlay = (*fen == 'w');
+    fen+=2; // parse the playing side and the space
+    while (*fen != ' '){
+        switch (*fen) {
+            case 'K': bord->whiteKingsideCastle = 1;
+            case 'k': bord->blackKingsideCastle = 1;
+            case 'Q': bord->whiteQueensideCastle = 1;
+            case 'q': bord->blackQueensideCastle = 1;
+            case '-': break;
+        }
+        fen++;
+    }
+    fen++; // parse the space
+    if(*fen != '-'){
+        bord->enPassentValid = 1;
+        // Concatenate characters to form a string
+        std::string target = std::string(1, fen[0]) + fen[1];
+        bord->enPassantTarget = stringToSquare(target);
+        fen += 2; // parse the 2 characters
+    }else{
+        bord->enPassentValid = 0;
+        fen++; // parse the -
+    }
+    fen++; // parse the space
+    bord->halfmoveClock = 0;
+    while (*fen >= '0' && *fen <= '9') {
+        bord->halfmoveClock = bord->halfmoveClock * 10 + (*fen - '0');
+        fen++;
+    }
+    //fen++; // parse the space
+    //TODO? parse the fullmove clock (The number of the full moves. It starts at 1 and is incremented after Black's move.)
 }

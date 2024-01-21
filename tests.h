@@ -16,6 +16,8 @@
 #include "moves.h"
 #include "testMoves.h"
 
+using namespace std;
+
 class TestRunner {
     int passedTests = 0;
     int totalTests = 0;

@@ -1,6 +1,15 @@
 #include "tests.h"
 
+#define REMOVE_CASTELS()    bord.whiteKingsideCastle = 0; \
+                            bord.blackKingsideCastle = 0; \
+                            bord.whiteQueensideCastle = 0; \
+                            bord.blackQueensideCastle = 0; \
 using namespace std;
+
+// Function to get the index of the least significant 1-bit
+static inline int get_ls1b_index_tests(U64 bitboard){
+    return bitboard ? __builtin_ctzll(bitboard) : -1;
+}
 
 // Utility function to check and report test results
 void TestRunner::testResultTrue(bool condition, const std::string& testName) {
@@ -433,19 +442,101 @@ void TestRunner::testGeneralPerftResultst() {
     Board bord;
     setup(&bord);
     bool printPercent = true;
-    //testResultTrue(generalPerft(&bord,0,printPercent,0,0ULL) == 1, "perft depth 0");
-    //testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 20, "perft depth 1");
-    //testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 400, "perft depth 2");
-    //testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 8'902, "perft depth 3");
-    //testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 197'281, "perft depth 4");
-    //testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 4'865'609, "perft depth 5");
-    //testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 119'060'324, "perft depth 6");
-    //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7");
-    //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 84'998'978'956, "perft depth 8");
-    //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9");
+
+    testResultTrue(generalPerft(&bord,0,printPercent,0,0ULL) == 1, "perft depth 0, fen: startpos");
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 20, "perft depth 1, fen: startpos");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 400, "perft depth 2, fen: startpos");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 8'902, "perft depth 3, fen: startpos");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 197'281, "perft depth 4, fen: startpos");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 4'865'609, "perft depth 5, fen: startpos");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 119'060'324, "perft depth 6, fen: startpos");
+    //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7, fen: startpos");
+    //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 84'998'978'956, "perft depth 8, fen: startpos");
+    //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9, fen: startpos");
+
+
+    char* fen;
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 48, "perft depth 1, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2039, "perft depth 2, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 97'862, "perft depth 3, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 4'085'603, "perft depth 4, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 193'690'690, "perft depth 5, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 8'031'647'685, "perft depth 6, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 14, "perft depth 1, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 191, "perft depth 2, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 2'812, "perft depth 3, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 43'238, "perft depth 4, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 674'624, "perft depth 5, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 11'030'083, "perft depth 6, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 178'633'661, "perft depth 7, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+    testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 3'009'794'393, "perft depth 8, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 9'467, "perft depth 3, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 422'333, "perft depth 4, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 15'833'292, "perft depth 5, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 706'045'033, "perft depth 6, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 9'467, "perft depth 3, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 422'333, "perft depth 4, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 15'833'292, "perft depth 5, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 706'045'033, "perft depth 6, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 44, "perft depth 1, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 1'486, "perft depth 2, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 62'379, "perft depth 3, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 2'103'487, "perft depth 4, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 89'941'194, "perft depth 5, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
+
+    setupEmpty(&bord);
+    REMOVE_CASTELS()
+    fen = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ";
+    readInFen(&bord, fen);
+    printFancyBoard(&bord);
+    testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 46, "perft depth 1, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2'079, "perft depth 2, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 89'890, "perft depth 3, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 3'894'594, "perft depth 4, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 164'075'551, "perft depth 5, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 6'923'051'137, "perft depth 6, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 287'188'994'746, "perft depth 7, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 11'923'589'843'526, "perft depth 8, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 490'154'852'788'714, "perft depth 9, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
 
 
 
+
+    /*
     //cout << detailedPerft(&bord,9) << endl;
 
 
@@ -455,7 +546,7 @@ void TestRunner::testGeneralPerftResultst() {
     movePiece(&bord,&action);
 
     //printBoard(&bord);
-    //cout << detailedPerft(&bord,8) << endl;
+    cout << detailedPerft(&bord,8) << endl;
 
 
     action.src = G8;
@@ -511,9 +602,14 @@ void TestRunner::testGeneralPerftResultst() {
     movePiece(&bord,&action);
 
     printBoard(&bord);
+    printBitBoard(calculateDanger(&bord,B1),"B1 danger squares");
+    printBitBoard(calculateDanger(&bord,C1),"C1 danger squares");
+    printBitBoard(calculateDanger(&bord,D1),"D1 danger squares");
+    printBitBoard(~c1_mask, "all danger");
+    cout << ((get_ls1b_index_tests(bord.white & bord.king) == E1) ? "white king is at E1" : "white king is not at E1") << endl;
     cout << detailedPerft(&bord,1) << endl;
 
-    /*
+
     action.src = G3;
     action.dst = H4;
     movePiece(&bord,&action);
@@ -570,13 +666,60 @@ bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& 
 }
 
 U64 TestRunner::generalPerft(Board *bord, int depth, bool printPercentage = false, int startAt = 0, U64 initMoves = 0ULL) {
+    std::unordered_map<std::string, U64> wanted;
+
+    if(depth == 9) {
+        // Add move-value pairs to the map
+        wanted["A2A3"] = 74950758099ULL;
+        wanted["B2B3"] = 96577095997ULL;
+        wanted["C2C3"] = 108697368719ULL;
+        wanted["D2D3"] = 176976245463ULL;
+        wanted["E2E3"] = 259522947791ULL;
+        wanted["F2F3"] = 68094899093ULL;
+        wanted["G2G3"] = 99646370024ULL;
+        wanted["H2H3"] = 74778417365ULL;
+        wanted["A2A4"] = 101265301849ULL;
+        wanted["B2B4"] = 97442160946ULL;
+        wanted["C2C4"] = 120549219832ULL;
+        wanted["D2D4"] = 227220482342ULL;
+        wanted["E2E4"] = 263561543780ULL;
+        wanted["F2F4"] = 84792070664ULL;
+        wanted["G2G4"] = 92281289941ULL;
+        wanted["H2H4"] = 102853440161ULL;
+        wanted["B1A3"] = 85849641909ULL;
+        wanted["B1C3"] = 109418317145ULL;
+        wanted["G1F3"] = 108393009416ULL;
+        wanted["G1H3"] = 86659653631ULL;
+    }else if (depth == 8){
+        wanted["A2A3"] = 2863411653ULL;
+        wanted["B2B3"] = 3579299617ULL;
+        wanted["C2C3"] = 3806229124ULL;
+        wanted["D2D3"] = 6093248619ULL;
+        wanted["E2E3"] = 8039390919ULL;
+        wanted["F2F3"] = 2728615868ULL;
+        wanted["G2G3"] = 3641432923ULL;
+        wanted["H2H3"] = 2860408680ULL;
+        wanted["A2A4"] = 3676309619ULL;
+        wanted["B2B4"] = 3569067629ULL;
+        wanted["C2C4"] = 4199667616ULL;
+        wanted["D2D4"] = 7184581950ULL;
+        wanted["E2E4"] = 8102108221ULL;
+        wanted["F2F4"] = 3199039406ULL;
+        wanted["G2G4"] = 3466204702ULL;
+        wanted["H2H4"] = 3711123115ULL;
+        wanted["B1A3"] = 3193522577ULL;
+        wanted["B1C3"] = 3926684340ULL;
+        wanted["G1F3"] = 3937354096ULL;
+        wanted["G1H3"] = 3221278282ULL;
+    }
+
     if(depth == 0) return 1;
     /* generate a list of all legal moves from this position */
     ActionList actionList;
     getLegalMoves(bord,&actionList);
 
     /* if we are at depth 1 the count of moves is a correct perft for the lower level (stop case) */
-    if(depth == 1) return actionList.count;
+    //if(depth == 1) return actionList.count;
 
     U64 moves = initMoves;
     U64 totalMoves = actionList.count;
@@ -590,7 +733,13 @@ U64 TestRunner::generalPerft(Board *bord, int depth, bool printPercentage = fals
 
         if (printPercentage) {
             float percentage = (i + 1) * 100.0 / totalMoves;
-            std::cout << "Percentage done: " << percentage << "% finding: " << moves << " moves, currMoves: " << currMoves << " after: " << i << " moves are evaluated ( last move: " << squareToString(actionList.moves[i].src) << squareToString(actionList.moves[i].dst) << " )" << std::endl;
+            if (depth == 9 || depth == 8) {
+                U64 wantedAmount = wanted[squareToString(actionList.moves[i].src) +
+                                      squareToString(actionList.moves[i].dst)];
+                std::cout << "Percentage done: " << percentage << "% finding: " << moves << " moves, currMoves: " << currMoves << " after: " << i << " moves are evaluated ( last move: " << squareToString(actionList.moves[i].src) << squareToString(actionList.moves[i].dst) << " ) wanted: " << wantedAmount << ", difference of: " << currMoves-wantedAmount << std::endl;
+            }else{
+                std::cout << "Percentage done: " << percentage << "% finding: " << moves << " moves, currMoves: " << currMoves << " after: " << i << " moves are evaluated ( last move: " << squareToString(actionList.moves[i].src) << squareToString(actionList.moves[i].dst) << " )" << std::endl;
+            }
         }
     }
     return moves;
@@ -611,10 +760,10 @@ U64 TestRunner::detailedPerft(Board *bord, int depth) {
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
         U64 movesHere = perftHelper(&copy, depth-1);
-        cout << "move: " << squareToString(actionList.moves[i].src) <<  squareToString(actionList.moves[i].dst) << " found: " << movesHere << " moves" << endl;
+        std::cout << "move: " << squareToString(actionList.moves[i].src) <<  squareToString(actionList.moves[i].dst) << " found: " << movesHere << " moves" << std::endl;
         moves += movesHere;
     }
-    cout << "total: " << moves << endl;
+    std::cout << "total: " << moves << std::endl;
     return moves;
 }
 
@@ -665,7 +814,7 @@ void king_danger_squares_test() {
 
     black_king_moves(E7, &moveList, &bord);
 
-    cout << endl;
+    std::cout << std::endl;
 }
 
 void path_test() {
@@ -770,7 +919,7 @@ void fen_test() {
     Board bord;
     setupEmpty(&bord);
     std::string fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
 }
 
 void legalMoveTest() {
@@ -797,8 +946,7 @@ void legalMoveTest() {
 
     */
     setupEmpty(&bord);
-    std::string fen = "r1bq2r1/b4pk1/p1pp1p2/1p2pPQ1/1P2P1PB/3P4/1PP3P1/R3K2R b - - 0 1";
-    readInFen(&bord, &fen);
+    readInFen(&bord, "r1bq2r1/b4pk1/p1pp1p2/1p2pPQ1/1P2P1PB/3P4/1PP3P1/R3K2R b - - 0 1");
     GenLegalMoveList(&moveList, &bord, &positionTracker);
     cout << endl;
 }
@@ -815,40 +963,40 @@ bool inCheckTest() {
     // white
     // in check tests
     fen = "RNBQKBNR/PPPP1PPP/8/8/8/4q3/pppppppp/rnb1kbnr w KQkq - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (!inCheck(&bord)) return false;
 
     // not in check tests
     fen = "R1B1KBR1/PPbP1N1P/6P1/3p4/6p1/8/ppp1pp1p/rn2kb1r w KQq - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (inCheck(&bord)) return false;
 
 
     // black
     // in check tests
     fen = "rnbqkbnr/pppp1ppp/8/8/8/4Q3/PPPPPPPP/RNB1KBNR b KQkq - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (!inCheck(&bord)) return false;
 
     fen = "4k2R/8/4K3/8/8/8/8/8 b - - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (!inCheck(&bord)) return false;
 
     fen = "r1b1kbr1/ppBp1n1p/6p1/3P4/6P1/4Q3/PPP1PP1P/RN2KB1R b KQq - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (!inCheck(&bord)) return false;
 
     // not in check tests
     fen = "r1b1kbr1/ppBp1n1p/6p1/3P4/6P1/8/PPP1PP1P/RN2KB1R b KQq - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (inCheck(&bord)) return false;
 
     fen = "r1b1kbr1/ppBp1n1p/Q5pQ/Q6Q/Q6Q/Q6Q/P3P3/RN2KB1R b - - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (inCheck(&bord)) return false;
 
     fen = "r1bqkbr1/pprp1n1p/Q2PN1pQ/Q3R2B/Q6Q/Q6Q/P3P3/1N2K2R b - - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     if (inCheck(&bord)) return false;
 
     return true;
@@ -863,7 +1011,7 @@ bool mateInOneTest() {
     PositionTracker positionTracker;
     setupEmpty(&bord);
     std::string fen = "4kb1r/p2ppppp/8/8/8/8/P1PPPPPP/RQ2KB1R w - - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
 
     MOVELIST moveList;
     // Clear move list
@@ -889,7 +1037,7 @@ bool mateInTwoTest() {
     PositionTracker positionTracker;
     setupEmpty(&bord);
     std::string fen = "r1bq2r1/b4pk1/p1pp1p2/1p2pP2/1P2P1PB/3P4/1PP3P1/R1Q1K2R w - - 0 1";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     //printBoard(&bord);
     int depth = 3; // set the depth for the minimax
     MOVELIST moveList;
@@ -951,7 +1099,7 @@ bool mateInThreeTest() {
     PositionTracker positionTracker;
     setupEmpty(&bord);
     std::string fen = "r3k2r/ppp2Npp/1b5n/4p2b/2B1P2q/BQP2P2/P5PP/RN5K w kq - 1 0";
-    readInFen(&bord, &fen);
+    //readInFen(&bord, &fen);
     //printBoard(&bord);
     int depth = 5; // set the depth for the minimax
     MOVELIST moveList;

@@ -214,6 +214,7 @@ private:
 };
 
 void printBoard(Board* bord);
+void printFancyBoard(Board* bord);
 
 struct PositionRecord {
     int occurrences;
@@ -312,7 +313,6 @@ U64 white_checking_bitmap(Board* bord);
 U64 black_checking_bitmap(Board* bord);
 
 void copyBoard(const Board* bordIn, Board* bordOut);
-void readInFen(Board* bord, std::string* fen);
 
 std::string squareToString(int square);
 std::string specialToString(SPECIAL special);
@@ -406,5 +406,11 @@ void getLegalMoves(Board* bord, ActionList* actionList);
 /* calculate a mask of all pieces attacking the king */
 U64 calculateKingDanger(Board* bord);
 
+/* calculate a mask of all pieces attacking a square */
+U64 calculateDanger(Board* bord, int square);
+
 /* get all the destinations of moves that originate from a square and put them in a bitmap (only use this for drawing this is slow) */
 U64 calculateBitmapFromSquare(int square, ActionList* actionList);
+
+/* place a fen position on the board */
+void readInFen(Board* bord, char* fen);
