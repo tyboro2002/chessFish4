@@ -371,9 +371,13 @@ public:
     int  dst : 8 = 0;
     Exceptional special : 8 = Non_Exceptional;
 
-    bool operator ==(Action other) const { return(*((int16_t*)this) == *((int16_t*)(&other)));}
+    bool operator==(const Action& other) const {
+        return src == other.src && dst == other.dst && special == other.special;
+    }
 
-    bool operator !=(const Move& other) const { return(*((int16_t*)this) != *((int16_t*)(&other)));}
+    bool operator!=(const Action& other) const {
+        return !(*this == other);
+    }
 };
 
 /* a list of actions used to represent everything we can do from a formation */
@@ -382,8 +386,8 @@ struct ActionList{
     Action moves[MAXMOVES]{};
 
     // Function to add a move to the list
-    void addMove(int src, int dst) {
-        moves[count++] = {src, dst};
+    void addMove(int src, int dst, Exceptional exp = Non_Exceptional) {
+        moves[count++] = {src, dst, exp};
     }
 
     void popMove(){
@@ -414,3 +418,9 @@ U64 calculateBitmapFromSquare(int square, ActionList* actionList);
 
 /* place a fen position on the board */
 void readInFen(Board* bord, char* fen);
+
+/* print an actionlist */
+void printActionList(ActionList* actionList);
+
+/* print an action */
+void printAction(Action* action);

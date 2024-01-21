@@ -23,8 +23,9 @@ class TestRunner {
     int totalTests = 0;
     std::vector<std::string> failedTests;
     bool printPassed = true;
+    bool printFaults = false;
 public:
-    explicit TestRunner(bool printPassedArg = true) : printPassed(printPassedArg) {}
+    explicit TestRunner(bool printPassedArg = true, bool printFaultsArg = false) : printPassed(printPassedArg),printFaults(printFaultsArg) {}
     int runAutomatedTestCases();
 private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results

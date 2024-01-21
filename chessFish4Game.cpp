@@ -91,7 +91,7 @@ void runGame() {
             i++;
         }
     }
-    if (isDraw(&bord, &positionTracker) && !(moveList.count == 0)) {
+    if (isDraw(&bord, &positionTracker) && moveList.count != 0) {
         cout << "a draw occured" << endl;
     }
     if (isDraw(&bord, &positionTracker) && (engineNumberA == 0 || engineNumberB == 0) ) {

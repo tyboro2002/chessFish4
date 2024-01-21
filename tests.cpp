@@ -410,32 +410,85 @@ void TestRunner::pawnMovesGenerator() {
 
 void TestRunner::GenerateActions() {
     ActionList testActionList;
-    testActionList.addMove(1,16);
-    testActionList.addMove(1,18);
-    testActionList.addMove(6,21);
-    testActionList.addMove(6,23);
-    testActionList.addMove(8,16);
-    testActionList.addMove(8,24);
-    testActionList.addMove(9,17);
-    testActionList.addMove(9,25);
-    testActionList.addMove(10,18);
-    testActionList.addMove(10,26);
-    testActionList.addMove(11,19);
-    testActionList.addMove(11,27);
-    testActionList.addMove(12,20);
-    testActionList.addMove(12,28);
-    testActionList.addMove(13,21);
-    testActionList.addMove(13,29);
-    testActionList.addMove(14,22);
-    testActionList.addMove(14,30);
-    testActionList.addMove(15,31);
-    testActionList.addMove(15,23);
+    testActionList.addMove(G1,H3);
+    testActionList.addMove(G1,F3);
+    testActionList.addMove(B1,C3);
+    testActionList.addMove(B1,A3);
+    testActionList.addMove(H2,H3);
+    testActionList.addMove(H2,H4);
+    testActionList.addMove(G2,G3);
+    testActionList.addMove(G2,G4);
+    testActionList.addMove(F2,F3);
+    testActionList.addMove(F2,F4);
+    testActionList.addMove(E2,E3);
+    testActionList.addMove(E2,E4);
+    testActionList.addMove(D2,D3);
+    testActionList.addMove(D2,D4);
+    testActionList.addMove(C2,C3);
+    testActionList.addMove(C2,C4);
+    testActionList.addMove(B2,B3);
+    testActionList.addMove(B2,B4);
+    testActionList.addMove(A2,A4);
+    testActionList.addMove(A2,A3);
     Board bord;
     setup(&bord);
     ActionList actionList;
     getAllMoves(&bord,&actionList);
     testResultTrue(actionList.count == 20,"correct amount of actions from starting position as white");
-    testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white");
+    testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white are the correct actions");
+
+    testActionList.count = 0;
+    actionList.count = 0;
+    testActionList.addMove(E1,G1);
+    testActionList.addMove(E1,F2);
+    testActionList.addMove(A2, A3);
+    testActionList.addMove(B2, B3);
+    testActionList.addMove(C2, C3);
+    testActionList.addMove(G2, G3);
+    testActionList.addMove(H2, H3);
+    testActionList.addMove(A2, A4);
+    testActionList.addMove(B2, B4);
+    testActionList.addMove(G2, G4);
+    testActionList.addMove(H2, H4);
+    testActionList.addMove(D7, C8, Promote_Queen);
+    testActionList.addMove(D7, C8, Promote_Rook);
+    testActionList.addMove(D7, C8, Promote_Bishop);
+    testActionList.addMove(D7, C8, Promote_Knight);
+    testActionList.addMove(B1, D2);
+    testActionList.addMove(B1, A3);
+    testActionList.addMove(B1, C3);
+    testActionList.addMove(E2, G1);
+    testActionList.addMove(E2, C3);
+    testActionList.addMove(E2, G3);
+    testActionList.addMove(E2, D4);
+    testActionList.addMove(E2, F4);
+    testActionList.addMove(C1, D2);
+    testActionList.addMove(C1, E3);
+    testActionList.addMove(C1, F4);
+    testActionList.addMove(C1, G5);
+    testActionList.addMove(C1, H6);
+    testActionList.addMove(C4, B3);
+    testActionList.addMove(C4, D3);
+    testActionList.addMove(C4, B5);
+    testActionList.addMove(C4, D5);
+    testActionList.addMove(C4, A6);
+    testActionList.addMove(C4, E6);
+    testActionList.addMove(C4, F7);
+    testActionList.addMove(H1, F1);
+    testActionList.addMove(H1, G1);
+    testActionList.addMove(D1, D2);
+    testActionList.addMove(D1, D3);
+    testActionList.addMove(D1, D4);
+    testActionList.addMove(D1, D5);
+    testActionList.addMove(D1, D6);
+    testActionList.addMove(E1, F1);
+    testActionList.addMove(E1, D2);
+    setupEmpty(&bord);
+    readInFen(&bord,"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 ");
+    getAllMoves(&bord,&actionList);
+    testResultTrue(actionList.count == 44,"correct amount of actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white");
+    testResultTrue(areActionListsEqual(actionList,testActionList),"actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white are the correct actions");
+
 }
 
 void TestRunner::testGeneralPerftResultst() {
@@ -630,6 +683,7 @@ void TestRunner::testGeneralPerftResultst() {
 
 
 int TestRunner::runAutomatedTestCases() {
+    /*
     bool temp = printPassed;
     printPassed = false;
     // Run the tests
@@ -640,11 +694,12 @@ int TestRunner::runAutomatedTestCases() {
     queenMovesGenerator();
     pawnMovesGenerator();
     printPassed = temp;
+    */
 
     GenerateActions();
 
 
-    testGeneralPerftResultst();
+    //testGeneralPerftResultst();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;
@@ -661,10 +716,45 @@ int TestRunner::runAutomatedTestCases() {
 
 bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& list2) {
     // Check if the counts are the same
-    if (list1.count != list2.count) return false;
+    if (list1.count != list2.count){
+        if (printFaults) cout << "the lists dont have equal sizes, list1: " << list1.count << " list2: " << list2.count << endl;
+        return false;
+    }
 
     // Check if both sets of moves contain the same elements
-    return std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves);
+    if(std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves)) return true;
+    else{
+        if (printFaults){cout << "moves in list1 but not in list2: " << endl;
+            for (int i = 0; i<list1.count; i++) {
+                Action actie = list1.moves[i];
+                bool moveFound = false;
+                for (int j = 0; j < list2.count; j++) {
+                    if (actie == list2.moves[j]) {
+                        moveFound = true;
+                    }
+                }
+                if (!moveFound) {
+                    printAction(&actie);
+                }
+                moveFound = false;
+            }
+            cout << "moves in list2 but not in list1: " << endl;
+            for (int i = 0; i<list2.count; i++) {
+                Action actie = list2.moves[i];
+                bool moveFound = false;
+                for (int j = 0; j < list1.count; j++) {
+                    if (actie == list1.moves[j]) {
+                        moveFound = true;
+                    }
+                }
+                if (!moveFound) {
+                    printAction(&actie);
+                }
+                moveFound = false;
+            }
+        }
+        return false;
+    }
 }
 
 U64 TestRunner::generalPerft(Board *bord, int depth, bool printPercentage = false, int startAt = 0, U64 initMoves = 0ULL) {

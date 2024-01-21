@@ -2151,3 +2151,12 @@ void readInFen(Board* bord, char* fen) {
     //fen++; // parse the space
     //TODO? parse the fullmove clock (The number of the full moves. It starts at 1 and is incremented after Black's move.)
 }
+
+void printAction(Action* action){
+    cout << squareToString(action->src)<< squareToString(action->dst) << (action->special == Promote_Rook ? "r" : "") << (action->special == Promote_Knight ? "n" : "") << (action->special == Promote_Bishop ? "b" : "") << (action->special == Promote_Queen ? "q" : "") << endl;
+
+}
+
+void printActionList(ActionList* actionList){
+    for (int i = 0; i<actionList->count; i++) printAction(&actionList->moves[i]);
+}
