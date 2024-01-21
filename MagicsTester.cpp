@@ -134,6 +134,7 @@ U64 bishop_magic_numbers[64] = {
         4613423251128058114ULL
 };
 
+
 U64 MagicsTester::find_magic_number(int square, int relevant_bits, bool bishop) {
     // init occupancies
     U64 occupancies[ROOK_ATTACKS];

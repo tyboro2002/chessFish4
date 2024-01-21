@@ -190,8 +190,10 @@ U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const cha
 }
 
 int TimerRunner::runAutomatedTimerCases() {
-
-    totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
+    totalTime += timeFunction([this] { return time_perft(1); },num_runs, "perft depth 1");
+    totalTime += timeFunction([this] { return time_perft(2); },num_runs, "perft depth 2");
+    totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+    //totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
     /*
     totalTime += timeFunction([this] { return time_knight_moves(); },num_runs, "knight function");
     totalTime += timeFunction([this] { return time_king_moves(); },num_runs, "king function");
@@ -231,7 +233,6 @@ int TimerRunner::runAutomatedTimerCases() {
  * below are all move timing functions
  */
 
-// TODO below update timers
 U64 TimerRunner::time_knight_moves() {
     Board bord;
     setup(&bord);
@@ -406,6 +407,21 @@ U64 TimerRunner::time_all_attackers() {
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {
         dummy_var = all_attacks(&bord);
+    }
+    // Get the ending timestamp
+    auto endTime = std::chrono::high_resolution_clock::now();
+    // Calculate the duration in microseconds (change to other duration units as needed)
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+    return duration;
+}
+
+U64 TimerRunner::time_perft(int depth) {
+    Board bord;
+    setup(&bord);
+    TestRunner testRunner;
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0;i<itterations;i++) {
+        testRunner.generalPerft(&bord,depth,false,0,0ULL);
     }
     // Get the ending timestamp
     auto endTime = std::chrono::high_resolution_clock::now();

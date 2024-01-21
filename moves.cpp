@@ -263,7 +263,7 @@ U64 get_bishop_attacks(const int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= bischopMovesONE_OFF[square];
     occupancy *= bishop_magic_numbers[square];
-    occupancy >>= 64 - bischopRelevantBits[square];
+    occupancy >>= bishopMagicIndexShift[square];
 
     // return bishop attacks
     return bishop_attacks[square][occupancy];
@@ -274,9 +274,7 @@ U64 get_rook_attacks(const int square, U64 occupancy){
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= rookMovesONE_OFF[square];
     occupancy *= rook_magic_numbers[square];
-    occupancy >>= 64-rookRelevantBits[square];
-
-    //printf("%llu occupancy\n", occupancy);
+    occupancy >>= rookMagicIndexShift[square];
 
     // return rook attacks
     return rook_attacks[square][occupancy];
@@ -288,17 +286,16 @@ U64 get_queen_attacks(const int square, U64 occupancy){
     U64 magicIndex = occupancy;
     magicIndex &= rookMovesONE_OFF[square];
     magicIndex *= rook_magic_numbers[square];
-    magicIndex >>= 64 - rookRelevantBits[square];
+    magicIndex >>= rookMagicIndexShift[square];
 
     // get bishop attacks assuming current board occupancy by calculating the magic index
     occupancy &= bischopMovesONE_OFF[square];
     occupancy *= bishop_magic_numbers[square];
-    occupancy >>= 64 - bischopRelevantBits[square];
+    occupancy >>= bishopMagicIndexShift[square];
 
     // return rook attacks
     return rook_attacks[square][magicIndex] | bishop_attacks[square][occupancy];
 }
-
 
 
 U64 get_white_pawn_attacks(int square, U64 white, U64 black){

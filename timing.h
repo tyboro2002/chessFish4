@@ -45,6 +45,8 @@ private:
     U64 time_bischop_moves_magic();
     U64 time_queen_moves_magic();
 
+    U64 time_perft(int depth);
+
     U64 timeFunction(std::function<U64()> func, U64 num_runs, const char* description);
 };
 

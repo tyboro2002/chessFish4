@@ -14,7 +14,7 @@ using namespace std;
 //#define RUN_GAME  // Uncomment this line to run the game
 //#define DRAW // Define this macro to run draw
 //#define MAGIC // Define this macro to run the initialisation of the magic numbers
-//#define TIME // Define this macro to time the code
+#define TIME // Define this macro to time the code
 
 int main() {
     /*
@@ -33,12 +33,12 @@ int main() {
     init_all_sliders_attacks(false, "../foundMagicNumbers.txt", "../foundMagicNumbersCondensed.txt");
 
 #ifdef RUN_TESTS
-    TestRunner testRunner = TestRunner(true,false);
+    TestRunner testRunner = TestRunner(false,false);
     testRunner.runAutomatedTestCases();
 #endif
 
 #ifdef TIME
-    TimerRunner timerRunner = TimerRunner(1'000'000,1'000,true);
+    TimerRunner timerRunner = TimerRunner(100,1'000,true); // 1'000'000, 1'000
     timerRunner.runAutomatedTimerCases();
 #endif
 

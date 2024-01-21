@@ -683,7 +683,6 @@ void TestRunner::testGeneralPerftResultst() {
 
 
 int TestRunner::runAutomatedTestCases() {
-    /*
     bool temp = printPassed;
     printPassed = false;
     // Run the tests
@@ -694,7 +693,6 @@ int TestRunner::runAutomatedTestCases() {
     queenMovesGenerator();
     pawnMovesGenerator();
     printPassed = temp;
-    */
 
     GenerateActions();
 

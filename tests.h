@@ -27,6 +27,8 @@ class TestRunner {
 public:
     explicit TestRunner(bool printPassedArg = true, bool printFaultsArg = false) : printPassed(printPassedArg),printFaults(printFaultsArg) {}
     int runAutomatedTestCases();
+    U64 generalPerft(Board* bord, int depth, bool printPercentage, int startAt, U64 initMoves);
+    U64 detailedPerft(Board *bord, int depth);
 private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
     void testResultFalse(bool condition, const std::string& testName); // Utility function to check and report test results
@@ -46,8 +48,6 @@ private:
     void testGeneralPerftResultst();
 
     U64 perftHelper(Board* bord, int depth);
-    U64 generalPerft(Board* bord, int depth, bool printPercentage, int startAt, U64 initMoves);
-    U64 detailedPerft(Board *bord, int depth);
 };
 
 void king_danger_squares_test();
