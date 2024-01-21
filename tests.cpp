@@ -630,17 +630,19 @@ void TestRunner::testGeneralPerftResultst() {
 
 
 int TestRunner::runAutomatedTestCases() {
+    bool temp = printPassed;
+    printPassed = false;
     // Run the tests
-    /*
     kingMovesGenerator();
     knightMovesGenerator();
     rookMovesGenerator();
     bischopMovesGenerator();
     queenMovesGenerator();
     pawnMovesGenerator();
+    printPassed = temp;
 
     GenerateActions();
-     */
+
 
     testGeneralPerftResultst();
 
