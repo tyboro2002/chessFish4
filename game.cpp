@@ -42,9 +42,6 @@
     bord->black |= 1ULL << (dstSquare); \
     bord->rook |= 1ULL << (dstSquare)
 
-bool isAttackedByRook(const Board *pBoard, int position);
-
-bool isAttackedByBishop(const Board *pBoard, int position);
 
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
@@ -70,7 +67,7 @@ void copyBoard(const Board* bordIn, Board* bordOut) {
     //bordOut->extra = bordIn->extra;
 }
 
-int findMoveIndex(MOVELIST* moveList, Move* targetMove) {
+int findMoveIndex(MOVELIST* moveList, Move* targetMove) { //only used in old code
     for (int i = 0; i < moveList->count; ++i) {
         if (moveList->moves[i] == *targetMove) return i;  // Return the index of the matching move
     }
@@ -85,6 +82,7 @@ static inline int get_ls1b_index_game(U64 bitboard){
 }
 
 int countSetBits(U64 number) {
+    return __builtin_popcountll(number);
     int count = 0;
     while (number) {
         count++;
@@ -93,7 +91,7 @@ int countSetBits(U64 number) {
     return count;
 }
 
-std::string squareToString(int square) {
+std::string squareToString(const int square) {
     std::string file = "HGFEDCBA";
     std::string rank = "12345678";
 
@@ -104,7 +102,7 @@ std::string squareToString(int square) {
     return std::string(1, file[fileIndex]) + rank[rankIndex];
 }
 
-std::string moveToString(Move* move) {
+std::string moveToString(const Move* move) {
     std::string captureString = "";
     if (move->capture != -52) captureString = " is capturing a piece";
     return "move from: " + squareToString(move->src) +
@@ -113,11 +111,11 @@ std::string moveToString(Move* move) {
            captureString;
 }
 
-std::string moveToStringShort(Move* move) {
+std::string moveToStringShort(const Move* move) {
     return squareToString(move->src) + squareToString(move->dst);
 }
 
-void printPositionRecords(const PositionTracker* tracker) {
+void printPositionRecords(const PositionTracker* tracker) { //only used in old code
     for (const auto& entry : tracker->getPositionRecords()) {
         const size_t positionHash = entry.first;
         const PositionRecord& record = entry.second;
@@ -129,19 +127,19 @@ void printPositionRecords(const PositionTracker* tracker) {
     }
 }
 
-void printMoveList(MOVELIST* moveList) {
+void printMoveList(MOVELIST* moveList) { //only used in old code
     for (int i = 0; i < moveList->count; i++) cout << i << ") " << moveToString(&(moveList->moves[i])) /* << " with value: " << move_value(bord, &moveList->moves[i], false)*/ << endl; //TODO for testing
 }
 
-U64 bitmap_white_pawn(int position, Board* bord) {
+U64 bitmap_white_pawn(const int position,const Board* bord) {
     return get_white_pawn_attacks(position, bord->white,bord->black) | (en_passent_target(bord) & whitePawnAttacks[position]);
 }
 
-U64 bitmap_black_pawn(int position, Board* bord) {
+U64 bitmap_black_pawn(const int position,const Board* bord) {
     return get_black_pawn_attacks(position, bord->white,bord->black) | (en_passent_target(bord) & blackPawnAttacks[position]);
 }
 
-U64 bitmap_white_king(int position, Board* bord) {
+U64 bitmap_white_king(const int position,const Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E1) {
@@ -151,7 +149,7 @@ U64 bitmap_white_king(int position, Board* bord) {
     return ret & (~bord->white);
 }
 
-U64 bitmap_black_king(int position, Board* bord) {
+U64 bitmap_black_king(const int position,const  Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E8) {
@@ -162,40 +160,40 @@ U64 bitmap_black_king(int position, Board* bord) {
 }
 
 // rook attacks
-U64 bitmap_white_rook(int square, Board* bord){
+U64 bitmap_white_rook(const int square,const  Board* bord){
     return get_rook_attacks(square, bord->white | bord->black) & (~bord->white);
 }
 
 // rook attacks
-U64 bitmap_black_rook(int square, Board* bord){
+U64 bitmap_black_rook(const int square,const  Board* bord){
     return get_rook_attacks(square, bord->white | bord->black) & (~bord->black);
 }
 
 // bishop attacks
-U64 bitmap_white_bishop(int square, Board* bord){
+U64 bitmap_white_bishop(const int square,const  Board* bord){
     return get_bishop_attacks(square, bord->white | bord->black) & (~bord->white);
 }
 
 // bishop attacks
-U64 bitmap_black_bishop(int square, Board* bord){
+U64 bitmap_black_bishop(const int square,const  Board* bord){
     return get_bishop_attacks(square, bord->white | bord->black) & (~bord->black);
 }
 
 // mask knight attacks
-U64 bitmap_white_knight(int square, Board* bord) {
+U64 bitmap_white_knight(const int square,const  Board* bord) {
     return knightMoves[square] & (~bord->white);
 }
 
 // mask knight attacks
-U64 bitmap_black_knight(int square, Board* bord) {
+U64 bitmap_black_knight(const int square,const  Board* bord) {
     return knightMoves[square] & (~bord->black);
 }
 
-U64 bitmap_white_queen(int square, Board* bord) {
+U64 bitmap_white_queen(const int square,const  Board* bord) {
     return (get_bishop_attacks(square, bord->white | bord->black) | get_rook_attacks(square, bord->white | bord->black)) & (~bord->white);
 }
 
-U64 bitmap_black_queen(int square, Board* bord) {
+U64 bitmap_black_queen(const int square,const  Board* bord) {
     return (get_bishop_attacks(square, bord->white | bord->black) | get_rook_attacks(square, bord->white | bord->black)) & (~bord->black);
 
 }
@@ -1554,7 +1552,7 @@ void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
  *  below is the new code
  * ===================================== */
 
-U64 calculateKingDanger(Board* bord){
+U64 calculateKingDanger(const Board* bord){
     if(bord->whiteToPlay) {
         /* find the square of the king */
         int kingSquare = get_ls1b_index_game(bord->white & bord->king);
@@ -1585,7 +1583,7 @@ U64 calculateKingDanger(Board* bord){
     }
 }
 
-U64 calculateDanger(Board* bord, int square){
+U64 calculateDanger(const Board* bord,const int square){
     if(bord->whiteToPlay) {
         /* find the square of the king */
         /* if there are certainly no pieces able to capture the queen return */
@@ -1614,15 +1612,7 @@ U64 calculateDanger(Board* bord, int square){
     }
 }
 
-U64 all_attacks(Board* bord){
-    /*
-    //TODO update like isatacked
-    U64 att = 0ULL;
-    for(int i = 0; i<64;i++){
-        att |= is_attacked(i,bord);
-    }
-    return att;
-    */
+U64 all_attacks(const Board* bord){
     U64 att = 0ULL;
     if(bord->whiteToPlay){
         U64 wrook = bord->white & bord->rook;
@@ -1703,7 +1693,7 @@ U64 all_attacks(Board* bord){
     }
 }
 
-U64 is_attacked(int square, Board *bord) {
+U64 is_attacked(const int square,const  Board *bord) {
     U64 sq_mask = 1ULL << square;
     U64 att = 0ULL;
     if(bord->whiteToPlay){

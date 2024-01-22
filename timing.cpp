@@ -192,16 +192,19 @@ U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const cha
 int TimerRunner::runAutomatedTimerCases() {
     totalTime += timeFunction([this] { return time_perft(1); },num_runs, "perft depth 1");
     totalTime += timeFunction([this] { return time_perft(2); },num_runs, "perft depth 2");
-    totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+    //totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+
     //totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
-    /*
+
+    itterations = 1'000'000; //temporary
+
     totalTime += timeFunction([this] { return time_knight_moves(); },num_runs, "knight function");
     totalTime += timeFunction([this] { return time_king_moves(); },num_runs, "king function");
     totalTime += timeFunction([this] { return time_queen_moves(); },num_runs, "queen function");
     totalTime += timeFunction([this] { return time_rook_moves(); },num_runs, "rook function");
     totalTime += timeFunction([this] { return time_bischop_moves(); },num_runs, "bishop function");
     totalTime += timeFunction([this] { return time_pawn_moves(); },num_runs, "pawn function");
-    */
+
     /*
     totalTime += timeFunction([this] { return time_bischop_moves_on_the_fly(); },num_runs, "bishop moves on the fly function");
     totalTime += timeFunction([this] { return time_rook_moves_on_the_fly(); },num_runs, "rook moves on the fly function");

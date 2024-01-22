@@ -16,6 +16,7 @@ U64 rook_attacks[64][ROOK_ATTACKS];
 #define pop_bit(bitboard, square) (get_bit(bitboard, square) ? bitboard ^= (1ULL << square) : 0)
 
 int count_bits(U64 bitboard){
+    return __builtin_popcountll(bitboard);
     int count = 0;
     while(bitboard){
         count++;
@@ -298,16 +299,18 @@ U64 get_queen_attacks(const int square, U64 occupancy){
 }
 
 
-U64 get_white_pawn_attacks(int square, U64 white, U64 black){
+U64 get_white_pawn_attacks(const int square,const U64 white,const U64 black){
     U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
-    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(white|black)) && !((1ULL<<(square+16))&(white|black))){att |= (1ULL<<(square+16));}
-    att |= ((1ULL<<(square+8)) & ~(white|black));
+    U64 whiteBlack = white | black;
+    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(whiteBlack)) && !((1ULL<<(square+16))&(whiteBlack))) att |= (1ULL<<(square+16));
+    att |= ((1ULL<<(square+8)) & ~(whiteBlack));
     return att & ~oneRow;
 }
 
-U64 get_black_pawn_attacks(int square, U64 white, U64 black){
+U64 get_black_pawn_attacks(const int square, const U64 white, const U64 black){
     U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
-    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(white|black)) && !((1ULL<<(square-16))&(white|black))){att |= (1ULL<<(square-16));}
-    att |= ((1ULL<<(square-8)) & ~(white|black));
+    U64 whiteBlack = white | black;
+    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(whiteBlack)) && !((1ULL<<(square-16))&(whiteBlack))) att |= (1ULL<<(square-16));
+    att |= ((1ULL<<(square-8)) & ~(whiteBlack));
     return att & ~eightRow;
 }

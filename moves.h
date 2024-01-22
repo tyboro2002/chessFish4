@@ -51,7 +51,8 @@ extern U64 rook_magic_numbers[64];
 // bishop magic numbers
 extern U64 bishop_magic_numbers[64];
 
-const int bischopRelevantBits[64] = {
+
+constexpr int bischopRelevantBits[64] = {
         6 ,5 ,5 ,5 ,5 ,5 ,5 ,6,
         5 ,5, 5 ,5 ,5 ,5 ,5 ,5,
         5 ,5 ,7 ,7 ,7 ,7 ,5 ,5,
@@ -62,7 +63,7 @@ const int bischopRelevantBits[64] = {
         6 ,5 ,5 ,5 ,5 ,5 ,5 ,6
 };
 
-const int rookRelevantBits[64] = {
+constexpr int rookRelevantBits[64] = {
         12 ,11 ,11 ,11 ,11 ,11 ,11 ,12,
         11 ,10 ,10 ,10 ,10 ,10 ,10 ,11,
         11 ,10 ,10 ,10 ,10 ,10 ,10 ,11,
@@ -73,7 +74,7 @@ const int rookRelevantBits[64] = {
         12 ,11 ,11 ,11 ,11 ,11 ,11 ,12,
 };
 
-const int rookMagicIndexShift[64] = {
+constexpr int rookMagicIndexShift[64] = {
         52 ,53 ,53 ,53 ,53 ,53 ,53 ,52,
         53 ,54 ,54 ,54 ,54 ,54 ,54 ,53,
         53 ,54 ,54 ,54 ,54 ,54 ,54 ,53,
@@ -84,7 +85,7 @@ const int rookMagicIndexShift[64] = {
         52 ,53 ,53 ,53 ,53 ,53 ,53 ,52,
 };
 
-const int bishopMagicIndexShift[64] = {
+constexpr int bishopMagicIndexShift[64] = {
         58 ,59 ,59 ,59 ,59 ,59 ,59 ,58,
         59 ,59, 59 ,59 ,59 ,59 ,59 ,59,
         59 ,59 ,57 ,57 ,57 ,57 ,59 ,59,

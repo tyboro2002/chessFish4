@@ -494,7 +494,7 @@ void TestRunner::GenerateActions() {
 void TestRunner::testGeneralPerftResultst() {
     Board bord;
     setup(&bord);
-    bool printPercent = true;
+    bool printPercent = false;
 
     testResultTrue(generalPerft(&bord,0,printPercent,0,0ULL) == 1, "perft depth 0, fen: startpos");
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 20, "perft depth 1, fen: startpos");
@@ -503,6 +503,7 @@ void TestRunner::testGeneralPerftResultst() {
     testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 197'281, "perft depth 4, fen: startpos");
     testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 4'865'609, "perft depth 5, fen: startpos");
     testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 119'060'324, "perft depth 6, fen: startpos");
+
     //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7, fen: startpos");
     //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 84'998'978'956, "perft depth 8, fen: startpos");
     //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9, fen: startpos");
@@ -514,7 +515,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 48, "perft depth 1, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2039, "perft depth 2, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 97'862, "perft depth 3, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
@@ -526,7 +527,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 14, "perft depth 1, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 191, "perft depth 2, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 2'812, "perft depth 3, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
@@ -540,7 +541,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 9'467, "perft depth 3, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
@@ -552,7 +553,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 9'467, "perft depth 3, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
@@ -564,7 +565,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 44, "perft depth 1, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 1'486, "perft depth 2, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 62'379, "perft depth 3, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
@@ -575,7 +576,7 @@ void TestRunner::testGeneralPerftResultst() {
     REMOVE_CASTELS()
     fen = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ";
     readInFen(&bord, fen);
-    printFancyBoard(&bord);
+    //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 46, "perft depth 1, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2'079, "perft depth 2, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     testResultTrue(generalPerft(&bord,3,printPercent,0,0ULL) == 89'890, "perft depth 3, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");

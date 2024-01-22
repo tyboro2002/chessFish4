@@ -316,8 +316,8 @@ void copyBoard(const Board* bordIn, Board* bordOut);
 
 std::string squareToString(int square);
 std::string specialToString(SPECIAL special);
-std::string moveToString(Move* move);
-std::string moveToStringShort(Move* move);
+std::string moveToString(const Move* move);
+std::string moveToStringShort(const Move* move);
 
 
 /*==========================
@@ -333,24 +333,24 @@ void addPiece(Board* bord, Pieces piece, int square);
 void printBitBoard(U64 bitbord, std::string extra);
 
 /* calculate the bitmaps of attacks */
-U64 bitmap_white_pawn(int position, Board* bord);
-U64 bitmap_black_pawn(int position, Board* bord);
-U64 bitmap_white_king(int position, Board* bord);
-U64 bitmap_black_king(int position, Board* bord);
-U64 bitmap_white_rook(int position, Board* bord);
-U64 bitmap_black_rook(int position, Board* bord);
-U64 bitmap_white_bishop(int square, Board* bord);
-U64 bitmap_black_bishop(int square, Board* bord);
-U64 bitmap_white_knight(int square, Board* bord);
-U64 bitmap_black_knight(int square, Board* bord);
-U64 bitmap_white_queen(int square, Board* bord);
-U64 bitmap_black_queen(int square, Board* bord);
+U64 bitmap_white_pawn(const int position,const Board* bord);
+U64 bitmap_black_pawn(const int position,const Board* bord);
+U64 bitmap_white_king(const int position,const Board* bord);
+U64 bitmap_black_king(const int position,const Board* bord);
+U64 bitmap_white_rook(const int position,const Board* bord);
+U64 bitmap_black_rook(const int position,const Board* bord);
+U64 bitmap_white_bishop(const int square,const Board* bord);
+U64 bitmap_black_bishop(const int square,const Board* bord);
+U64 bitmap_white_knight(const int square,const Board* bord);
+U64 bitmap_black_knight(const int square,const Board* bord);
+U64 bitmap_white_queen(const int square,const Board* bord);
+U64 bitmap_black_queen(const int square,const Board* bord);
 
 /* calculate the bitmap of all squares the current player can move to or attack */
-U64 all_attacks(Board* bord);
+U64 all_attacks(const Board* bord);
 
 /* calculate the bitmap of all squares the current player can move to or attack from that square */
-U64 is_attacked(int square, Board* bord);
+U64 is_attacked(const int square,const Board* bord);
 
 /* check if the board is valid (true if it is) */
 bool checkBoard(Board* bord);
@@ -408,10 +408,10 @@ void getAllMoves(Board* bord, ActionList* actionList);
 void getLegalMoves(Board* bord, ActionList* actionList);
 
 /* calculate a mask of all pieces attacking the king */
-U64 calculateKingDanger(Board* bord);
+U64 calculateKingDanger(const Board* bord);
 
 /* calculate a mask of all pieces attacking a square */
-U64 calculateDanger(Board* bord, int square);
+U64 calculateDanger(const Board* bord,const  int square);
 
 /* get all the destinations of moves that originate from a square and put them in a bitmap (only use this for drawing this is slow) */
 U64 calculateBitmapFromSquare(int square, ActionList* actionList);
