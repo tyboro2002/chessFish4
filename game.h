@@ -274,7 +274,7 @@ void printMoveList(MOVELIST* moveList);
 int countSetBits(U64 number);
 int findMoveIndex(MOVELIST* moveList, Move* targetMove);
 
-Pieces pieceAt(int square, Board* bord);
+Pieces pieceAt(const int square,const Board* bord);
 
 void makeMove(Board* bord, Move* move, PositionTracker* positionTracker);
 
@@ -327,7 +327,7 @@ std::string moveToStringShort(const Move* move);
 /* add pieces to the board */
 void setup(Board* bord);
 void setupEmpty(Board* bord);
-void addPiece(Board* bord, Pieces piece, int square);
+void addPiece(Board* bord,const Pieces piece,const int square);
 
 /* print the bitboard with a message */
 void printBitBoard(U64 bitbord, std::string extra);
@@ -413,6 +413,9 @@ U64 calculateKingDanger(const Board* bord);
 /* calculate a mask of all pieces attacking a square */
 U64 calculateDanger(const Board* bord,const  int square);
 
+/* calculate if there is something attacking a square */
+bool calculateIfInDanger(const Board* bord,const int square);
+
 /* get all the destinations of moves that originate from a square and put them in a bitmap (only use this for drawing this is slow) */
 U64 calculateBitmapFromSquare(int square, ActionList* actionList);
 
@@ -424,3 +427,6 @@ void printActionList(ActionList* actionList);
 
 /* print an action */
 void printAction(Action* action);
+
+U64 get_white_pawn_attacks(int square, U64 white, U64 black);
+U64 get_black_pawn_attacks(int square, U64 white, U64 black);

@@ -139,6 +139,22 @@ U64 bitmap_black_pawn(const int position,const Board* bord) {
     return get_black_pawn_attacks(position, bord->white,bord->black) | (en_passent_target(bord) & blackPawnAttacks[position]);
 }
 
+inline U64 get_white_pawn_attacks(const int square,const U64 white,const U64 black){
+    U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
+    U64 whiteBlack = white | black;
+    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(whiteBlack)) && !((1ULL<<(square+16))&(whiteBlack))) att |= (1ULL<<(square+16));
+    att |= ((1ULL<<(square+8)) & ~(whiteBlack));
+    return att & ~oneRow;
+}
+
+inline U64 get_black_pawn_attacks(const int square, const U64 white, const U64 black){
+    U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
+    U64 whiteBlack = white | black;
+    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(whiteBlack)) && !((1ULL<<(square-16))&(whiteBlack))) att |= (1ULL<<(square-16));
+    att |= ((1ULL<<(square-8)) & ~(whiteBlack));
+    return att & ~eightRow;
+}
+
 U64 bitmap_white_king(const int position,const Board* bord) {
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
@@ -226,7 +242,7 @@ U64 black_checking_pieces(Board* bord) {
     return attackers;
 }
 
-U64 squaresBetweenBitmap(int startSquare, int endSquare) {
+U64 squaresBetweenBitmap(int startSquare, int endSquare) { //only used in old code
     startSquare = 63 - startSquare;
     endSquare = 63 - endSquare;
     U64 result = 0ULL;
@@ -262,7 +278,7 @@ U64 squaresBetweenBitmap(int startSquare, int endSquare) {
 /*
 * returns all 1 if no checking pieces or path to white king if there are
 */
-U64 white_checking_bitmap(Board* bord) {
+U64 white_checking_bitmap(Board* bord) { //only used in old code
     U64 att_path = 0ULL; //empty bitboard
     U64 checks = white_checking_pieces(bord);
     U64 att_rooks = checks & bord->rook;
@@ -297,7 +313,7 @@ U64 white_checking_bitmap(Board* bord) {
 /*
 * returns all 1 if no checking pieces or path to black king if there are
 */
-U64 black_checking_bitmap(Board* bord) {
+U64 black_checking_bitmap(Board* bord) { //only used in old code
     U64 att_path = 0ULL; //empty bitboard
     U64 checks = black_checking_pieces(bord);
     U64 att_rooks = checks & bord->rook;
@@ -332,7 +348,7 @@ U64 black_checking_bitmap(Board* bord) {
 /*
 * bitmap of al squares reachable by white pieces
 */
-U64 all_white_attacks(Board* bord) {
+U64 all_white_attacks(Board* bord) { //only used in old code
     U64 wrook = bord->white & bord->rook;
     U64 wknight = bord->white & bord->knight;
     U64 wbishop = bord->white & bord->bishop;
@@ -372,7 +388,7 @@ U64 all_white_attacks(Board* bord) {
 /*
 * bitmap of al squares reachable by black pieces
 */
-U64 all_black_attacks(Board* bord) {
+U64 all_black_attacks(Board* bord) { //only used in old code
     U64 brook = bord->black & bord->rook;
     U64 bknight = bord->black & bord->knight;
     U64 bbishop = bord->black & bord->bishop;
@@ -412,7 +428,7 @@ U64 all_black_attacks(Board* bord) {
 /*
 * all moves generating and putting them in a movelist
 */
-void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_white_pawn(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & eightRow) {
@@ -490,7 +506,7 @@ void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_black_pawn(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & oneRow) {
@@ -569,7 +585,7 @@ void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_rook_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_rook_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_white_rook(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -588,7 +604,7 @@ void white_rook_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_rook_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_rook_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_black_rook(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -607,7 +623,7 @@ void black_rook_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_knight_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_knight_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_white_knight(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -626,7 +642,7 @@ void white_knight_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_knight_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_knight_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_black_knight(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -645,7 +661,7 @@ void black_knight_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_bishop_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_bishop_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_white_bishop(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -664,7 +680,7 @@ void white_bishop_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_bishop_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_bishop_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_black_bishop(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -683,7 +699,7 @@ void black_bishop_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_queen_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_queen_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = (bitmap_white_bishop(position, bord) | bitmap_white_rook(position, bord));// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -702,7 +718,7 @@ void white_queen_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_queen_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_queen_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = (bitmap_black_bishop(position, bord) | bitmap_black_rook(position, bord));// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -721,7 +737,7 @@ void black_queen_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_king_moves(int position, MOVELIST* movelist, Board* bord) {
+void white_king_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_white_king(position, bord);// &~white_checking_bitmap(bord);;
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -752,7 +768,7 @@ void white_king_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_king_moves(int position, MOVELIST* movelist, Board* bord) {
+void black_king_moves(int position, MOVELIST* movelist, Board* bord) { //only used in old code
     U64 destinations = bitmap_black_king(position, bord);// &~black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
@@ -783,7 +799,7 @@ void black_king_moves(int position, MOVELIST* movelist, Board* bord) {
     }
 }
 
-void white_moves(MOVELIST* movelist, Board* bord) {
+void white_moves(MOVELIST* movelist, Board* bord) { //only used in old code
     U64 wrook = bord->white & bord->rook;
     U64 wknight = bord->white & bord->knight;
     U64 wbishop = bord->white & bord->bishop;
@@ -825,7 +841,7 @@ void white_moves(MOVELIST* movelist, Board* bord) {
     }
 }
 
-void black_moves(MOVELIST* movelist, Board* bord) {
+void black_moves(MOVELIST* movelist, Board* bord) { //only used in old code
     U64 brook = bord->black & bord->rook;
     U64 bknight = bord->black & bord->knight;
     U64 bbishop = bord->black & bord->bishop;
@@ -867,7 +883,7 @@ void black_moves(MOVELIST* movelist, Board* bord) {
     }
 }
 
-void GenMoveList(MOVELIST* list, Board* bord) {
+void GenMoveList(MOVELIST* list, Board* bord) { //only used in old code
     // Generate all moves, including illegal (e.g. put king in check) moves
     if (bord->whiteToPlay) {
         white_moves(list, bord);
@@ -876,7 +892,7 @@ void GenMoveList(MOVELIST* list, Board* bord) {
     }
 }
 
-bool EvaluateQuick(Board* bord) {
+bool EvaluateQuick(Board* bord) { //only used in old code
     if (bord->whiteToPlay) {
         return (((bord->king & bord->black) & all_white_attacks(bord))) == 0;
     }else{
@@ -885,7 +901,7 @@ bool EvaluateQuick(Board* bord) {
     //return OpponentHasMoves(bord);
 }
 
-void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker){
+void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker){ //only used in old code
     int i, j;
     bool okay;
     MOVELIST list2;
@@ -910,7 +926,7 @@ void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTrac
     list->count = j;
 }
 
-void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker) {
+void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker) { //only used in old code
     int i, j;
     bool okay;
     list->count = 0;
@@ -940,7 +956,7 @@ void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTrac
 /*
 * returns true if oponent has moves and false otherwise (false also means checkmated of stalemate)
 */
-bool OpponentHasMoves(Board* bord) {
+bool OpponentHasMoves(Board* bord) { //only used in old code
     int i, j;
     bool okay;
     MOVELIST list2;
@@ -968,7 +984,7 @@ bool OpponentHasMoves(Board* bord) {
 /*
 * returns true if we have moves and false otherwise (false also means checkmated of stalemate)
 */
-bool weHaveMoves(Board* bord) {
+bool weHaveMoves(Board* bord) { //only used in old code
     int i, j;
     bool okay;
     MOVELIST list2;
@@ -993,11 +1009,11 @@ bool weHaveMoves(Board* bord) {
     return j > 0;
 }
 
-bool inCheck(Board* bord) {
+bool inCheck(Board* bord) { //only used in old code (maybe used in new code if optimised)
     return calculateKingDanger(bord);
 }
 
-DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker) {
+DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker) { //only used in old code
     if (bord->halfmoveClock >= 100) return DRAWTYPE_50MOVE;
     if (positionTracker->getPositionOccurrences(bord) >= 3) return DRAWTYPE_REPITITION;
     U64 nonKingPieces = bord->bishop | bord->rook | bord->knight | bord->queen | bord->pawn; //TODO test
@@ -1040,7 +1056,7 @@ std::string convertTo64CharString(U64 rook, U64 knight, U64 bishop, U64 queen, U
 * this function overlays the string with the character for each place where the coresponding bit in bitpatroon is 1
 * (bitpatroon and string always have same length)
 */
-void overlay(std::string* str, U64 bitpattern, char character) {
+void overlay(std::string* str, U64 bitpattern, char character) { //only used in old code
     std::string& myString = *str;
     size_t strLength = myString.length();
 
@@ -1143,7 +1159,6 @@ void setup(Board* bord) {
     bord->enPassantTarget = 0;
     bord->halfmoveClock = 0;
     bord->reserved = 0;
-    //bord->extra = 0b1111100000000000000;
 }
 
 void setupEmpty(Board* bord) {
@@ -1165,10 +1180,9 @@ void setupEmpty(Board* bord) {
     bord->enPassantTarget = 0;
     bord->halfmoveClock = 0;
     bord->reserved = 0;
-    //bord->extra = 0b1111100000000000000;
 }
 
-void addPiece(Board* bord, Pieces piece, int square) {
+void addPiece(Board* bord, const Pieces piece,const int square) {
     U64 placeBit = 1ULL << square;
     switch (piece) {
         case WROOK:
@@ -1224,7 +1238,7 @@ void addPiece(Board* bord, Pieces piece, int square) {
     }
 }
 
-Pieces pieceAt(int square, Board* board) {
+Pieces pieceAt(const int square,const Board* board) { //only used in old code
     U64 sq = 1ULL << square;  // Calculate the bit corresponding to the square
 
     // Check for white pieces
@@ -1249,7 +1263,7 @@ Pieces pieceAt(int square, Board* board) {
     return NOPIECE;
 }
 
-Square stringToSquare(const std::string& inp) {
+Square stringToSquare(const std::string& inp) { //only used in old code
     static const std::unordered_map<std::string, Square> squareMap = {
             {"a8", A8}, {"a7", A7}, {"a6", A6}, {"a5", A5}, {"a4", A4}, {"a3", A3}, {"a2", A2}, {"a1", A1},
             {"b8", B8}, {"b7", B7}, {"b6", B6}, {"b5", B5}, {"b4", B4}, {"b3", B3}, {"b2", B2}, {"b1", B1},
@@ -1264,7 +1278,7 @@ Square stringToSquare(const std::string& inp) {
     return (it != squareMap.end()) ? it->second : A8;
 }
 
-std::string specialToString(SPECIAL special) {
+std::string specialToString(SPECIAL special) { //only used in old code
     static const std::unordered_map<SPECIAL, std::string> specialStrings = {
             {NOT_SPECIAL, ""},
             {SPECIAL_WK_CASTLING, "White is kingside castling"},
@@ -1286,7 +1300,7 @@ std::string specialToString(SPECIAL special) {
 }
 
 // Helper function to map characters to piece enums
-Pieces charToPiece(char c) {
+Pieces charToPiece(char c) { //only used in old code
     switch (std::toupper(c)) {
         case 'R': return WROOK;
         case 'N': return WKNIGHT;
@@ -1306,7 +1320,7 @@ Pieces charToPiece(char c) {
 
 
 // Function to make a move
-void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) {
+void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) { //only used in old code
     //bord->extra = (bord->extra & ~0x7F) | ((bord->extra + 1) & 0x7F); //TODO halfmove clock
     U64 fromBit = 1ULL << move->src;
     U64 toBit = 1ULL << move->dst;
@@ -1612,6 +1626,27 @@ U64 calculateDanger(const Board* bord,const int square){
     }
 }
 
+bool calculateIfInDanger(const Board* bord,const int square){
+    if(bord->whiteToPlay) {
+        return bitmap_white_queen(square,bord) & (bord->black & bord->queen)||
+        bitmap_white_bishop(square,bord) & (bord->black & bord->bishop) ||
+        bitmap_white_rook(square,bord) & (bord->black & bord->rook) ||
+        bitmap_white_knight(square,bord) & (bord->black & bord->knight) ||
+        whitePawnAttacks[square] & (bord->black & bord->pawn) ||
+        bitmap_white_king(square,bord) & (bord->black & bord->king);
+        //return queen | bishop | rook | knight | pawn | king;
+    }
+    else{
+        return bitmap_black_queen(square,bord) & (bord->white & bord->queen) ||
+        bitmap_black_bishop(square,bord) & (bord->white & bord->bishop) ||
+        bitmap_black_rook(square,bord) & (bord->white & bord->rook) ||
+        bitmap_black_knight(square,bord) & (bord->white & bord->knight) ||
+        blackPawnAttacks[square] & (bord->white & bord->pawn) ||
+        bitmap_black_king(square,bord) & (bord->white & bord->king);
+        //return queen | bishop | rook | knight | pawn | king;
+    }
+}
+
 U64 all_attacks(const Board* bord){
     U64 att = 0ULL;
     if(bord->whiteToPlay){
@@ -1626,8 +1661,8 @@ U64 all_attacks(const Board* bord){
         int checks = countSetBits(calculateKingDanger(bord));
         if (get_ls1b_index_game(wking) == E1){
             if(checks) att &= ~whiteCastles;
-            if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
-            if (calculateDanger(bord, D1) || calculateDanger(bord,C1)) att &= ~c1_mask;
+            if (calculateIfInDanger(bord, F1) || calculateIfInDanger(bord,G1)) att &= ~g1_mask;
+            if (calculateIfInDanger(bord, D1) || calculateIfInDanger(bord,C1)) att &= ~c1_mask;
         }
         if (checks > 1) return att;
 
@@ -1664,8 +1699,8 @@ U64 all_attacks(const Board* bord){
         int checks = countSetBits(calculateKingDanger(bord));
         if (get_ls1b_index_game(bking) == E8){
             if(checks) att &= ~whiteCastles;
-            if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
-            if (calculateDanger(bord, D8) || calculateDanger(bord,C8)) att &= ~c8_mask;
+            if (calculateIfInDanger(bord, F8) || calculateIfInDanger(bord,G8)) att &= ~g8_mask;
+            if (calculateIfInDanger(bord, D8) || calculateIfInDanger(bord,C8)) att &= ~c8_mask;
         }
         if (checks > 1) return att;
 
@@ -1709,8 +1744,8 @@ U64 is_attacked(const int square,const  Board *bord) {
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E1){
             if(checks) att &= ~whiteCastles;
-            if (calculateDanger(bord, F1) || calculateDanger(bord,G1)) att &= ~g1_mask;
-            if (calculateDanger(bord, D1) || calculateDanger(bord,C1)) att &= ~c1_mask;
+            if (calculateIfInDanger(bord, F1) || calculateIfInDanger(bord,G1)) att &= ~g1_mask;
+            if (calculateIfInDanger(bord, D1) || calculateIfInDanger(bord,C1)) att &= ~c1_mask;
         }
         if (checks > 1) return att;
 
@@ -1748,8 +1783,8 @@ U64 is_attacked(const int square,const  Board *bord) {
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E8){
             if(checks) att &= ~blackCastles;
-            if (calculateDanger(bord, F8) || calculateDanger(bord,G8)) att &= ~g8_mask;
-            if (calculateDanger(bord, D8) || calculateDanger(bord,C8)) att &= ~c8_mask;
+            if (calculateIfInDanger(bord, F8) || calculateIfInDanger(bord,G8)) att &= ~g8_mask;
+            if (calculateIfInDanger(bord, D8) || calculateIfInDanger(bord,C8)) att &= ~c8_mask;
         }
         if (checks > 1) return att;
 

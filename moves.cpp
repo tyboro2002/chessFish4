@@ -297,20 +297,3 @@ U64 get_queen_attacks(const int square, U64 occupancy){
     // return rook attacks
     return rook_attacks[square][magicIndex] | bishop_attacks[square][occupancy];
 }
-
-
-U64 get_white_pawn_attacks(const int square,const U64 white,const U64 black){
-    U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
-    U64 whiteBlack = white | black;
-    if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(whiteBlack)) && !((1ULL<<(square+16))&(whiteBlack))) att |= (1ULL<<(square+16));
-    att |= ((1ULL<<(square+8)) & ~(whiteBlack));
-    return att & ~oneRow;
-}
-
-U64 get_black_pawn_attacks(const int square, const U64 white, const U64 black){
-    U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
-    U64 whiteBlack = white | black;
-    if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(whiteBlack)) && !((1ULL<<(square-16))&(whiteBlack))) att |= (1ULL<<(square-16));
-    att |= ((1ULL<<(square-8)) & ~(whiteBlack));
-    return att & ~eightRow;
-}

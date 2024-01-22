@@ -809,8 +809,6 @@ U64 get_rook_attacks(const int square, U64 occupancy);
 U64 get_bishop_attacks(const int square, U64 occupancy);
 U64 get_queen_attacks(const int square, U64 occupancy);
 
-U64 get_white_pawn_attacks(int square, U64 white, U64 black);
-U64 get_black_pawn_attacks(int square, U64 white, U64 black);
 
 void init_sliders_attacks(bool bishop);
 void init_all_sliders_attacks(bool testWorking, const char* outputFile, const char* outputFileCondensed);

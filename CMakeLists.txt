@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(ChessFish4 main.cpp
+        moves.cpp
+        moves.h
         game.h
         game.cpp
         engine.h
@@ -23,8 +25,7 @@ add_executable(ChessFish4 main.cpp
         MagicNumberGenerator.h
         MagicsTester.cpp
         MagicsTester.h
-        moves.cpp
-        moves.h)
+)
 
 target_link_libraries(ChessFish4 PRIVATE
         -lpng             # for libpng

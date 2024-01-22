@@ -192,7 +192,11 @@ U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const cha
 int TimerRunner::runAutomatedTimerCases() {
     totalTime += timeFunction([this] { return time_perft(1); },num_runs, "perft depth 1");
     totalTime += timeFunction([this] { return time_perft(2); },num_runs, "perft depth 2");
-    //totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+    totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+
+    totalTime += timeFunction([this] { return time_perft_in_check(1); },num_runs, "perft depth 1 in check");
+    totalTime += timeFunction([this] { return time_perft_in_check(2); },num_runs, "perft depth 2 in check");
+    totalTime += timeFunction([this] { return time_perft_in_check(3); },num_runs, "perft depth 3 in check");
 
     //totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
 
@@ -421,6 +425,22 @@ U64 TimerRunner::time_all_attackers() {
 U64 TimerRunner::time_perft(int depth) {
     Board bord;
     setup(&bord);
+    TestRunner testRunner;
+    auto startTime = std::chrono::high_resolution_clock::now();
+    for (int i = 0;i<itterations;i++) {
+        testRunner.generalPerft(&bord,depth,false,0,0ULL);
+    }
+    // Get the ending timestamp
+    auto endTime = std::chrono::high_resolution_clock::now();
+    // Calculate the duration in microseconds (change to other duration units as needed)
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+    return duration;
+}
+
+U64 TimerRunner::time_perft_in_check(int depth) {
+    Board bord;
+    setupEmpty(&bord);
+    readInFen(&bord,"r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
     TestRunner testRunner;
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {
