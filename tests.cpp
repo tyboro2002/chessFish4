@@ -503,8 +503,7 @@ void TestRunner::testGeneralPerftResultst() {
     testResultTrue(generalPerft(&bord,4,printPercent,0,0ULL) == 197'281, "perft depth 4, fen: startpos");
     testResultTrue(generalPerft(&bord,5,printPercent,0,0ULL) == 4'865'609, "perft depth 5, fen: startpos");
     testResultTrue(generalPerft(&bord,6,printPercent,0,0ULL) == 119'060'324, "perft depth 6, fen: startpos");
-
-    //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7, fen: startpos");
+    testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 3'195'901'860, "perft depth 7, fen: startpos");
     //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 84'998'978'956, "perft depth 8, fen: startpos");
     //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9, fen: startpos");
 
@@ -716,7 +715,13 @@ int TestRunner::runAutomatedTestCases() {
 bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& list2) {
     // Check if the counts are the same
     if (list1.count != list2.count){
-        if (printFaults) cout << "the lists dont have equal sizes, list1: " << list1.count << " list2: " << list2.count << endl;
+        if (printFaults){
+            cout << "the lists dont have equal sizes, list1: " << list1.count << " list2: " << list2.count << endl;
+            cout << "list1: " << endl;
+            printActionList(&list1);
+            cout << "list2: " << endl;
+            printActionList(&list2);
+        }
         return false;
     }
 

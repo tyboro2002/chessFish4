@@ -4,7 +4,6 @@
 using namespace std;
 
 #define white_plays(bord) (bord->whiteToPlay)
-#define en_passent_target(bord) (((1ULL<<63) >> (bord->enPassantTarget)) & (bord->enPassentValid ? UINT64_MAX : 0))
 
 constexpr const char engine0[] = "the human player";
 constexpr const char engine1[] = "the random engine";

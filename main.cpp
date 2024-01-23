@@ -33,7 +33,7 @@ int main() {
     init_all_sliders_attacks(false, "../foundMagicNumbers.txt", "../foundMagicNumbersCondensed.txt");
 
 #ifdef RUN_TESTS
-    TestRunner testRunner = TestRunner(true,false);
+    TestRunner testRunner = TestRunner(true,true);
     testRunner.runAutomatedTestCases();
 #endif
 

@@ -1,11 +1,4 @@
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <bitset>
 #include "moves.h"
-#include "MagicsTester.h"
 
 // Definitions for bishop_attacks and rook_attacks
 U64 bishop_attacks[64][BISHOP_ATTACKS];
@@ -14,16 +7,6 @@ U64 rook_attacks[64][ROOK_ATTACKS];
 #define set_bit(bitboard, square) (bitboard |= (1ULL << square))
 #define get_bit(bitboard, square) (bitboard & (1ULL << square))
 #define pop_bit(bitboard, square) (get_bit(bitboard, square) ? bitboard ^= (1ULL << square) : 0)
-
-int count_bits(U64 bitboard){
-    return __builtin_popcountll(bitboard);
-    int count = 0;
-    while(bitboard){
-        count++;
-        bitboard &= bitboard-1;
-    }
-    return count;
-}
 
 // Function to get the index of the least significant 1-bit
 static inline int get_ls1b_index(U64 bitboard){
@@ -257,43 +240,4 @@ void init_sliders_attacks(bool bishop){
             }
         }
     }
-}
-
-// get bishop attacks
-U64 get_bishop_attacks(const int square, U64 occupancy){
-    // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= bischopMovesONE_OFF[square];
-    occupancy *= bishop_magic_numbers[square];
-    occupancy >>= bishopMagicIndexShift[square];
-
-    // return bishop attacks
-    return bishop_attacks[square][occupancy];
-}
-
-// get rook attacks
-U64 get_rook_attacks(const int square, U64 occupancy){
-    // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= rookMovesONE_OFF[square];
-    occupancy *= rook_magic_numbers[square];
-    occupancy >>= rookMagicIndexShift[square];
-
-    // return rook attacks
-    return rook_attacks[square][occupancy];
-}
-
-// get queen attacks
-U64 get_queen_attacks(const int square, U64 occupancy){
-    // get rook attacks assuming current board occupancy by calculating the magic index
-    U64 magicIndex = occupancy;
-    magicIndex &= rookMovesONE_OFF[square];
-    magicIndex *= rook_magic_numbers[square];
-    magicIndex >>= rookMagicIndexShift[square];
-
-    // get bishop attacks assuming current board occupancy by calculating the magic index
-    occupancy &= bischopMovesONE_OFF[square];
-    occupancy *= bishop_magic_numbers[square];
-    occupancy >>= bishopMagicIndexShift[square];
-
-    // return rook attacks
-    return rook_attacks[square][magicIndex] | bishop_attacks[square][occupancy];
 }
