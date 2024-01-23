@@ -209,6 +209,46 @@ struct MOVELIST{
     Move moves[MAXMOVES];
 };
 
+enum Exceptional{
+    Non_Exceptional,
+    Promote_Queen,
+    Promote_Rook,
+    Promote_Bishop,
+    Promote_Knight
+};
+
+/* a type representing the moving of a piece */
+class Action{
+public:
+    // Action is a lightweight type, it is accommodated in only 16 bits
+    int  src : 8 = 0;
+    int  dst : 8 = 0;
+    Exceptional special : 8 = Non_Exceptional;
+
+    bool operator==(const Action& other) const {
+        return src == other.src && dst == other.dst && special == other.special;
+    }
+
+    bool operator!=(const Action& other) const {
+        return !(*this == other);
+    }
+};
+
+/* a list of actions used to represent everything we can do from a formation */
+struct ActionList{
+    int count = 0;  // number of moves
+    Action moves[MAXMOVES]{};
+
+    // Function to add a move to the list
+    void addMove(int src, int dst, Exceptional exp = Non_Exceptional) {
+        moves[count++] = {src, dst, exp};
+    }
+
+    void popMove(){
+        count--;
+    }
+};
+
 struct TranspositionTableEntry {
     int score;
     int depth;
@@ -351,30 +391,18 @@ void black_king_moves(int position, MOVELIST* movelist, Board* bord);
 void white_moves(MOVELIST* movelist, Board* bord);
 void black_moves(MOVELIST* movelist, Board* bord);
 
-
-U64 white_checking_pieces(Board* bord);
-U64 black_checking_pieces(Board* bord);
-
-U64 all_white_attacks(Board* bord);
-U64 all_black_attacks(Board* bord);
-
-void GenMoveList(MOVELIST* list, Board* bord);
 void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker);
-void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker);
-bool OpponentHasMoves(Board* bord);
 bool weHaveMoves(Board* bord);
 bool inCheck(Board* bord);
 DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker);
 
 U64 squaresBetweenBitmap(int startSquare, int endSquare);
-U64 white_checking_bitmap(Board* bord);
-U64 black_checking_bitmap(Board* bord);
 
 void copyBoard(const Board* bordIn, Board* bordOut);
 
 std::string squareToString(int square);
 std::string specialToString(SPECIAL special);
-std::string moveToString(const Move* move);
+std::string actionToString(const Action* move);
 std::string moveToStringShort(const Move* move);
 
 
@@ -401,45 +429,6 @@ void printBitBoard(U64 bitbord, std::string extra);
 /* check if the board is valid (true if it is) */
 bool checkBoard(Board* bord);
 
-enum Exceptional{
-    Non_Exceptional,
-    Promote_Queen,
-    Promote_Rook,
-    Promote_Bishop,
-    Promote_Knight
-};
-
-/* a type representing the moving of a piece */
-class Action{
-public:
-    // Action is a lightweight type, it is accommodated in only 16 bits
-    int  src : 8 = 0;
-    int  dst : 8 = 0;
-    Exceptional special : 8 = Non_Exceptional;
-
-    bool operator==(const Action& other) const {
-        return src == other.src && dst == other.dst && special == other.special;
-    }
-
-    bool operator!=(const Action& other) const {
-        return !(*this == other);
-    }
-};
-
-/* a list of actions used to represent everything we can do from a formation */
-struct ActionList{
-    int count = 0;  // number of moves
-    Action moves[MAXMOVES]{};
-
-    // Function to add a move to the list
-    void addMove(int src, int dst, Exceptional exp = Non_Exceptional) {
-        moves[count++] = {src, dst, exp};
-    }
-
-    void popMove(){
-        count--;
-    }
-};
 
 /* execute the action given (basicaly moving the piece from src to dst and doing the special needs for this like castling ex) */
 //void movePiece(Board* bord, Action* move);

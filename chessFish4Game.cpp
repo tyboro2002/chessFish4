@@ -4,8 +4,8 @@ using namespace std;
 
 void runGame() {
     Board bord;
-    Move move;
-    MOVELIST moveList;
+    Action action;
+    ActionList actionList;
     TranspositionTable transpositionTable;
     PositionTracker positionTracker;
     //setupEmpty(&bord);
@@ -38,7 +38,7 @@ void runGame() {
     }
 
     if (engineNumberA == 4 || engineNumberB == 4) {
-        cout << "what time do you wanna give each move (in milliseconds)" << endl;
+        cout << "what time do you wanna give each action (in milliseconds)" << endl;
         cin >> time;
         cout << "what max depth do you want" << endl;
         cin >> depth;
@@ -47,51 +47,53 @@ void runGame() {
     }
     bool finished = false;
     while (i < duration && !finished && !isDraw(&bord, &positionTracker)) {
-        cout << "move: " << i+1<< endl;
+        cout << "action: " << i+1<< endl;
         printBoard(&bord);
-        GenLegalMoveList(&moveList, &bord, &positionTracker);
-        if (moveList.count == 0) {
+        //GenLegalMoveList(&actionList, &bord, &positionTracker);
+        getLegalMoves(&bord,&actionList);
+        if (actionList.count == 0) {
             cout << "white has no more legal moves" << endl;
             finished = true;
         }
         if (engineNumberA == 0) {
-            askForMove(&bord, &move, &moveList);
-            cout << "You selected: " << moveToString(&move) << endl;
-            makeMove(&bord, &move, &positionTracker);
+            askForMove(&bord, &action, &actionList);
+            cout << "You selected: " << actionToString(&action) << endl;
+            //makeMove(&bord, &action, &positionTracker);
+            movePiece(&bord,&action);
         }else if (engineNumberA == 1) {
-            makeRandomMove(&bord, &moveList, &positionTracker);
+            makeRandomMove(&bord, &actionList);
         }else if (engineNumberA == 2) {
-            makeMiniMaxMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker);
+            //makeMiniMaxMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker);
         }else if (engineNumberA == 3) {
-            makeMiniMaxOptimizedMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker);
+            //makeMiniMaxOptimizedMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker);
         }else if (engineNumberA == 4) {
-            makeMiniMaxOptimizedItterativeDeepeningMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker, time);
+            //makeMiniMaxOptimizedItterativeDeepeningMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker, time);
         }
         printBoard(&bord);
-        GenLegalMoveList(&moveList, &bord, &positionTracker);
-        if (moveList.count == 0) {
+        getLegalMoves(&bord, &actionList);
+        if (actionList.count == 0) {
             cout << "black has no more legal moves" << endl;
             finished = true;
         }
         if (!finished && !isDraw(&bord, &positionTracker)) {
             if (engineNumberB == 0) {
-                askForMove(&bord, &move, &moveList);
-                cout << "You selected: " << moveToString(&move) << endl;
-                makeMove(&bord, &move, &positionTracker);
+                askForMove(&bord, &action, &actionList);
+                cout << "You selected: " << actionToString(&action) << endl;
+                movePiece(&bord, &action);
             }
             else if (engineNumberB == 1) {
-                makeRandomMove(&bord, &moveList, &positionTracker);
+                makeRandomMove(&bord, &actionList);
             }else if (engineNumberB == 2) {
-                makeMiniMaxMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker);
+                //makeMiniMaxMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker);
             }else if (engineNumberB == 3) {
-                makeMiniMaxOptimizedMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker);
+                //makeMiniMaxOptimizedMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker);
             }else if (engineNumberB == 4) {
-                makeMiniMaxOptimizedItterativeDeepeningMove(&bord, &moveList, depth, true, &transpositionTable, &positionTracker, time);
+                //makeMiniMaxOptimizedItterativeDeepeningMove(&bord, &actionList, depth, true, &transpositionTable, &positionTracker, time);
             }
             i++;
         }
     }
-    if (isDraw(&bord, &positionTracker) && moveList.count != 0) {
+    if (isDraw(&bord, &positionTracker) && actionList.count != 0) {
         cout << "a draw occured" << endl;
     }
     if (isDraw(&bord, &positionTracker) && (engineNumberA == 0 || engineNumberB == 0) ) {

@@ -50,13 +50,8 @@ std::string squareToString(const int square) {
     return std::string(1, file[fileIndex]) + rank[rankIndex];
 }
 
-std::string moveToString(const Move* move) {
-    std::string captureString = "";
-    if (move->capture != -52) captureString = " is capturing a piece";
-    return "move from: " + squareToString(move->src) +
-           " to: " + squareToString(move->dst) + " " +
-           specialToString(move->special) +
-           captureString;
+std::string actionToString(const Action* move) {
+    return squareToString(move->src) + squareToString(move->dst) + (move->special == Promote_Rook ? "r" : "") + (move->special == Promote_Knight ? "n" : "") + (move->special == Promote_Bishop ? "b" : "") + (move->special == Promote_Queen ? "q" : "");
 }
 
 std::string moveToStringShort(const Move* move) {
@@ -76,7 +71,7 @@ void printPositionRecords(const PositionTracker* tracker) { //only used in old c
 }
 
 void printMoveList(MOVELIST* moveList) { //only used in old code
-    for (int i = 0; i < moveList->count; i++) cout << i << ") " << moveToString(&(moveList->moves[i])) /* << " with value: " << move_value(bord, &moveList->moves[i], false)*/ << endl; //TODO for testing
+    //for (int i = 0; i < moveList->count; i++) cout << i << ") " << moveToString(&(moveList->moves[i])) /* << " with value: " << move_value(bord, &moveList->moves[i], false)*/ << endl; //TODO for testing
 }
 
 
@@ -139,156 +134,6 @@ U64 squaresBetweenBitmap(int startSquare, int endSquare) { //only used in old co
     }
 
     return result;
-}
-
-/*
-* returns all 1 if no checking pieces or path to white king if there are
-*/
-U64 white_checking_bitmap(Board* bord) { //only used in old code
-    U64 att_path = 0ULL; //empty bitboard
-    U64 checks = white_checking_pieces(bord);
-    U64 att_rooks = checks & bord->rook;
-    U64 att_knight = checks & bord->knight;
-    U64 att_bishop = checks & bord->bishop;
-    U64 att_queen = checks & bord->queen;
-    U64 att_pawn = checks & bord->pawn;
-    int wking_square = get_ls1b_index(bord->king & bord->white);
-    while (att_rooks) {
-        int rook_square = get_ls1b_index(att_rooks);
-        att_path |= squaresBetweenBitmap(rook_square, wking_square);
-        att_rooks &= (att_rooks - 1);
-    }
-    while (att_bishop) {
-        int bishop_square = get_ls1b_index(att_bishop);
-        att_path |= squaresBetweenBitmap(bishop_square, wking_square);
-        att_bishop &= (att_bishop - 1);
-    }
-    while (att_queen) {
-        int queen_square = get_ls1b_index(att_queen);
-        att_path |= squaresBetweenBitmap(queen_square, wking_square);
-        att_queen &= (att_queen - 1);
-    }
-    att_path |= att_knight;
-    att_path |= att_pawn;
-    if ((att_path | checks) == 0) {
-        return all;
-    }
-    return att_path | checks;
-}
-
-/*
-* returns all 1 if no checking pieces or path to black king if there are
-*/
-U64 black_checking_bitmap(Board* bord) { //only used in old code
-    U64 att_path = 0ULL; //empty bitboard
-    U64 checks = black_checking_pieces(bord);
-    U64 att_rooks = checks & bord->rook;
-    U64 att_knight = checks & bord->knight;
-    U64 att_bishop = checks & bord->bishop;
-    U64 att_queen = checks & bord->queen;
-    U64 att_pawn = checks & bord->pawn;
-    int bking_square = get_ls1b_index(bord->king & bord->black);
-    while (att_rooks) {
-        int rook_square = get_ls1b_index(att_rooks);
-        att_path |= squaresBetweenBitmap(rook_square, bking_square);
-        att_rooks &= (att_rooks - 1);
-    }
-    while (att_bishop) {
-        int bishop_square = get_ls1b_index(att_bishop);
-        att_path |= squaresBetweenBitmap(bishop_square, bking_square);
-        att_bishop &= (att_bishop - 1);
-    }
-    while (att_queen) {
-        int queen_square = get_ls1b_index(att_queen);
-        att_path |= squaresBetweenBitmap(queen_square, bking_square);
-        att_queen &= (att_queen - 1);
-    }
-    att_path |= att_knight;
-    att_path |= att_pawn;
-    if ((att_path | checks) == 0) {
-        return all;
-    }
-    return att_path | checks;
-}
-
-/*
-* bitmap of al squares reachable by white pieces
-*/
-U64 all_white_attacks(Board* bord) { //only used in old code
-    U64 wrook = bord->white & bord->rook;
-    U64 wknight = bord->white & bord->knight;
-    U64 wbishop = bord->white & bord->bishop;
-    U64 wqueen = bord->white & bord->queen;
-    U64 wking = bord->white & bord->king;
-    U64 wpawn = bord->white & bord->pawn;
-    U64 attacks = 0ULL;
-    attacks |= bitmap_white_king(get_ls1b_index(wking), bord);
-    if (countSetBits(white_checking_pieces(bord)) > 1) {
-        return attacks;
-    }
-    while (wrook) {
-        int bitIndex = get_ls1b_index(wrook); // Get the index of the least significant set bit
-        attacks |= bitmap_white_rook(63-bitIndex,bord); // Call the corresponding function with the index of the set bit
-        wrook &= (wrook - 1); // Clear the least significant set bit
-    }
-    while (wknight) {
-        int bitIndex = get_ls1b_index(wknight); // Get the index of the least significant set bit
-        attacks |= bitmap_white_knight(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        wknight &= (wknight - 1); // Clear the least significant set bit
-    }
-    while (wbishop) {
-        int bitIndex = get_ls1b_index(wbishop); // Get the index of the least significant set bit
-        attacks |= bitmap_white_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        wbishop &= (wbishop - 1); // Clear the least significant set bit
-    }
-    while (wqueen) {
-        int bitIndex = get_ls1b_index(wqueen); // Get the index of the least significant set bit
-        attacks |= bitmap_white_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        attacks |= bitmap_white_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        wqueen &= (wqueen - 1); // Clear the least significant set bit
-    }
-    //attacks |= bitmap_all_white_pawns(bord);
-    return attacks;// &white_checking_bitmap(bord);
-}
-
-/*
-* bitmap of al squares reachable by black pieces
-*/
-U64 all_black_attacks(Board* bord) { //only used in old code
-    U64 brook = bord->black & bord->rook;
-    U64 bknight = bord->black & bord->knight;
-    U64 bbishop = bord->black & bord->bishop;
-    U64 bqueen = bord->black & bord->queen;
-    U64 bking = bord->black & bord->king;
-    U64 bpawn = bord->black & bord->pawn;
-    U64 attacks = 0ULL;
-    attacks |= bitmap_black_king(get_ls1b_index(bking), bord);
-    if (countSetBits(black_checking_pieces(bord)) > 1) {
-        return attacks;
-    }
-    while (brook) {
-        int bitIndex = get_ls1b_index(brook); // Get the index of the least significant set bit
-        attacks |= bitmap_black_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        brook &= (brook - 1); // Clear the least significant set bit
-    }
-    while (bknight) {
-        int bitIndex = get_ls1b_index(bknight); // Get the index of the least significant set bit
-        attacks |= bitmap_black_knight(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        bknight &= (bknight - 1); // Clear the least significant set bit
-    }
-    while (bbishop) {
-        int bitIndex = get_ls1b_index(bbishop); // Get the index of the least significant set bit
-        attacks |= bitmap_black_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        bbishop &= (bbishop - 1); // Clear the least significant set bit
-    }
-    while (bqueen) {
-        int bitIndex = get_ls1b_index(bqueen); // Get the index of the least significant set bit
-        attacks |= bitmap_black_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        attacks |= bitmap_black_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
-        bqueen &= (bqueen - 1); // Clear the least significant set bit
-    }
-    //attacks |= bitmap_all_black_pawns(bord);
-    return attacks;// &black_checking_bitmap(bord);
 }
 
 /*
@@ -749,43 +594,10 @@ void black_moves(MOVELIST* movelist, Board* bord) { //only used in old code
     }
 }
 
-void GenMoveList(MOVELIST* list, Board* bord) { //only used in old code
-    // Generate all moves, including illegal (e.g. put king in check) moves
-    if (bord->whiteToPlay) {
-        white_moves(list, bord);
-    }else{
-        black_moves(list, bord);
-    }
-}
-
 bool EvaluateQuick(Board* bord) { //only used in old code
     return calculateKingDanger(bord) == 0ULL;
 }
 
-void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker){ //only used in old code
-    int i, j;
-    bool okay;
-    MOVELIST list2;
-    list2.count = 0;
-
-    // Generate all moves, including illegal (e.g. put king in check) moves
-    if (bord->whiteToPlay) {
-        white_moves(&list2, bord);
-    }else {
-        black_moves(&list2, bord);
-    }
-    Board bordCopy;
-    // Loop copying the proven good ones
-    for (i = j = 0; i < list2.count; i++){
-        copyBoard(bord, &bordCopy);
-        makeMove(&bordCopy, &list2.moves[i],positionTracker);
-        okay = EvaluateQuick(bord);
-        if (isDraw(&bordCopy, positionTracker) != NOT_DRAW) okay = false;
-        positionTracker->removePosition(&bordCopy);
-        if (okay) list->moves[j++] = list2.moves[i];
-    }
-    list->count = j;
-}
 
 void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker) { //only used in old code
     int i, j;
@@ -814,60 +626,14 @@ void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTrac
     list->count = j;
 }
 
-/*
-* returns true if oponent has moves and false otherwise (false also means checkmated of stalemate)
-*/
-bool OpponentHasMoves(Board* bord) { //only used in old code
-    int i, j;
-    bool okay;
-    MOVELIST list2;
-    PositionTracker positionTracker;
-    list2.count = 0;
-
-    // Generate all moves, including illegal (e.g. put king in check) moves
-    if (bord->whiteToPlay) { // to generate moves for oponent
-        black_moves(&list2, bord);
-    }else {
-        white_moves(&list2, bord);
-    }
-    Board bordCopy;
-    // Loop copying the proven good ones
-    for (i = j = 0; i < list2.count; i++){
-        copyBoard(bord, &bordCopy);
-        makeMove(&bordCopy, &list2.moves[i], &positionTracker);
-        //positionTracker.removePosition(&bordCopy);
-        okay = EvaluateQuick(&bordCopy);
-        if (okay) j++;
-    }
-    return j > 0;
-}
 
 /*
 * returns true if we have moves and false otherwise (false also means checkmated of stalemate)
 */
 bool weHaveMoves(Board* bord) { //only used in old code
-    int i, j;
-    bool okay;
-    MOVELIST list2;
-    PositionTracker positionTracker;
-    list2.count = 0;
-
-    // Generate all moves, including illegal (e.g. put king in check) moves
-    if (bord->whiteToPlay) { // to generate moves for oponent
-        white_moves(&list2, bord);
-    }else {
-        black_moves(&list2, bord);
-    }
-    Board bordCopy;
-    // Loop copying the proven good ones
-    for (i = j = 0; i < list2.count; i++){
-        copyBoard(bord, &bordCopy);
-        makeMove(&bordCopy, &list2.moves[i], &positionTracker);
-        //positionTracker.removePosition(&bordCopy);
-        okay = EvaluateQuick(&bordCopy);
-        if (okay) j++;
-    }
-    return j > 0;
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+    return actionList.count;
 }
 
 bool inCheck(Board* bord) { //only used in old code (maybe used in new code if optimised)
