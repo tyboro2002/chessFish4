@@ -33,6 +33,47 @@ typedef unsigned long long U64;
     bord->black |= 1ULL << (dstSquare); \
     bord->rook |= 1ULL << (dstSquare)
 
+/* define a board reset function to use in the legal move generation */
+#define resetBoard()                                    \
+    bord->rook = rook;                                  \
+    bord->knight = knight;                              \
+    bord->bishop = bishop;                              \
+    bord->queen = queen;                                \
+    bord->king = king;                                  \
+    bord->pawn = pawn;                                  \
+    bord->white = white;                                \
+    bord->black = black;                                \
+    bord->whiteToPlay = whiteToPlay;                    \
+    bord->whiteKingsideCastle = whiteKingsideCastle;    \
+    bord->whiteQueensideCastle = whiteQueensideCastle;  \
+    bord->blackKingsideCastle = blackKingsideCastle;    \
+    bord->blackQueensideCastle = blackQueensideCastle;  \
+    bord->enPassentValid = enPassentValid;              \
+    bord->enPassantTarget = enPassantTarget;            \
+    bord->halfmoveClock = halfmoveClock;
+
+
+#define saveBoard() \
+                                                             \
+    U64 rook = bord->rook;                                   \
+    U64 knight = bord->knight;                               \
+    U64 bishop = bord->bishop;                               \
+    U64 queen = bord->queen;                                 \
+    U64 king = bord->king;                                   \
+    U64 pawn = bord->pawn;                                   \
+                                                             \
+    U64 white = bord->white;                                 \
+    U64 black = bord->black;                                 \
+                                                             \
+    U64 whiteToPlay = bord->whiteToPlay;                     \
+    U64 whiteKingsideCastle = bord->whiteKingsideCastle;     \
+    U64 whiteQueensideCastle = bord->whiteQueensideCastle;   \
+    U64 blackKingsideCastle = bord->blackKingsideCastle;     \
+    U64 blackQueensideCastle = bord->blackQueensideCastle;   \
+    U64 enPassentValid = bord->enPassentValid;               \
+    U64 enPassantTarget = bord->enPassantTarget;             \
+    U64 halfmoveClock = bord->halfmoveClock;
+
 namespace std {
     template<>
     struct hash<Board> {
@@ -404,10 +445,10 @@ struct ActionList{
 //void movePiece(Board* bord, Action* move);
 
 /* calculate all moves the current player can do from this square and add them to the actionlist */
-void getMovesAtSquare(Board* bord, int square, ActionList* actionList);
+//void getMovesAtSquare(Board* bord, int square, ActionList* actionList);
 
 /* calculate all possible moves from a position */
-void getAllMoves(Board* bord, ActionList* actionList);
+//void getAllMoves(Board* bord, ActionList* actionList);
 
 /* filter all legal moves from the getAllMoves function (this function calls that move itself) */
 void getLegalMoves(Board* bord, ActionList* actionList);
@@ -454,8 +495,6 @@ inline U64 get_black_pawn_attacks(const int square, const U64 white, const U64 b
 
 inline int countSetBits(U64 number) {return __builtin_popcountll(number);}
 
-// Function to get the index of the least significant 1-bit
-static inline int get_ls1b_index_game(U64 bitboard){ return bitboard ? __builtin_ctzll(bitboard) : -1;}
 
 // mask knight attacks
 inline U64 bitmap_white_knight(const int square,const  Board* bord) {return knightMoves[square] & (~bord->white);}
@@ -524,7 +563,7 @@ inline U64 bitmap_black_king(const int position,const  Board* bord) {
 inline U64 calculateKingDanger(const Board* bord){
     if(bord->whiteToPlay) {
         /* find the square of the king */
-        int kingSquare = get_ls1b_index_game(bord->white & bord->king);
+        int kingSquare = get_ls1b_index(bord->white & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
         //if((bitmap_white_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
@@ -538,7 +577,7 @@ inline U64 calculateKingDanger(const Board* bord){
     }
     else{
         /* find the square of the king */
-        int kingSquare = get_ls1b_index_game(bord->black & bord->king);
+        int kingSquare = get_ls1b_index(bord->black & bord->king);
         /* if there are certainly no pieces able to capture the queen return */
         //if((bitmap_black_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
         /* get a bitmap of all the pieces that attack the king */
@@ -612,9 +651,9 @@ inline U64 all_attacks(const Board* bord){
         U64 wking = bord->white & bord->king;
         U64 wpawn = bord->white & bord->pawn;
 
-        att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
+        att |= bitmap_white_king(get_ls1b_index(wking), bord);
         int checks = countSetBits(calculateKingDanger(bord));
-        if (get_ls1b_index_game(wking) == E1){
+        if (get_ls1b_index(wking) == E1){
             if(checks) att &= ~whiteCastles;
             if (calculateIfInDanger(bord, F1) || calculateIfInDanger(bord,G1)) att &= ~g1_mask;
             if (calculateIfInDanger(bord, D1) || calculateIfInDanger(bord,C1)) att &= ~c1_mask;
@@ -622,23 +661,23 @@ inline U64 all_attacks(const Board* bord){
         if (checks > 1) return att;
 
         while (wrook) {
-            att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
+            att |= bitmap_white_rook(get_ls1b_index(wrook), bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
         }
         while (wbishop) {
-            att |= bitmap_white_bishop(get_ls1b_index_game(wbishop),bord);
+            att |= bitmap_white_bishop(get_ls1b_index(wbishop), bord);
             wbishop &= (wbishop - 1);
         }
         while (wqueen) {
-            att |= bitmap_white_queen(get_ls1b_index_game(wqueen),bord);
+            att |= bitmap_white_queen(get_ls1b_index(wqueen), bord);
             wqueen &= (wqueen - 1);
         }
         while (wknight) {
-            att |= bitmap_white_knight(get_ls1b_index_game(wknight),bord);
+            att |= bitmap_white_knight(get_ls1b_index(wknight), bord);
             wknight &= (wknight - 1);
         }
         while (wpawn) {
-            att |= bitmap_white_pawn(get_ls1b_index_game(wpawn),bord);
+            att |= bitmap_white_pawn(get_ls1b_index(wpawn), bord);
             wpawn &= (wpawn - 1);
         }
         return att;
@@ -650,9 +689,9 @@ inline U64 all_attacks(const Board* bord){
         U64 bking = bord->black & bord->king;
         U64 bpawn = bord->black & bord->pawn;
 
-        att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
+        att |= bitmap_black_king(get_ls1b_index(bking), bord);
         int checks = countSetBits(calculateKingDanger(bord));
-        if (get_ls1b_index_game(bking) == E8){
+        if (get_ls1b_index(bking) == E8){
             if(checks) att &= ~whiteCastles;
             if (calculateIfInDanger(bord, F8) || calculateIfInDanger(bord,G8)) att &= ~g8_mask;
             if (calculateIfInDanger(bord, D8) || calculateIfInDanger(bord,C8)) att &= ~c8_mask;
@@ -660,23 +699,23 @@ inline U64 all_attacks(const Board* bord){
         if (checks > 1) return att;
 
         while (brook) {
-            att |= bitmap_black_rook(get_ls1b_index_game(brook),bord);
+            att |= bitmap_black_rook(get_ls1b_index(brook), bord);
             brook &= (brook - 1);
         }
         while (bbishop) {
-            att |= bitmap_black_bishop(get_ls1b_index_game(bbishop),bord);
+            att |= bitmap_black_bishop(get_ls1b_index(bbishop), bord);
             bbishop &= (bbishop - 1);
         }
         while (bqueen) {
-            att |= bitmap_black_queen(get_ls1b_index_game(bqueen),bord);
+            att |= bitmap_black_queen(get_ls1b_index(bqueen), bord);
             bqueen &= (bqueen - 1);
         }
         while (bknight) {
-            att |= bitmap_black_knight(get_ls1b_index_game(bknight),bord);
+            att |= bitmap_black_knight(get_ls1b_index(bknight), bord);
             bknight &= (bknight - 1);
         }
         while (bpawn) {
-            att |= bitmap_black_pawn(get_ls1b_index_game(bpawn),bord);
+            att |= bitmap_black_pawn(get_ls1b_index(bpawn), bord);
             bpawn &= (bpawn - 1);
         }
         return att;
@@ -694,7 +733,7 @@ inline U64 is_attacked(const int square,const  Board *bord) {
         U64 wking = bord->white & bord->king & sq_mask;
         U64 wpawn = bord->white & bord->pawn & sq_mask;
 
-        att |= bitmap_white_king(get_ls1b_index_game(wking), bord);
+        att |= bitmap_white_king(get_ls1b_index(wking), bord);
 
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E1){
@@ -705,23 +744,23 @@ inline U64 is_attacked(const int square,const  Board *bord) {
         if (checks > 1) return att;
 
         while (wrook) {
-            att |= bitmap_white_rook(get_ls1b_index_game(wrook),bord); // get the attacks of the rook at this position
+            att |= bitmap_white_rook(get_ls1b_index(wrook), bord); // get the attacks of the rook at this position
             wrook &= (wrook - 1); // Clear the least significant set bit
         }
         while (wbishop) {
-            att |= bitmap_white_bishop(get_ls1b_index_game(wbishop),bord);
+            att |= bitmap_white_bishop(get_ls1b_index(wbishop), bord);
             wbishop &= (wbishop - 1);
         }
         while (wqueen) {
-            att |= bitmap_white_queen(get_ls1b_index_game(wqueen),bord);
+            att |= bitmap_white_queen(get_ls1b_index(wqueen), bord);
             wqueen &= (wqueen - 1);
         }
         while (wknight) {
-            att |= bitmap_white_knight(get_ls1b_index_game(wknight),bord);
+            att |= bitmap_white_knight(get_ls1b_index(wknight), bord);
             wknight &= (wknight - 1);
         }
         while (wpawn) {
-            att |= bitmap_white_pawn(get_ls1b_index_game(wpawn),bord);
+            att |= bitmap_white_pawn(get_ls1b_index(wpawn), bord);
             wpawn &= (wpawn - 1);
         }
         return att;
@@ -733,7 +772,7 @@ inline U64 is_attacked(const int square,const  Board *bord) {
         U64 bking = bord->black & bord->king & sq_mask;
         U64 bpawn = bord->black & bord->pawn & sq_mask;
 
-        att |= bitmap_black_king(get_ls1b_index_game(bking), bord);
+        att |= bitmap_black_king(get_ls1b_index(bking), bord);
 
         int checks = countSetBits(calculateKingDanger(bord));
         if (square == E8){
@@ -744,23 +783,23 @@ inline U64 is_attacked(const int square,const  Board *bord) {
         if (checks > 1) return att;
 
         while (brook) {
-            att |= bitmap_black_rook(get_ls1b_index_game(brook),bord);
+            att |= bitmap_black_rook(get_ls1b_index(brook), bord);
             brook &= (brook - 1);
         }
         while (bbishop) {
-            att |= bitmap_black_bishop(get_ls1b_index_game(bbishop),bord);
+            att |= bitmap_black_bishop(get_ls1b_index(bbishop), bord);
             bbishop &= (bbishop - 1);
         }
         while (bqueen) {
-            att |= bitmap_black_queen(get_ls1b_index_game(bqueen),bord);
+            att |= bitmap_black_queen(get_ls1b_index(bqueen), bord);
             bqueen &= (bqueen - 1);
         }
         while (bknight) {
-            att |= bitmap_black_knight(get_ls1b_index_game(bknight),bord);
+            att |= bitmap_black_knight(get_ls1b_index(bknight), bord);
             bknight &= (bknight - 1);
         }
         while (bpawn) {
-            att |= bitmap_black_pawn(get_ls1b_index_game(bpawn),bord);
+            att |= bitmap_black_pawn(get_ls1b_index(bpawn), bord);
             bpawn &= (bpawn - 1);
         }
         return att;
@@ -914,5 +953,41 @@ inline void movePiece(Board* bord, Action* move){
         return;
     }
 }
+
+inline void getMovesAtSquare(Board* bord, int square, ActionList* actionList){
+    U64 attacks = is_attacked(square,bord);
+    Action actie;
+    actie.src = square;
+    if(((actie.src >= 8 && actie.src <= 15) || (actie.src>= 48 && actie.src <= 55)) && (bord->pawn & (1ULL << actie.src))) {
+        while(attacks){
+            actie.dst = __builtin_ctzll(attacks);
+            if((actie.dst <= 7) || (actie.dst >= 56)){
+                actie.special = Promote_Queen;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Bishop;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Knight;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Promote_Rook;
+                actionList->moves[actionList->count++] = actie;
+                actie.special = Non_Exceptional;
+            }else{
+                actionList->moves[actionList->count++] = actie;
+            }
+            attacks &= (attacks - 1);
+        }
+    }else{
+        while(attacks){
+            actie.dst = __builtin_ctzll(attacks);
+            actionList->moves[actionList->count++] = actie;
+            attacks &= (attacks - 1);
+        }
+    }
+}
+
+inline void getAllMoves(Board* bord, ActionList* actionList){
+    for (int i = 0;i<64;i++){ getMovesAtSquare(bord,i,actionList);}
+}
+
 
 //TODO a function to convert from board to fen (see: string Position::fen() const { from https://github.com/official-stockfish/Stockfish/blob/master/src/position.cpp)

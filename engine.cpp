@@ -12,10 +12,6 @@ constexpr const char engine3[] = "the minimax optimized engine";
 constexpr const char engine4[] = "the minimax optimized engine with itterative deepening";
 constexpr std::array<const char*, 5> engines = { engine0, engine1, engine2, engine3 , engine4 };
 
-// Function to get the index of the least significant 1-bit
-static inline int get_ls1b_index_engine(U64 bitboard){
-    return bitboard ? __builtin_ctzll(bitboard) : -1;
-}
 
 const map<Pieces, int> piece_score_dic = {
         //white
@@ -212,27 +208,27 @@ int evaluateWhite(Board* bord) {
     U64 wqueen = bord->white & bord->queen;
     U64 wpawn = bord->white & bord->pawn;
     while (wrook) {
-        int bitIndex = get_ls1b_index_engine(wrook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wrook); // Get the index of the least significant set bit
         white_material += 500;// piece_score_dic.find(WROOK)->second; //TODO hardcode
         wrook &= (wrook - 1); // Clear the least significant set bit
     }
     while (wknight) {
-        int bitIndex = get_ls1b_index_engine(wknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wknight); // Get the index of the least significant set bit
         white_material += 300;// piece_score_dic.find(WKNIGHT)->second; //TODO hardcode
         wknight &= (wknight - 1); // Clear the least significant set bit
     }
     while (wbishop) {
-        int bitIndex = get_ls1b_index_engine(wbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wbishop); // Get the index of the least significant set bit
         white_material += 300;// piece_score_dic.find(WBISCHOP)->second; //TODO hardcode
         wbishop &= (wbishop - 1); // Clear the least significant set bit
     }
     while (wqueen) {
-        int bitIndex = get_ls1b_index_engine(wqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wqueen); // Get the index of the least significant set bit
         white_material += 900;// piece_score_dic.find(WQUEEN)->second; //TODO hardcode
         wqueen &= (wqueen - 1); // Clear the least significant set bit
     }
     while (wpawn) {
-        int bitIndex = get_ls1b_index_engine(wpawn); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wpawn); // Get the index of the least significant set bit
         white_material += 100; // piece_score_dic.find(WPAWN)->second; //TODO hardcode
         wpawn &= (wpawn - 1); // Clear the least significant set bit
     }
@@ -247,27 +243,27 @@ int evaluateBlack(Board* bord) {
     U64 bqueen = bord->black & bord->queen;
     U64 bpawn = bord->black & bord->pawn;
     while (brook) {
-        int bitIndex = get_ls1b_index_engine(brook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(brook); // Get the index of the least significant set bit
         black_material += 500;// piece_score_dic.find(BROOK)->second; //TODO hardcode
         brook &= (brook - 1); // Clear the least significant set bit
     }
     while (bknight) {
-        int bitIndex = get_ls1b_index_engine(bknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bknight); // Get the index of the least significant set bit
         black_material += 300;// piece_score_dic.find(BKNIGHT)->second; //TODO hardcode
         bknight &= (bknight - 1); // Clear the least significant set bit
     }
     while (bbishop) {
-        int bitIndex = get_ls1b_index_engine(bbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bbishop); // Get the index of the least significant set bit
         black_material += 300;// piece_score_dic.find(BBISCHOP)->second; //TODO hardcode
         bbishop &= (bbishop - 1); // Clear the least significant set bit
     }
     while (bqueen) {
-        int bitIndex = get_ls1b_index_engine(bqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bqueen); // Get the index of the least significant set bit
         black_material += 900;// piece_score_dic.find(BQUEEN)->second; //TODO hardcode
         bqueen &= (bqueen - 1); // Clear the least significant set bit
     }
     while (bpawn) {
-        int bitIndex = get_ls1b_index_engine(bpawn); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bpawn); // Get the index of the least significant set bit
         black_material += 100; // piece_score_dic.find(BPAWN)->second; //TODO hardcode
         bpawn &= (bpawn - 1); // Clear the least significant set bit
     }
@@ -295,7 +291,7 @@ int evaluate_capture(Board* bord, Move* mv) {
     Pieces _to = pieceAt(mv->dst,bord);
     Pieces _from = pieceAt(mv->src, bord);
     int val = 0;
-    if (get_ls1b_index_engine(en_passent_target(bord)) == mv->dst) {
+    if (get_ls1b_index(en_passent_target(bord)) == mv->dst) {
         return 100;// piece_score_dic.find(WPAWN)->second; //TODO hardcode value
     }
     return piece_score_dic.find(_to)->second - piece_score_dic.find(_from)->second;

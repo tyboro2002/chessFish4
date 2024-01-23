@@ -6,11 +6,6 @@
                             bord.blackQueensideCastle = 0; \
 using namespace std;
 
-// Function to get the index of the least significant 1-bit
-static inline int get_ls1b_index_tests(U64 bitboard){
-    return bitboard ? __builtin_ctzll(bitboard) : -1;
-}
-
 // Utility function to check and report test results
 void TestRunner::testResultTrue(bool condition, const std::string& testName) {
     totalTests++;
@@ -659,7 +654,7 @@ void TestRunner::testGeneralPerftResultst() {
     printBitBoard(calculateDanger(&bord,C1),"C1 danger squares");
     printBitBoard(calculateDanger(&bord,D1),"D1 danger squares");
     printBitBoard(~c1_mask, "all danger");
-    cout << ((get_ls1b_index_tests(bord.white & bord.king) == E1) ? "white king is at E1" : "white king is not at E1") << endl;
+    cout << ((get_ls1b_index(bord.white & bord.king) == E1) ? "white king is at E1" : "white king is not at E1") << endl;
     cout << detailedPerft(&bord,1) << endl;
 
 
@@ -697,7 +692,7 @@ int TestRunner::runAutomatedTestCases() {
     GenerateActions();
 
 
-    //testGeneralPerftResultst();
+    testGeneralPerftResultst();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;
@@ -995,7 +990,7 @@ void move_test_check() {
     addPiece(&bord, BKING, D6);
     addPiece(&bord, WKNIGHT, D3);
     printBoard(&bord);
-    printBitBoard(all_white_attacks(&bord), "all white attacks");
+    //printBitBoard(all_white_attacks(&bord), "all white attacks");
 }
 
 void randomMoveTest() {

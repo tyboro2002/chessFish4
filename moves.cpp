@@ -8,10 +8,6 @@ U64 rook_attacks[64][ROOK_ATTACKS];
 #define get_bit(bitboard, square) (bitboard & (1ULL << square))
 #define pop_bit(bitboard, square) (get_bit(bitboard, square) ? bitboard ^= (1ULL << square) : 0)
 
-// Function to get the index of the least significant 1-bit
-static inline int get_ls1b_index(U64 bitboard){
-    return bitboard ? __builtin_ctzll(bitboard) : -1;
-}
 
 U64 set_occupancy(int index, int bits_in_mask, U64 attacks_mask){
     U64 occupancy = 0ULL;

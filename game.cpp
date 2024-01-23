@@ -5,25 +5,6 @@
 #define set_bit(bitboard, index) (bitboard |= (1ULL << index))
 #define pop_bit(bitboard, index) (get_bit(bitboard, index) ? bitboard ^= (1ULL << index) : 0)
 
-/* define a board reset function to use in the legal move generation */
-#define resetBoard()                                    \
-    bord->rook = rook;                                  \
-    bord->knight = knight;                              \
-    bord->bishop = bishop;                              \
-    bord->queen = queen;                                \
-    bord->king = king;                                  \
-    bord->pawn = pawn;                                  \
-    bord->white = white;                                \
-    bord->black = black;                                \
-    bord->whiteToPlay = whiteToPlay;                    \
-    bord->whiteKingsideCastle = whiteKingsideCastle;    \
-    bord->whiteQueensideCastle = whiteQueensideCastle;  \
-    bord->blackKingsideCastle = blackKingsideCastle;    \
-    bord->blackQueensideCastle = blackQueensideCastle;  \
-    bord->enPassentValid = enPassentValid;              \
-    bord->enPassantTarget = enPassantTarget;            \
-    bord->halfmoveClock = halfmoveClock;                \
-
 
 // Function to copy values from bordIn to bordOut
 void copyBoard(const Board* bordIn, Board* bordOut) {
@@ -104,7 +85,7 @@ void printMoveList(MOVELIST* moveList) { //only used in old code
 */
 U64 white_checking_pieces(Board* bord) {
     U64 attackers = 0ULL; // empty bitboard
-    int king_position = get_ls1b_index_game(bord->king & bord->white);
+    int king_position = get_ls1b_index(bord->king & bord->white);
     attackers |= bitmap_white_rook(king_position, bord) & (bord->rook & bord->black);
     attackers |= bitmap_white_knight(king_position, bord) & (bord->knight & bord->black);
     attackers |= bitmap_white_bishop(king_position, bord) & (bord->bishop & bord->black);
@@ -118,7 +99,7 @@ U64 white_checking_pieces(Board* bord) {
 */
 U64 black_checking_pieces(Board* bord) {
     U64 attackers = 0ULL; // empty bitboard
-    int king_position = get_ls1b_index_game(bord->king & bord->black);
+    int king_position = get_ls1b_index(bord->king & bord->black);
     attackers |= bitmap_black_rook(king_position, bord) & (bord->rook & bord->white);
     attackers |= bitmap_black_knight(king_position, bord) & (bord->knight & bord->white);
     attackers |= bitmap_black_bishop(king_position, bord) & (bord->bishop & bord->white);
@@ -171,19 +152,19 @@ U64 white_checking_bitmap(Board* bord) { //only used in old code
     U64 att_bishop = checks & bord->bishop;
     U64 att_queen = checks & bord->queen;
     U64 att_pawn = checks & bord->pawn;
-    int wking_square = get_ls1b_index_game(bord->king & bord->white);
+    int wking_square = get_ls1b_index(bord->king & bord->white);
     while (att_rooks) {
-        int rook_square = get_ls1b_index_game(att_rooks);
+        int rook_square = get_ls1b_index(att_rooks);
         att_path |= squaresBetweenBitmap(rook_square, wking_square);
         att_rooks &= (att_rooks - 1);
     }
     while (att_bishop) {
-        int bishop_square = get_ls1b_index_game(att_bishop);
+        int bishop_square = get_ls1b_index(att_bishop);
         att_path |= squaresBetweenBitmap(bishop_square, wking_square);
         att_bishop &= (att_bishop - 1);
     }
     while (att_queen) {
-        int queen_square = get_ls1b_index_game(att_queen);
+        int queen_square = get_ls1b_index(att_queen);
         att_path |= squaresBetweenBitmap(queen_square, wking_square);
         att_queen &= (att_queen - 1);
     }
@@ -206,19 +187,19 @@ U64 black_checking_bitmap(Board* bord) { //only used in old code
     U64 att_bishop = checks & bord->bishop;
     U64 att_queen = checks & bord->queen;
     U64 att_pawn = checks & bord->pawn;
-    int bking_square = get_ls1b_index_game(bord->king & bord->black);
+    int bking_square = get_ls1b_index(bord->king & bord->black);
     while (att_rooks) {
-        int rook_square = get_ls1b_index_game(att_rooks);
+        int rook_square = get_ls1b_index(att_rooks);
         att_path |= squaresBetweenBitmap(rook_square, bking_square);
         att_rooks &= (att_rooks - 1);
     }
     while (att_bishop) {
-        int bishop_square = get_ls1b_index_game(att_bishop);
+        int bishop_square = get_ls1b_index(att_bishop);
         att_path |= squaresBetweenBitmap(bishop_square, bking_square);
         att_bishop &= (att_bishop - 1);
     }
     while (att_queen) {
-        int queen_square = get_ls1b_index_game(att_queen);
+        int queen_square = get_ls1b_index(att_queen);
         att_path |= squaresBetweenBitmap(queen_square, bking_square);
         att_queen &= (att_queen - 1);
     }
@@ -241,27 +222,27 @@ U64 all_white_attacks(Board* bord) { //only used in old code
     U64 wking = bord->white & bord->king;
     U64 wpawn = bord->white & bord->pawn;
     U64 attacks = 0ULL;
-    attacks |= bitmap_white_king(get_ls1b_index_game(wking), bord);
+    attacks |= bitmap_white_king(get_ls1b_index(wking), bord);
     if (countSetBits(white_checking_pieces(bord)) > 1) {
         return attacks;
     }
     while (wrook) {
-        int bitIndex = get_ls1b_index_game(wrook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wrook); // Get the index of the least significant set bit
         attacks |= bitmap_white_rook(63-bitIndex,bord); // Call the corresponding function with the index of the set bit
         wrook &= (wrook - 1); // Clear the least significant set bit
     }
     while (wknight) {
-        int bitIndex = get_ls1b_index_game(wknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wknight); // Get the index of the least significant set bit
         attacks |= bitmap_white_knight(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         wknight &= (wknight - 1); // Clear the least significant set bit
     }
     while (wbishop) {
-        int bitIndex = get_ls1b_index_game(wbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wbishop); // Get the index of the least significant set bit
         attacks |= bitmap_white_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         wbishop &= (wbishop - 1); // Clear the least significant set bit
     }
     while (wqueen) {
-        int bitIndex = get_ls1b_index_game(wqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wqueen); // Get the index of the least significant set bit
         attacks |= bitmap_white_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         attacks |= bitmap_white_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         wqueen &= (wqueen - 1); // Clear the least significant set bit
@@ -281,27 +262,27 @@ U64 all_black_attacks(Board* bord) { //only used in old code
     U64 bking = bord->black & bord->king;
     U64 bpawn = bord->black & bord->pawn;
     U64 attacks = 0ULL;
-    attacks |= bitmap_black_king(get_ls1b_index_game(bking), bord);
+    attacks |= bitmap_black_king(get_ls1b_index(bking), bord);
     if (countSetBits(black_checking_pieces(bord)) > 1) {
         return attacks;
     }
     while (brook) {
-        int bitIndex = get_ls1b_index_game(brook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(brook); // Get the index of the least significant set bit
         attacks |= bitmap_black_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         brook &= (brook - 1); // Clear the least significant set bit
     }
     while (bknight) {
-        int bitIndex = get_ls1b_index_game(bknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bknight); // Get the index of the least significant set bit
         attacks |= bitmap_black_knight(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         bknight &= (bknight - 1); // Clear the least significant set bit
     }
     while (bbishop) {
-        int bitIndex = get_ls1b_index_game(bbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bbishop); // Get the index of the least significant set bit
         attacks |= bitmap_black_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         bbishop &= (bbishop - 1); // Clear the least significant set bit
     }
     while (bqueen) {
-        int bitIndex = get_ls1b_index_game(bqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bqueen); // Get the index of the least significant set bit
         attacks |= bitmap_black_bishop(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         attacks |= bitmap_black_rook(63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         bqueen &= (bqueen - 1); // Clear the least significant set bit
@@ -317,7 +298,7 @@ void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_white_pawn(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & eightRow) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = SPECIAL_PROMOTION_QUEEN;
@@ -368,12 +349,12 @@ void white_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only us
         destinations &= (destinations - 1); // Clear the least significant set bit
     }
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63-bitIndex);
         if (m->src - m->dst == 16) {
             m->special = SPECIAL_WPAWN_2SQUARES;
-        }else if (m->dst == (63-get_ls1b_index_game(en_passent_target(bord)))) {
+        }else if (m->dst == (63 - get_ls1b_index(en_passent_target(bord)))) {
             m->special = SPECIAL_WEN_PASSANT;
             m->capture = m->dst + 8;
         }else {
@@ -395,7 +376,7 @@ void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_black_pawn(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations & oneRow) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = SPECIAL_PROMOTION_QUEEN;
@@ -446,13 +427,13 @@ void black_pawn_moves(int position, MOVELIST* movelist, Board* bord) { //only us
         destinations &= (destinations - 1); // Clear the least significant set bit
     }
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         if (m->dst - m->src == 16) {
             m->special = SPECIAL_BPAWN_2SQUARES;
         }
-        else if (m->dst == (63 - get_ls1b_index_game(en_passent_target(bord)))) {
+        else if (m->dst == (63 - get_ls1b_index(en_passent_target(bord)))) {
             m->special = SPECIAL_BEN_PASSANT;
             m->capture = m->dst - 8;
         }
@@ -474,7 +455,7 @@ void white_rook_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_white_rook(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -493,7 +474,7 @@ void black_rook_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_black_rook(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -512,7 +493,7 @@ void white_knight_moves(int position, MOVELIST* movelist, Board* bord) { //only 
     U64 destinations = bitmap_white_knight(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -531,7 +512,7 @@ void black_knight_moves(int position, MOVELIST* movelist, Board* bord) { //only 
     U64 destinations = bitmap_black_knight(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -550,7 +531,7 @@ void white_bishop_moves(int position, MOVELIST* movelist, Board* bord) { //only 
     U64 destinations = bitmap_white_bishop(position, bord);// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -569,7 +550,7 @@ void black_bishop_moves(int position, MOVELIST* movelist, Board* bord) { //only 
     U64 destinations = bitmap_black_bishop(position, bord);// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -588,7 +569,7 @@ void white_queen_moves(int position, MOVELIST* movelist, Board* bord) { //only u
     U64 destinations = (bitmap_white_bishop(position, bord) | bitmap_white_rook(position, bord));// &white_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -607,7 +588,7 @@ void black_queen_moves(int position, MOVELIST* movelist, Board* bord) { //only u
     U64 destinations = (bitmap_black_bishop(position, bord) | bitmap_black_rook(position, bord));// &black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         m->special = NOT_SPECIAL;
@@ -626,7 +607,7 @@ void white_king_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_white_king(position, bord);// &~white_checking_bitmap(bord);;
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         if (m->src == E1) {
@@ -657,7 +638,7 @@ void black_king_moves(int position, MOVELIST* movelist, Board* bord) { //only us
     U64 destinations = bitmap_black_king(position, bord);// &~black_checking_bitmap(bord);
     Move* m = &movelist->moves[movelist->count];
     while (destinations) {
-        int bitIndex = get_ls1b_index_game(destinations); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(destinations); // Get the index of the least significant set bit
         m->src = (Square)position;
         m->dst = (Square)(63 - bitIndex);
         if (m->src == E8) {
@@ -692,7 +673,7 @@ void white_moves(MOVELIST* movelist, Board* bord) { //only used in old code
     U64 wking = bord->white & bord->king;
     U64 wpawn = bord->white & bord->pawn;
     while (wking) {
-        int bitIndex = get_ls1b_index_game(wking); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wking); // Get the index of the least significant set bit
         white_king_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         wking &= (wking - 1); // Clear the least significant set bit
     }
@@ -700,27 +681,27 @@ void white_moves(MOVELIST* movelist, Board* bord) { //only used in old code
         return;
     }
     while (wrook) {
-        int bitIndex = get_ls1b_index_game(wrook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wrook); // Get the index of the least significant set bit
         white_rook_moves(63 - bitIndex,movelist,bord); // Call the corresponding function with the index of the set bit
         wrook &= (wrook - 1); // Clear the least significant set bit
     }
     while (wknight) {
-        int bitIndex = get_ls1b_index_game(wknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wknight); // Get the index of the least significant set bit
         white_knight_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         wknight &= (wknight - 1); // Clear the least significant set bit
     }
     while (wbishop) {
-        int bitIndex = get_ls1b_index_game(wbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wbishop); // Get the index of the least significant set bit
         white_bishop_moves(63 - bitIndex, movelist, bord); (63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         wbishop &= (wbishop - 1); // Clear the least significant set bit
     }
     while (wqueen) {
-        int bitIndex = get_ls1b_index_game(wqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wqueen); // Get the index of the least significant set bit
         white_queen_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         wqueen &= (wqueen - 1); // Clear the least significant set bit
     }
     while (wpawn) {
-        int bitIndex = get_ls1b_index_game(wpawn); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(wpawn); // Get the index of the least significant set bit
         white_pawn_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         wpawn &= (wpawn - 1); // Clear the least significant set bit
     }
@@ -734,7 +715,7 @@ void black_moves(MOVELIST* movelist, Board* bord) { //only used in old code
     U64 bking = bord->black & bord->king;
     U64 bpawn = bord->black & bord->pawn;
     while (bking) {
-        int bitIndex = get_ls1b_index_game(bking); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bking); // Get the index of the least significant set bit
         black_king_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         bking &= (bking - 1); // Clear the least significant set bit
     }
@@ -742,27 +723,27 @@ void black_moves(MOVELIST* movelist, Board* bord) { //only used in old code
         return;
     }
     while (brook) {
-        int bitIndex = get_ls1b_index_game(brook); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(brook); // Get the index of the least significant set bit
         black_rook_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         brook &= (brook - 1); // Clear the least significant set bit
     }
     while (bknight) {
-        int bitIndex = get_ls1b_index_game(bknight); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bknight); // Get the index of the least significant set bit
         black_knight_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         bknight &= (bknight - 1); // Clear the least significant set bit
     }
     while (bbishop) {
-        int bitIndex = get_ls1b_index_game(bbishop); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bbishop); // Get the index of the least significant set bit
         black_bishop_moves(63 - bitIndex, movelist, bord); (63 - bitIndex, bord); // Call the corresponding function with the index of the set bit
         bbishop &= (bbishop - 1); // Clear the least significant set bit
     }
     while (bqueen) {
-        int bitIndex = get_ls1b_index_game(bqueen); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bqueen); // Get the index of the least significant set bit
         black_queen_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         bqueen &= (bqueen - 1); // Clear the least significant set bit
     }
     while (bpawn) {
-        int bitIndex = get_ls1b_index_game(bpawn); // Get the index of the least significant set bit
+        int bitIndex = get_ls1b_index(bpawn); // Get the index of the least significant set bit
         black_pawn_moves(63 - bitIndex, movelist, bord); // Call the corresponding function with the index of the set bit
         bpawn &= (bpawn - 1); // Clear the least significant set bit
     }
@@ -778,12 +759,7 @@ void GenMoveList(MOVELIST* list, Board* bord) { //only used in old code
 }
 
 bool EvaluateQuick(Board* bord) { //only used in old code
-    if (bord->whiteToPlay) {
-        return (((bord->king & bord->black) & all_white_attacks(bord))) == 0;
-    }else{
-        return (((bord->king & bord->white) & all_black_attacks(bord))) == 0;
-    }
-    //return OpponentHasMoves(bord);
+    return calculateKingDanger(bord) == 0ULL;
 }
 
 void addLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker){ //only used in old code
@@ -1467,68 +1443,12 @@ bool checkBoard(Board* bord){
     return true;
 }
 
-void getMovesAtSquare(Board* bord, int square, ActionList* actionList){
-    U64 attacks = is_attacked(square,bord);
-    Action actie;
-    actie.src = square;
-    if(((actie.src >= 8 && actie.src <= 15) || (actie.src>= 48 && actie.src <= 55)) && (bord->pawn & (1ULL << actie.src))) {
-        while(attacks){
-            actie.dst = __builtin_ctzll(attacks);
-            if((actie.dst <= 7) || (actie.dst >= 56)){
-                actie.special = Promote_Queen;
-                actionList->moves[actionList->count++] = actie;
-                actie.special = Promote_Bishop;
-                actionList->moves[actionList->count++] = actie;
-                actie.special = Promote_Knight;
-                actionList->moves[actionList->count++] = actie;
-                actie.special = Promote_Rook;
-                actionList->moves[actionList->count++] = actie;
-                actie.special = Non_Exceptional;
-            }else{
-                actionList->moves[actionList->count++] = actie;
-            }
-            attacks &= (attacks - 1);
-        }
-    }else{
-        while(attacks){
-            actie.dst = __builtin_ctzll(attacks);
-            actionList->moves[actionList->count++] = actie;
-            attacks &= (attacks - 1);
-        }
-    }
-}
-
-void getAllMoves(Board* bord, ActionList* actionList){
-    for (int i = 0;i<64;i++){
-        getMovesAtSquare(bord,i,actionList);
-    }
-}
-
 void getLegalMoves(Board* bord, ActionList* legal){
-    //TODO castling is impossible when there is an attack on the path (white king f1,g1)
     ActionList pseudo;
     getAllMoves(bord, &pseudo);
 
     /* initiate bitmaps to redo the move */
-    // pieces
-    U64 rook = bord->rook;
-    U64 knight = bord->knight;
-    U64 bishop = bord->bishop;
-    U64 queen = bord->queen;
-    U64 king = bord->king;
-    U64 pawn = bord->pawn;
-    // colors
-    U64 white = bord->white;
-    U64 black = bord->black;
-    // extra info (packed in one 64bit number)
-    U64 whiteToPlay = bord->whiteToPlay;
-    U64 whiteKingsideCastle = bord->whiteKingsideCastle;
-    U64 whiteQueensideCastle = bord->whiteQueensideCastle;
-    U64 blackKingsideCastle = bord->blackKingsideCastle;
-    U64 blackQueensideCastle = bord->blackQueensideCastle;
-    U64 enPassentValid = bord->enPassentValid;
-    U64 enPassantTarget = bord->enPassantTarget;
-    U64 halfmoveClock = bord->halfmoveClock;
+    saveBoard();
 
     for (int i = 0; i<pseudo.count;i++) {
         movePiece(bord, &(pseudo.moves[i]));

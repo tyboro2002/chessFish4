@@ -10,6 +10,9 @@
 
 typedef unsigned long long U64;
 
+// Function to get the index of the least significant 1-bit
+static inline int get_ls1b_index(U64 bitboard){ return bitboard ? __builtin_ctzll(bitboard) : -1;}
+
 struct Board {
     // pieces
     U64 rook;
