@@ -368,7 +368,6 @@ private:
 };
 
 void printPositionRecords(const PositionTracker* tracker);
-void printMoveList(MOVELIST* moveList);
 
 int findMoveIndex(MOVELIST* moveList, Move* targetMove);
 
@@ -391,7 +390,6 @@ void black_king_moves(int position, MOVELIST* movelist, Board* bord);
 void white_moves(MOVELIST* movelist, Board* bord);
 void black_moves(MOVELIST* movelist, Board* bord);
 
-void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker);
 bool weHaveMoves(Board* bord);
 bool inCheck(Board* bord);
 DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker);
@@ -455,7 +453,7 @@ void getLegalMoves(Board* bord, ActionList* actionList);
 U64 calculateBitmapFromSquare(int square, ActionList* actionList);
 
 /* place a fen position on the board */
-void readInFen(Board* bord, char* fen);
+void readInFen(Board* bord,const char* fen);
 
 /* print an actionlist */
 void printActionList(const ActionList* actionList);

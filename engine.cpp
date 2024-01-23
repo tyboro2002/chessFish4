@@ -464,7 +464,7 @@ void orderMovesWithTriangularTable(Board* bord, MOVELIST* moveList, std::vector<
 }
 
 void get_orderd_moves(Board* bord, MOVELIST* moveList, PositionTracker* positionTracker) {
-    GenLegalMoveList(moveList, bord, positionTracker); //TODO
+    //GenLegalMoveList(moveList, bord, positionTracker); //TODO
     orderMoves(bord, moveList);
 }
 
@@ -1013,7 +1013,7 @@ void makeMiniMaxMove(Board* bord, ActionList* moveList, int depth, bool maximize
     transpositionTable->printInfo();
 
     auto startTime = std::chrono::high_resolution_clock::now();
-    minimax_root(bord, depth, maximize, &moveOut, moveList, transpositionTable, positionTracker);
+    //minimax_root(bord, depth, maximize, &moveOut, moveList, transpositionTable, positionTracker);
     // Get the ending timestamp
     auto endTime = std::chrono::high_resolution_clock::now();
     // Calculate the duration in microseconds (change to other duration units as needed)

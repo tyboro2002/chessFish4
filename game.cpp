@@ -70,11 +70,6 @@ void printPositionRecords(const PositionTracker* tracker) { //only used in old c
     }
 }
 
-void printMoveList(MOVELIST* moveList) { //only used in old code
-    //for (int i = 0; i < moveList->count; i++) cout << i << ") " << moveToString(&(moveList->moves[i])) /* << " with value: " << move_value(bord, &moveList->moves[i], false)*/ << endl; //TODO for testing
-}
-
-
 /*
 * all pieces attacking the white king
 */
@@ -596,34 +591,6 @@ void black_moves(MOVELIST* movelist, Board* bord) { //only used in old code
 
 bool EvaluateQuick(Board* bord) { //only used in old code
     return calculateKingDanger(bord) == 0ULL;
-}
-
-
-void GenLegalMoveList(MOVELIST* list, Board* bord, PositionTracker* positionTracker) { //only used in old code
-    int i, j;
-    bool okay;
-    list->count = 0;
-    MOVELIST list2;
-    list2.count = 0;
-
-    // Generate all moves, including illegal (e.g. put king in check) moves
-    if (bord->whiteToPlay) {
-        white_moves(&list2, bord);
-    }else {
-        black_moves(&list2, bord);
-    }
-
-    Board bordCopy;
-    // Loop copying the proven good ones
-    for (i = j = 0; i < list2.count; i++){
-        copyBoard(bord, &bordCopy);
-        makeMove(&bordCopy, &list2.moves[i], positionTracker);
-        okay = EvaluateQuick(&bordCopy);
-        if (isDraw(&bordCopy, positionTracker) != NOT_DRAW) okay = false;
-        positionTracker->removePosition(&bordCopy);
-        if (okay)list->moves[j++] = list2.moves[i];
-    }
-    list->count = j;
 }
 
 
@@ -1233,7 +1200,7 @@ U64 calculateBitmapFromSquare(int square, ActionList* actionList){
     return att;
 }
 
-void readInFen(Board* bord, char* fen) {
+void readInFen(Board* bord,const char* fen) {
     int index = 63;
     while (*fen != ' '){
         //cout << "'" << fen << "' index: " << index << endl;

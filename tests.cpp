@@ -503,12 +503,9 @@ void TestRunner::testGeneralPerftResultst() {
     //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 2'439'530'234'167, "perft depth 9, fen: startpos");
 
 
-    char* fen;
-
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0";
-    readInFen(&bord, fen);
+    readInFen(&bord, "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 48, "perft depth 1, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2039, "perft depth 2, fen: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0");
@@ -519,8 +516,7 @@ void TestRunner::testGeneralPerftResultst() {
 
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0";
-    readInFen(&bord, fen);
+    readInFen(&bord, "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 14, "perft depth 1, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 191, "perft depth 2, fen: 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0");
@@ -533,8 +529,7 @@ void TestRunner::testGeneralPerftResultst() {
 
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1";
-    readInFen(&bord, fen);
+    readInFen(&bord, "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
@@ -545,8 +540,7 @@ void TestRunner::testGeneralPerftResultst() {
 
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ";
-    readInFen(&bord, fen);
+    readInFen(&bord, "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 6, "perft depth 1, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 264, "perft depth 2, fen: r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1 ");
@@ -557,8 +551,7 @@ void TestRunner::testGeneralPerftResultst() {
 
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ";
-    readInFen(&bord, fen);
+    readInFen(&bord, "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 44, "perft depth 1, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 1'486, "perft depth 2, fen: rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8  ");
@@ -568,8 +561,7 @@ void TestRunner::testGeneralPerftResultst() {
 
     setupEmpty(&bord);
     REMOVE_CASTELS()
-    fen = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ";
-    readInFen(&bord, fen);
+    readInFen(&bord, "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     //printFancyBoard(&bord);
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 46, "perft depth 1, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     testResultTrue(generalPerft(&bord,2,printPercent,0,0ULL) == 2'079, "perft depth 2, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
@@ -970,7 +962,7 @@ void move_test_halfmove() {
     printBoard(&bord);
 
     for (int i = 0; i < 10; i++) {
-        GenLegalMoveList(&moveList, &bord, &positionTracker);
+        //GenLegalMoveList(&moveList, &bord, &positionTracker);
         //makeRandomMove(&bord, &moveList, &positionTracker);
         printBoard(&bord);
         cout << bord.halfmoveClock << endl;
@@ -1037,8 +1029,8 @@ void legalMoveTest() {
 
     */
     setupEmpty(&bord);
-    readInFen(&bord, "r1bq2r1/b4pk1/p1pp1p2/1p2pPQ1/1P2P1PB/3P4/1PP3P1/R3K2R b - - 0 1");
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //readInFen(&bord, "r1bq2r1/b4pk1/p1pp1p2/1p2pPQ1/1P2P1PB/3P4/1PP3P1/R3K2R b - - 0 1");
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     cout << endl;
 }
 
@@ -1107,7 +1099,7 @@ bool mateInOneTest() {
     MOVELIST moveList;
     // Clear move list
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
 
     //minimax_root(&bord, 1, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
@@ -1136,7 +1128,7 @@ bool mateInTwoTest() {
 
     //white move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = C1;
@@ -1151,14 +1143,14 @@ bool mateInTwoTest() {
 
     //black move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord,&positionTracker);
+    //GenLegalMoveList(&moveList, &bord,&positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = G7;
     move.dst = H6;
     move.capture = H6;
     move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
+    //makeMove(&bord, &moveOut, &positionTracker);
     //printBoard(&bord);
     if (!(move == moveOut)) {
         return false;
@@ -1167,7 +1159,7 @@ bool mateInTwoTest() {
 
     //white move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = H4;
@@ -1198,7 +1190,7 @@ bool mateInThreeTest() {
 
     //white move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = C4;
@@ -1213,7 +1205,7 @@ bool mateInThreeTest() {
 
     //black move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = C7;
@@ -1229,7 +1221,7 @@ bool mateInThreeTest() {
 
     //white move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = B3;
@@ -1244,7 +1236,7 @@ bool mateInThreeTest() {
 
     //black move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = H4;
@@ -1259,7 +1251,7 @@ bool mateInThreeTest() {
 
     //white move
     moveList.count = 0;   // set each field for each move
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
     move.src = E6;

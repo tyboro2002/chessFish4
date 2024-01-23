@@ -65,7 +65,7 @@ void time_parralel_evaluation() {
     MOVELIST moveList;
     setup(&bord);
     PositionTracker positionTracker;
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     auto startTime = std::chrono::high_resolution_clock::now();
 
     //for (int i = 0; i < 1000000; ++i) orderMoves(&bord,&moveList);
@@ -75,11 +75,11 @@ void time_parralel_evaluation() {
 
     // Calculate the duration in microseconds (change to other duration units as needed)
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-    printMoveList(&moveList);
+    //printMoveList(&moveList);
     cout << "first approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 
-    GenLegalMoveList(&moveList, &bord, &positionTracker);
+    //GenLegalMoveList(&moveList, &bord, &positionTracker);
     startTime = std::chrono::high_resolution_clock::now();
 
     //for (int i = 0; i < 1000; ++i) orderMovesThreaded(&bord, &moveList);
@@ -90,7 +90,7 @@ void time_parralel_evaluation() {
     // Calculate the duration in microseconds (change to other duration units as needed)
     duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
-    printMoveList(&moveList);
+    //printMoveList(&moveList);
     cout << "second approach needed:" << endl;
     std::cout << "Time taken: " << duration << " microseconds" << std::endl;
 }
