@@ -610,8 +610,8 @@ bool inCheck(Board* bord) { //only used in old code (maybe used in new code if o
 DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker) { //only used in old code
     if (bord->halfmoveClock >= 100) return DRAWTYPE_50MOVE;
     if (positionTracker->getPositionOccurrences(bord) >= 3) return DRAWTYPE_REPITITION;
-    U64 nonKingPieces = bord->bishop | bord->rook | bord->knight | bord->queen | bord->pawn; //TODO test
-    if((nonKingPieces & bord->white) == 0 || (nonKingPieces & bord->black) == 0) return DRAWTYPE_INSUFFICIENT_AUTO; //TODO test
+    U64 nonKingPieces = bord->bishop | bord->rook | bord->knight | bord->queen | bord->pawn;
+    if((nonKingPieces & bord->white) == 0 || (nonKingPieces & bord->black) == 0) return DRAWTYPE_INSUFFICIENT_AUTO;
     if (countSetBits(bord->white | bord->black) <= 2) return DRAWTYPE_INSUFFICIENT_AUTO;
     return NOT_DRAW;
 }
@@ -915,7 +915,7 @@ Pieces charToPiece(char c) { //only used in old code
 
 // Function to make a move
 void makeMove(Board* bord, Move* move, PositionTracker* positionTracker) { //only used in old code
-    //bord->extra = (bord->extra & ~0x7F) | ((bord->extra + 1) & 0x7F); //TODO halfmove clock
+    //bord->extra = (bord->extra & ~0x7F) | ((bord->extra + 1) & 0x7F);
     U64 fromBit = 1ULL << move->src;
     U64 toBit = 1ULL << move->dst;
     bool capture = false;

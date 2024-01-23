@@ -224,13 +224,13 @@ void init_sliders_attacks(bool bishop){
             if (bishop){
                 // init magic index
                 U64 magic_index = (occupancy * bishop_magic_numbers[square]) >> (64 - bischopRelevantBits[square]);
-                if(magic_index >= BISHOP_ATTACKS) {printf("fuck %llu is te veel bishop for occupancy: %llu at index: %d for square: %d\n",magic_index, occupancy, index, square); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                if(magic_index >= BISHOP_ATTACKS) {printf("ohla %llu is te veel bishop for occupancy: %llu at index: %d for square: %d\n",magic_index, occupancy, index, square); exit(EXIT_FAILURE);}
                 // init bishop attacks
                 bishop_attacks[square][magic_index] = bishop_attacks_on_the_fly(square, occupancy);
             }else{ // rook
                 // init magic index
                 U64 magic_index = (occupancy * rook_magic_numbers[square]) >> (64-rookRelevantBits[square]);
-                if(magic_index >= ROOK_ATTACKS) {printf("fuck %llu is te veel rook for occupancy: %llu at index: %d for square: %d magic number: %llu\n",magic_index, occupancy, index, square,rook_magic_numbers[square]); exit(EXIT_FAILURE);} //TODO put print and exit in a panic function
+                if(magic_index >= ROOK_ATTACKS) {printf("ohla %llu is te veel rook for occupancy: %llu at index: %d for square: %d magic number: %llu\n",magic_index, occupancy, index, square,rook_magic_numbers[square]); exit(EXIT_FAILURE);}
                 // init bishop attacks
                 rook_attacks[square][magic_index] = rook_attacks_on_the_fly(square, occupancy);
             }

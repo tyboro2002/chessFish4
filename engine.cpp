@@ -209,27 +209,27 @@ int evaluateWhite(Board* bord) {
     U64 wpawn = bord->white & bord->pawn;
     while (wrook) {
         int bitIndex = get_ls1b_index(wrook); // Get the index of the least significant set bit
-        white_material += 500;// piece_score_dic.find(WROOK)->second; //TODO hardcode
+        white_material += 500;// piece_score_dic.find(WROOK)->second;
         wrook &= (wrook - 1); // Clear the least significant set bit
     }
     while (wknight) {
         int bitIndex = get_ls1b_index(wknight); // Get the index of the least significant set bit
-        white_material += 300;// piece_score_dic.find(WKNIGHT)->second; //TODO hardcode
+        white_material += 300;// piece_score_dic.find(WKNIGHT)->second;
         wknight &= (wknight - 1); // Clear the least significant set bit
     }
     while (wbishop) {
         int bitIndex = get_ls1b_index(wbishop); // Get the index of the least significant set bit
-        white_material += 300;// piece_score_dic.find(WBISCHOP)->second; //TODO hardcode
+        white_material += 300;// piece_score_dic.find(WBISCHOP)->second;
         wbishop &= (wbishop - 1); // Clear the least significant set bit
     }
     while (wqueen) {
         int bitIndex = get_ls1b_index(wqueen); // Get the index of the least significant set bit
-        white_material += 900;// piece_score_dic.find(WQUEEN)->second; //TODO hardcode
+        white_material += 900;// piece_score_dic.find(WQUEEN)->second;
         wqueen &= (wqueen - 1); // Clear the least significant set bit
     }
     while (wpawn) {
         int bitIndex = get_ls1b_index(wpawn); // Get the index of the least significant set bit
-        white_material += 100; // piece_score_dic.find(WPAWN)->second; //TODO hardcode
+        white_material += 100; // piece_score_dic.find(WPAWN)->second;
         wpawn &= (wpawn - 1); // Clear the least significant set bit
     }
     return white_material;
@@ -244,27 +244,27 @@ int evaluateBlack(Board* bord) {
     U64 bpawn = bord->black & bord->pawn;
     while (brook) {
         int bitIndex = get_ls1b_index(brook); // Get the index of the least significant set bit
-        black_material += 500;// piece_score_dic.find(BROOK)->second; //TODO hardcode
+        black_material += 500;// piece_score_dic.find(BROOK)->second;
         brook &= (brook - 1); // Clear the least significant set bit
     }
     while (bknight) {
         int bitIndex = get_ls1b_index(bknight); // Get the index of the least significant set bit
-        black_material += 300;// piece_score_dic.find(BKNIGHT)->second; //TODO hardcode
+        black_material += 300;// piece_score_dic.find(BKNIGHT)->second;
         bknight &= (bknight - 1); // Clear the least significant set bit
     }
     while (bbishop) {
         int bitIndex = get_ls1b_index(bbishop); // Get the index of the least significant set bit
-        black_material += 300;// piece_score_dic.find(BBISCHOP)->second; //TODO hardcode
+        black_material += 300;// piece_score_dic.find(BBISCHOP)->second;
         bbishop &= (bbishop - 1); // Clear the least significant set bit
     }
     while (bqueen) {
         int bitIndex = get_ls1b_index(bqueen); // Get the index of the least significant set bit
-        black_material += 900;// piece_score_dic.find(BQUEEN)->second; //TODO hardcode
+        black_material += 900;// piece_score_dic.find(BQUEEN)->second;
         bqueen &= (bqueen - 1); // Clear the least significant set bit
     }
     while (bpawn) {
         int bitIndex = get_ls1b_index(bpawn); // Get the index of the least significant set bit
-        black_material += 100; // piece_score_dic.find(BPAWN)->second; //TODO hardcode
+        black_material += 100; // piece_score_dic.find(BPAWN)->second;
         bpawn &= (bpawn - 1); // Clear the least significant set bit
     }
     return black_material;
@@ -292,7 +292,7 @@ int evaluate_capture(Board* bord, Move* mv) {
     Pieces _from = pieceAt(mv->src, bord);
     int val = 0;
     if (get_ls1b_index(en_passent_target(bord)) == mv->dst) {
-        return 100;// piece_score_dic.find(WPAWN)->second; //TODO hardcode value
+        return 100;// piece_score_dic.find(WPAWN)->second;
     }
     return piece_score_dic.find(_to)->second - piece_score_dic.find(_from)->second;
 }
@@ -384,12 +384,11 @@ double move_value(Board* bord, Move* mv, bool endgame) {
         current_move_value = -current_move_value;
     }
     //cout << current_move_value << endl;
-    //TODO check if a check if oponent has move is faster and better
     return current_move_value;
 }
 
 /*
-Move* reverseArray(Move* arr, const std::size_t size) { //TODO check
+Move* reverseArray(Move* arr, const std::size_t size) {
     Move* reversed = new Move[size];
     for (std::size_t i = 0; i < size; i++) {
         reversed[i] = arr[size - 1 - i];
@@ -464,7 +463,7 @@ void orderMovesWithTriangularTable(Board* bord, MOVELIST* moveList, std::vector<
 }
 
 void get_orderd_moves(Board* bord, MOVELIST* moveList, PositionTracker* positionTracker) {
-    //GenLegalMoveList(moveList, bord, positionTracker); //TODO
+    //GenLegalMoveList(moveList, bord, positionTracker);
     orderMoves(bord, moveList);
 }
 
@@ -479,7 +478,7 @@ double minimax(Board* bord, double alpha, double beta, int depth, bool maximizin
     }
 
     TERMINAL eval_final_position;
-    //bool legal = cr->Evaluate(eval_final_position); //TODO
+    //bool legal = cr->Evaluate(eval_final_position);
     //bool matew = (eval_final_position == TERMINAL_WCHECKMATE);
     //bool mateb = (eval_final_position == TERMINAL_BCHECKMATE);
     //if (matew && !whiteVraagteken || mateb && whiteVraagteken) {
@@ -498,7 +497,7 @@ double minimax(Board* bord, double alpha, double beta, int depth, bool maximizin
     if (maximizing_player) {
         double best_move = -INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
 
         int size = moveList.count;
@@ -537,7 +536,7 @@ double minimax(Board* bord, double alpha, double beta, int depth, bool maximizin
     else {
         double best_move = INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
         int size = moveList.count;
         Move* moves = moveList.moves;
@@ -656,7 +655,7 @@ double minimaxOptimized(Board* bord, double alpha, double beta, int depth, bool 
     }
 
     TERMINAL eval_final_position;
-    //bool legal = cr->Evaluate(eval_final_position); //TODO
+    //bool legal = cr->Evaluate(eval_final_position);
     //bool matew = (eval_final_position == TERMINAL_WCHECKMATE);
     //bool mateb = (eval_final_position == TERMINAL_BCHECKMATE);
     //if (matew && !whiteVraagteken || mateb && whiteVraagteken) {
@@ -675,7 +674,7 @@ double minimaxOptimized(Board* bord, double alpha, double beta, int depth, bool 
     if (maximizing_player) {
         double best_move = -INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
 
         int size = moveList.count;
@@ -714,7 +713,7 @@ double minimaxOptimized(Board* bord, double alpha, double beta, int depth, bool 
     else {
         double best_move = INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
         int size = moveList.count;
         Move* moves = moveList.moves;
@@ -831,7 +830,7 @@ double minimaxOptimizedItterativeDeepening(Board* bord, double alpha, double bet
     }
 
     TERMINAL eval_final_position;
-    //bool legal = cr->Evaluate(eval_final_position); //TODO
+    //bool legal = cr->Evaluate(eval_final_position);
     //bool matew = (eval_final_position == TERMINAL_WCHECKMATE);
     //bool mateb = (eval_final_position == TERMINAL_BCHECKMATE);
     //if (matew && !whiteVraagteken || mateb && whiteVraagteken) {
@@ -850,7 +849,7 @@ double minimaxOptimizedItterativeDeepening(Board* bord, double alpha, double bet
     if (maximizing_player) {
         double best_move = -INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
 
         int size = moveList.count;
@@ -889,7 +888,7 @@ double minimaxOptimizedItterativeDeepening(Board* bord, double alpha, double bet
     else {
         double best_move = INFINITY;
         MOVELIST moveList;
-        moveList.count = 0; //TODO check if needed
+        moveList.count = 0;
         get_orderd_moves(bord, &moveList, positionTracker);
         int size = moveList.count;
         Move* moves = moveList.moves;
