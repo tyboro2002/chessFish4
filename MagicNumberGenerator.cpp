@@ -39,7 +39,7 @@ U64 MagicNumberGenerator::generate_magic_number_canidate(){
     return get_random_U64_number() & get_random_U64_number() & get_random_U64_number();
 }
 
-unsigned int MagicNumberGenerator::getState() {
+unsigned int MagicNumberGenerator::getState() const {
     return state;
 }
 

@@ -3,7 +3,7 @@
 using namespace std;
 
 void runGame() {
-    Board bord;
+    Board bord{};
     Action action;
     ActionList actionList;
     TranspositionTable transpositionTable;

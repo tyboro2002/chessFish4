@@ -33,7 +33,7 @@ private:
     void testResultTrue(bool condition, const std::string& testName); // Utility function to check and report test results
     void testResultFalse(bool condition, const std::string& testName); // Utility function to check and report test results
 
-    bool areActionListsEqual(const ActionList& list1, const ActionList& list2);
+    [[nodiscard]] bool areActionListsEqual(const ActionList& list1, const ActionList& list2) const;
 
     /* test cases */
     void kingMovesGenerator();
@@ -51,6 +51,7 @@ private:
 };
 
 void king_danger_squares_test();
+
 void path_test();
 void checking_test();
 void move_test();

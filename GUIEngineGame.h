@@ -3,6 +3,8 @@
 #include <optional>
 #include "moves.h"
 #include "MagicsTester.h"
+#include "ChessEngine.h"
+#include "RandomEngine.h"
 
 #define LOOP
 #define LOOP_FRAMES 30
@@ -36,31 +38,7 @@ public:
 public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
-        //setup(&bord);
-        //readInFen(&bord, (std::string *)"rnbqk2r/pppp1ppp/3N3n/4p3/8/b6N/PPPPPPPP/R1BQKB1R b KQkq - 0 1");
-        setupEmpty(&bord);
-        bord.whiteToPlay = 0;
-        addPiece(&bord,BKING,E8);
-        addPiece(&bord,WKNIGHT,D6); //D6 standard
-        addPiece(&bord,WKING,E1);
-        printBoard(&bord);
-        //clearSquare(&bord,B1);
-        //clearSquare(&bord,A2);
-        /*
-        for (int i = 0; i < BITMAPS; i++) {
-            moves[i] = all_attacks(&bord);
-            //moves[i] = bischopMovesONE_OFF[i];
-            //moves[i] = bishop_attacks_on_the_fly(i,blocks);
-            //moves[i] = rook_attacks_on_the_fly(i,blocks);
-            //moves[i] = get_bishop_attacks(i,blocks);
-            //moves[i] = get_rook_attacks(i,blocks);
-            //moves[i] = get_queen_attacks(i,blocks);
-            //moves[i] = get_white_pawn_attacks(i,0ULL,all);
-            //moves[i] = whitePawnAttacks[i];
-            //moves[i] = 1ULL << i;
-            //moves[i] = blocks;
-        }
-         */
+        setup(&bord);
         return true;
     }
 
@@ -84,7 +62,7 @@ public:
         //DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, std::to_string(bitb));
 
         // Optional: Provide a list of squares to mark with a purple dot
-        std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
+        //std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
 
         // Optional: Provide a list of squares to mark with a purple dot
         //std::vector<int> greenSquares = {63-bitb};
@@ -111,18 +89,20 @@ public:
                 // Now, 'row' and 'col' represent the clicked cell
                 int toSq = 63-(row*8+col);
                 if(selectedSquare != -1){
-                    if(selectedSquare != toSq && 1ULL<<toSq & mask ){
+                    if(selectedSquare != toSq && 1ULL<<toSq & mask && !gameOver ){
                         Action action = {.src = selectedSquare, .dst = toSq};
                         movePiece(&bord, &action);
-                        printBoard(&bord);
+                        printFancyBoard(&bord);
+                        randomEngine->makeMove(&bord);
+                        printFancyBoard(&bord);
+                        if(isEnded(&bord)) gameOver = True; //TODO klopt iets nog nie
                     }
                     selectedSquare = -1;
                     mask = 0ULL;
                 }else{
                     selectedSquare = toSq;
-                    //mask = is_attacked(selectedSquare,&bord);
                     ActionList actionList;
-                    printf("cliked at %d\n",toSq);
+                    //printf("cliked at %d\n",toSq);
                     getLegalMoves(&bord, &actionList);
                     mask = calculateBitmapFromSquare(selectedSquare, &actionList);
                 }
@@ -154,11 +134,14 @@ private:
     //int bitb = 0;
     //U64 moves[BITMAPS];
     //U64 blocks = 4586532442ULL;
-    Board bord;
+    Board bord{};
     olc::Sprite spriteSheet;
     int selectedSquare = -1;
     std::string message = "";
     U64 mask = 0ULL;
+    bool gameOver = false;
+
+    ChessEngine* randomEngine = new RandomChessEngine();
 
     // Function to draw a chessboard
     void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){
@@ -223,7 +206,7 @@ private:
         DrawRect(x, y, width, height, olc::WHITE);
 
         // Draw the button text
-        int textWidth = text.length() * 8;
+        int textWidth = text.length() * 8; // NOLINT(*-narrowing-conversions)
         int textHeight = 8;
         DrawString(x + (width - textWidth) / 2, y + (height - textHeight) / 2, text, textCol);
     }

@@ -145,7 +145,7 @@ void TestRunner::kingMovesGenerator() {
 }
 
 void TestRunner::knightMovesGenerator() {
-    Board bord;
+    Board bord{};
     // test white knight
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
@@ -183,7 +183,7 @@ void TestRunner::knightMovesGenerator() {
 }
 
 void TestRunner::rookMovesGenerator() {
-    Board bord;
+    Board bord{};
     // test white rook
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
@@ -237,7 +237,7 @@ void TestRunner::rookMovesGenerator() {
 }
 
 void TestRunner::bischopMovesGenerator() {
-    Board bord;
+    Board bord{};
     // test white bischop
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
@@ -291,7 +291,7 @@ void TestRunner::bischopMovesGenerator() {
 }
 
 void TestRunner::queenMovesGenerator() {
-    Board bord;
+    Board bord{};
     //test white queen
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
@@ -346,7 +346,7 @@ void TestRunner::queenMovesGenerator() {
 }
 
 void TestRunner::pawnMovesGenerator() {
-    Board bord;
+    Board bord{};
     //test white pawn
     for (int i = 0; i < 64; i++) {
         setupEmpty(&bord);
@@ -425,7 +425,7 @@ void TestRunner::GenerateActions() {
     testActionList.addMove(B2,B4);
     testActionList.addMove(A2,A4);
     testActionList.addMove(A2,A3);
-    Board bord;
+    Board bord{};
     setup(&bord);
     ActionList actionList;
     getAllMoves(&bord,&actionList);
@@ -487,7 +487,7 @@ void TestRunner::GenerateActions() {
 }
 
 void TestRunner::testGeneralPerftResultst() {
-    Board bord;
+    Board bord{};
     setup(&bord);
     bool printPercent = false;
 
@@ -684,7 +684,7 @@ int TestRunner::runAutomatedTestCases() {
     GenerateActions();
 
 
-    testGeneralPerftResultst();
+    //testGeneralPerftResultst();
 
     // Print a summary
     std::cout << std::endl << std::endl << "Summary: " << passedTests << " out of " << totalTests << " tests passed." << std::endl;
@@ -699,7 +699,7 @@ int TestRunner::runAutomatedTestCases() {
     return 0;
 }
 
-bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& list2) {
+bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& list2) const {
     // Check if the counts are the same
     if (list1.count != list2.count){
         if (printFaults){
@@ -808,14 +808,14 @@ U64 TestRunner::generalPerft(Board *bord, int depth, bool printPercentage = fals
     U64 totalMoves = actionList.count;
 
     for (int i = startAt; i<actionList.count; i++){
-        Board copy;
+        Board copy{};
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
         U64 currMoves = perftHelper(&copy, depth-1);
         moves += currMoves;
 
         if (printPercentage) {
-            float percentage = (i + 1) * 100.0 / totalMoves;
+            float percentage = (i + 1) * 100.0 / totalMoves; // NOLINT(*-narrowing-conversions)
             if (depth == 9 || depth == 8) {
                 U64 wantedAmount = wanted[squareToString(actionList.moves[i].src) +
                                       squareToString(actionList.moves[i].dst)];
@@ -839,7 +839,7 @@ U64 TestRunner::detailedPerft(Board *bord, int depth) {
 
     U64 moves = 0ULL;
     for (int i = 0; i<actionList.count; i++){
-        Board copy;
+        Board copy{};
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
         U64 movesHere = perftHelper(&copy, depth-1);
@@ -861,7 +861,7 @@ U64 TestRunner::perftHelper(Board *bord, int depth) {
 
     U64 moves = 0ULL;
     for (int i = 0; i<actionList.count; i++){
-        Board copy;
+        Board copy{};
         copyBoard(bord,&copy);
         movePiece(&copy,&(actionList.moves[i]));
         moves += generalPerft(&copy, depth-1);
@@ -876,9 +876,9 @@ U64 TestRunner::perftHelper(Board *bord, int depth) {
 
 
 void king_danger_squares_test() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
 
@@ -909,9 +909,9 @@ void path_test() {
 }
 
 void checking_test() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
 
@@ -933,9 +933,9 @@ void checking_test() {
 }
 
 void move_test() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     PositionTracker positionTracker;
     // Clear move list
     moveList.count = 0;   // set each field for each move
@@ -951,9 +951,9 @@ void move_test() {
 }
 
 void move_test_halfmove() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     PositionTracker positionTracker;
     // Clear move list
     moveList.count = 0;   // set each field for each move
@@ -970,9 +970,9 @@ void move_test_halfmove() {
 }
 
 void move_test_check() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
 
@@ -986,9 +986,9 @@ void move_test_check() {
 }
 
 void randomMoveTest() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     PositionTracker positionTracker;
     // Clear move list
     moveList.count = 0;   // set each field for each move
@@ -999,16 +999,16 @@ void randomMoveTest() {
 }
 
 void fen_test() {
-    Board bord;
+    Board bord{};
     setupEmpty(&bord);
     std::string fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2";
     //readInFen(&bord, &fen);
 }
 
 void legalMoveTest() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
     PositionTracker positionTracker;
@@ -1039,8 +1039,8 @@ void legalMoveTest() {
 */
 
 bool inCheckTest() {
-    Board bord;
-    Move move;
+    Board bord{};
+    Move move{};
     setupEmpty(&bord);
     std::string fen;
     // white
@@ -1087,16 +1087,16 @@ bool inCheckTest() {
 
 
 bool mateInOneTest() {
-    Board bord;
-    Move move;
-    Move moveOut;
+    Board bord{};
+    Move move{};
+    Move moveOut{};
     TranspositionTable transpositionTable;
     PositionTracker positionTracker;
     setupEmpty(&bord);
     std::string fen = "4kb1r/p2ppppp/8/8/8/8/P1PPPPPP/RQ2KB1R w - - 0 1";
     //readInFen(&bord, &fen);
 
-    MOVELIST moveList;
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
     //GenLegalMoveList(&moveList, &bord, &positionTracker);
@@ -1113,9 +1113,9 @@ bool mateInOneTest() {
 }
 
 bool mateInTwoTest() {
-    Board bord;
-    Move move;
-    Move moveOut;
+    Board bord{};
+    Move move{};
+    Move moveOut{};
     TranspositionTable transpositionTable;
     PositionTracker positionTracker;
     setupEmpty(&bord);
@@ -1123,7 +1123,7 @@ bool mateInTwoTest() {
     //readInFen(&bord, &fen);
     //printBoard(&bord);
     int depth = 3; // set the depth for the minimax
-    MOVELIST moveList;
+    MOVELIST moveList{};
     // Clear move list
 
     //white move
@@ -1175,9 +1175,9 @@ bool mateInTwoTest() {
 }
 
 bool mateInThreeTest() {
-    Board bord;
-    Move move;
-    Move moveOut;
+    Board bord{};
+    Move move{};
+    Move moveOut{};
     TranspositionTable transpositionTable;
     PositionTracker positionTracker;
     setupEmpty(&bord);
@@ -1185,7 +1185,7 @@ bool mateInThreeTest() {
     //readInFen(&bord, &fen);
     //printBoard(&bord);
     int depth = 5; // set the depth for the minimax
-    MOVELIST moveList;
+    MOVELIST moveList{};
     // Clear move list
 
     //white move

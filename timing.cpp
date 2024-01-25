@@ -8,9 +8,9 @@
 using namespace std;
 
 void time_code() {
-    Board bord;
-    Move move;
-    MOVELIST moveList;
+    Board bord{};
+    Move move{};
+    MOVELIST moveList{};
     // Clear move list
     moveList.count = 0;   // set each field for each move
 
@@ -61,8 +61,8 @@ void time_code() {
 }
 
 void time_parralel_evaluation() {
-    Board bord;
-    MOVELIST moveList;
+    Board bord{};
+    MOVELIST moveList{};
     setup(&bord);
     PositionTracker positionTracker;
     //GenLegalMoveList(&moveList, &bord, &positionTracker);
@@ -115,8 +115,8 @@ void time_bitwise_code() {
 
 
 void time_minimax_code() {
-    Board bord;
-    Move move;
+    Board bord{};
+    Move move{};
     MOVELIST moveList;
     TranspositionTable transpositionTable;
     PositionTracker positionTracker;
@@ -160,7 +160,7 @@ void time_mate_test_code() {
 }
 
 // Function to time and calculate mean and variation
-U64 TimerRunner::timeFunction(std::function<U64()> func, U64 num_runs, const char* description) {
+U64 TimerRunner::timeFunction(const std::function<U64()>& func, U64 num_runs, const char* description) {
     totalTests++;
     std::cout << "timing: " << description << std::endl;
     std::vector<U64> run_times;
@@ -193,10 +193,16 @@ int TimerRunner::runAutomatedTimerCases() {
     totalTime += timeFunction([this] { return time_perft(1); },num_runs, "perft depth 1");
     totalTime += timeFunction([this] { return time_perft(2); },num_runs, "perft depth 2");
     totalTime += timeFunction([this] { return time_perft(3); },num_runs, "perft depth 3");
+    //totalTime += timeFunction([this] { return time_perft(4); },num_runs, "perft depth 4"); // takes a lot too much time
+    //totalTime += timeFunction([this] { return time_perft(5); },num_runs, "perft depth 5");
+    //totalTime += timeFunction([this] { return time_perft(6); },num_runs, "perft depth 6");
 
     totalTime += timeFunction([this] { return time_perft_in_check(1); },num_runs, "perft depth 1 in check");
     totalTime += timeFunction([this] { return time_perft_in_check(2); },num_runs, "perft depth 2 in check");
     totalTime += timeFunction([this] { return time_perft_in_check(3); },num_runs, "perft depth 3 in check");
+    //totalTime += timeFunction([this] { return time_perft_in_check(4); },num_runs, "perft depth 4 in check"); // takes a lot too much time
+    //totalTime += timeFunction([this] { return time_perft_in_check(5); },num_runs, "perft depth 5 in check");
+    //totalTime += timeFunction([this] { return time_perft_in_check(6); },num_runs, "perft depth 6 in check");
 
     //totalTime += timeFunction([this] { return time_all_attackers(); },num_runs, "all attackers function");
 
@@ -241,7 +247,7 @@ int TimerRunner::runAutomatedTimerCases() {
  */
 
 U64 TimerRunner::time_knight_moves() {
-    Board bord;
+    Board bord{};
     setup(&bord);
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {
@@ -255,7 +261,7 @@ U64 TimerRunner::time_knight_moves() {
 }
 
 U64 TimerRunner::time_king_moves() {
-    Board bord;
+    Board bord{};
     setup(&bord);
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0;i<itterations;i++) {

@@ -661,7 +661,7 @@ void overlay(std::string* str, U64 bitpattern, char character) { //only used in 
     }
 }
 
-void printBitBoard(U64 bitbord, std::string extra) {
+void printBitBoard(U64 bitbord, const std::string& extra) {
     std::cout << endl;
     std::cout << extra << endl;
     std::string temp;

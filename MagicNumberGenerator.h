@@ -10,7 +10,7 @@ public:
     MagicNumberGenerator();
     U64 generate_magic_number_canidate();
     U64 get_random_U64_number();
-    unsigned int getState();
+    unsigned int getState() const;
     void resetState();
 private:
     unsigned int get_random_U32_number();

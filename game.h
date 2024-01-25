@@ -273,7 +273,7 @@ public:
         currentSize += sizeof(entry);
     }
 
-    size_t getCurrentSize() {
+    size_t getCurrentSize() const {
         return currentSize;
     }
 
@@ -371,7 +371,7 @@ void printPositionRecords(const PositionTracker* tracker);
 
 int findMoveIndex(MOVELIST* moveList, Move* targetMove);
 
-Pieces pieceAt(const int square,const Board* bord);
+Pieces pieceAt(int square,const Board* bord);
 
 void makeMove(Board* bord, Move* move, PositionTracker* positionTracker);
 
@@ -411,10 +411,10 @@ std::string moveToStringShort(const Move* move);
 /* add pieces to the board */
 void setup(Board* bord);
 void setupEmpty(Board* bord);
-void addPiece(Board* bord,const Pieces piece,const int square);
+void addPiece(Board* bord,Pieces piece,int square);
 
 /* print the bitboard with a message */
-void printBitBoard(U64 bitbord, std::string extra);
+void printBitBoard(U64 bitbord, const std::string& extra);
 
 /* calculate the bitmaps of attacks */
 
@@ -976,5 +976,22 @@ inline void getAllMoves(Board* bord, ActionList* actionList){
     for (int i = 0;i<64;i++){ getMovesAtSquare(bord,i,actionList);}
 }
 
+inline bool isDraw(Board* bord){ //TODO test
+    // TODO 3 fold repetition ?
+    // TODO test op insuficient material ?
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+    return bord->halfmoveClock >= 50 || (actionList.count == 0 && calculateKingDanger(bord) == 0ULL);
+}
+
+inline bool isChekmate(Board* bord) { //TODO test
+    ActionList actionList;
+    getLegalMoves(bord,&actionList);
+    return actionList.count == 0 && calculateKingDanger(bord) != 0ULL;
+}
+
+inline bool isEnded(Board* bord){ //TODO test
+    return isChekmate(bord) || isDraw(bord);
+}
 
 //TODO a function to convert from board to fen (see: string Position::fen() const { from https://github.com/official-stockfish/Stockfish/blob/master/src/position.cpp)
