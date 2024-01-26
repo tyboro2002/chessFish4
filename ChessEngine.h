@@ -8,7 +8,7 @@ public:
     virtual ~ChessEngine() = default;
 };
 
-inline int evaluateBoard(Board* bord){
+inline int evaluateBoard(Board* bord){ //TODO check if needs to be more advanced and check piece values
     U64 colorMask;
     if(bord->whiteToPlay) colorMask = bord->white;
     else colorMask = bord->black;
