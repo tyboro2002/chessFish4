@@ -27,7 +27,6 @@ void copyBoard(const Board* bordIn, Board* bordOut) {
     bordOut->enPassantTarget = bordIn->enPassantTarget;
     bordOut->halfmoveClock = bordIn->halfmoveClock;
     bordOut->reserved = bordIn->reserved;
-    //bordOut->extra = bordIn->extra;
 }
 
 int findMoveIndex(MOVELIST* moveList, Move* targetMove) { //only used in old code

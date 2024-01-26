@@ -793,7 +793,7 @@ inline U64 is_attacked(const int square,const  Board *bord) {
     }
 }
 
-inline void movePiece(Board* bord, Action* move){
+inline void movePiece(Board* bord,const Action* move){
     U64 fromBit = 1ULL << move->src;
     U64 toBit = 1ULL << move->dst;
     bool normalCapture = false;

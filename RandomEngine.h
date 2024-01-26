@@ -18,11 +18,11 @@ public:
         getLegalMoves(bord,&actionList);
         int selectedIndex = getRandomNumber(actionList.count);
         movePiece(bord,&actionList.moves[selectedIndex]);
-        std::cout << "Random move made.\n";
+        //std::cout << "Random move made.\n";
     }
 
 private:
-    int getRandomNumber(int n) {
+    inline int getRandomNumber(int n) {
         // Seed the random number generator
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
 

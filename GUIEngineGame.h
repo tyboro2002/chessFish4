@@ -5,6 +5,7 @@
 #include "MagicsTester.h"
 #include "ChessEngine.h"
 #include "RandomEngine.h"
+#include "MonteCarloEngine.h"
 
 #define LOOP
 #define LOOP_FRAMES 30
@@ -70,7 +71,7 @@ public:
         // Called once per frame, draws random coloured pixels
         //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
         DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ /* is_attacked(E8,&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
-        //DrawSprite(300,200,&spriteSheet);
+        if (gameOver) DrawSprite(300,200,&spriteSheet); // TODO make this display endgame screen
 
 
         // Check for button click
@@ -93,7 +94,8 @@ public:
                         Action action = {.src = selectedSquare, .dst = toSq};
                         movePiece(&bord, &action);
                         printFancyBoard(&bord);
-                        randomEngine->makeMove(&bord);
+                        //randomEngine->makeMove(&bord);
+                        randomMonteCarloEngine->makeMove(&bord);
                         printFancyBoard(&bord);
                         if(isEnded(&bord)) gameOver = True; //TODO klopt iets nog nie
                     }
@@ -142,6 +144,7 @@ private:
     bool gameOver = false;
 
     ChessEngine* randomEngine = new RandomChessEngine();
+    ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
 
     // Function to draw a chessboard
     void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){
