@@ -44,6 +44,8 @@ private:
     void pawnMovesGenerator();
 
     void GenerateActions();
+    void testDrawFunction();
+    void testCheckMateFunction();
 
     void testGeneralPerftResultst();
 

@@ -39,6 +39,8 @@ public:
 public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
+        //setupEmpty(&bord);
+        //readInFen(&bord,"4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1");
         setup(&bord);
         return true;
     }

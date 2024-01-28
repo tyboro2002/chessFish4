@@ -682,7 +682,8 @@ int TestRunner::runAutomatedTestCases() {
     printPassed = temp;
 
     GenerateActions();
-
+    testDrawFunction();
+    testCheckMateFunction();
 
     //testGeneralPerftResultst();
 
@@ -867,6 +868,134 @@ U64 TestRunner::perftHelper(Board *bord, int depth) {
         moves += generalPerft(&copy, depth-1);
     }
     return moves;
+}
+
+void TestRunner::testDrawFunction() {
+    Board bord{};
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1");
+    testResultTrue(isDraw(&bord),"test 4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1 is a draw");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3q1q2/8/4K3 b - - 0 1");
+    testResultFalse(isDraw(&bord),"test 4k3/8/8/8/8/3q1q2/8/4K3 b - - 0 1 is not a draw");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/p6p/8/4K3 w - - 50 1");
+    testResultTrue(isDraw(&bord),"test 4k3/8/8/8/8/p6p/8/4K3 w - - 50 1 is a draw");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/p6p/8/4K3 b - - 50 1");
+    testResultTrue(isDraw(&bord),"test 4k3/8/8/8/8/p6p/8/4K3 b - - 50 1 is a draw");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3qqq2/8/4K3 w - - 0 1");
+    testResultFalse(isDraw(&bord),"test 4k3/8/8/8/8/3qqq2/8/4K3 w - - 0 1 is not a draw");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3qqq2/8/4K3 b - - 0 1");
+    testResultFalse(isDraw(&bord),"test 4k3/8/8/8/8/3qqq2/8/4K3 b - - 0 1 is not a draw");
+}
+
+void TestRunner::testCheckMateFunction() {
+    Board bord{};
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1");
+    testResultFalse(isChekmate(&bord),"test 4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1 is not a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3qqq2/8/4K3 w - - 0 1");
+    testResultTrue(isChekmate(&bord),"test 4k3/8/8/8/8/3qqq2/8/4K3 w - - 0 1 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k3/8/8/8/8/3qqq2/8/4K3 b - - 0 1");
+    testResultFalse(isChekmate(&bord),"test 4k3/8/8/8/8/3qqq2/8/4K3 b - - 0 1 is not a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"rnbqkbnr/2pp1Qpp/pp6/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1");
+    testResultTrue(isChekmate(&bord),"test rnbqkbnr/2pp1Qpp/pp6/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 1 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"rnbqkbnr/2pp1Qpp/pp6/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1");
+    testResultFalse(isChekmate(&bord),"test rnbqkbnr/2pp1Qpp/pp6/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1 is not a chekMate");
+
+
+    /* ------------------------------------------------------------------------- */
+    /* the positions after this point are final positions of games magnus played */
+    /* ------------------------------------------------------------------------- */
+
+
+    setupEmpty(&bord);
+    readInFen(&bord,"5k2/5Q2/p2q2B1/4p1PP/P3Pp2/2P2P1K/8/3r4 b - - 2 48");
+    testResultTrue(isChekmate(&bord),"test 5k2/5Q2/p2q2B1/4p1PP/P3Pp2/2P2P1K/8/3r4 b - - 2 48 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"k1Q2b2/pp6/1qp2p2/3P3p/2p2B1P/2P5/PP4r1/1K1R4 b - - 1 34");
+    testResultTrue(isChekmate(&bord),"test k1Q2b2/pp6/1qp2p2/3P3p/2p2B1P/2P5/PP4r1/1K1R4 b - - 1 34 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/1p6/7Q/1P6/5Rk1/r7/p4K2/8 b - - 8 50");
+    testResultTrue(isChekmate(&bord),"test 8/1p6/7Q/1P6/5Rk1/r7/p4K2/8 b - - 8 50 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"6R1/5p1p/5R1k/pp6/5PP1/1Pn2K2/P6r/8 b - - 0 40");
+    testResultTrue(isChekmate(&bord),"test 6R1/5p1p/5R1k/pp6/5PP1/1Pn2K2/P6r/8 b - - 0 40 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/5K2/6Qk/8/8/5P2/8/8 b - - 2 76");
+    testResultTrue(isChekmate(&bord),"test 8/5K2/6Qk/8/8/5P2/8/8 b - - 2 76 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4k1R1/7R/8/5P2/5q2/8/5P2/5BK1 b - - 8 58");
+    testResultTrue(isChekmate(&bord),"test 4k1R1/7R/8/5P2/5q2/8/5P2/5BK1 b - - 8 58 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/5R2/2bN1kpp/Pp1B4/n3PP2/P2P2P1/5K1P/2r5 b - - 0 39");
+    testResultTrue(isChekmate(&bord),"test 8/5R2/2bN1kpp/Pp1B4/n3PP2/P2P2P1/5K1P/2r5 b - - 0 39 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"r4k2/pp1n1Q2/2p1p3/3q3B/3P4/P6P/1PP2P2/2KR2r1 b - - 0 23");
+    testResultTrue(isChekmate(&bord),"test r4k2/pp1n1Q2/2p1p3/3q3B/3P4/P6P/1PP2P2/2KR2r1 b - - 0 23 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"k7/P7/1K6/8/4B3/8/8/8 b - - 2 72");
+    testResultTrue(isChekmate(&bord),"test k7/P7/1K6/8/4B3/8/8/8 b - - 2 72 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/8/8/6pp/4P2k/6QP/5rPK/R7 b - - 1 57");
+    testResultTrue(isChekmate(&bord),"test 8/8/8/6pp/4P2k/6QP/5rPK/R7 b - - 1 57 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4r3/ppprqkQp/8/5P2/4b2n/PP1p4/1B1P2PP/4RRK1 b - - 4 27");
+    testResultTrue(isChekmate(&bord),"test 4r3/ppprqkQp/8/5P2/4b2n/PP1p4/1B1P2PP/4RRK1 b - - 4 27 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"2n1Rk2/pp1r1ppp/3q4/8/8/QP1P1PPP/P4PK1/4R3 b - - 0 29");
+    testResultTrue(isChekmate(&bord),"test 2n1Rk2/pp1r1ppp/3q4/8/8/QP1P1PPP/P4PK1/4R3 b - - 0 29 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"4q3/8/kQ1P4/P7/4pP1P/8/1P3PK1/8 b - - 10 69");
+    testResultTrue(isChekmate(&bord),"test 4q3/8/kQ1P4/P7/4pP1P/8/1P3PK1/8 b - - 10 69 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/7r/2R3Q1/1p1p1pk1/4q3/6P1/1N3P2/6K1 b - - 0 42");
+    testResultTrue(isChekmate(&bord),"test 8/7r/2R3Q1/1p1p1pk1/4q3/6P1/1N3P2/6K1 b - - 0 42 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"5k1Q/2q2p2/4b3/5N2/2Pp2pP/r7/6P1/4R2K b - - 2 44");
+    testResultTrue(isChekmate(&bord),"test 5k1Q/2q2p2/4b3/5N2/2Pp2pP/r7/6P1/4R2K b - - 2 44 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"8/8/8/3R4/1BP5/1P4K1/4k3/4Q3 b - - 4 65");
+    testResultTrue(isChekmate(&bord),"test 8/8/8/3R4/1BP5/1P4K1/4k3/4Q3 b - - 4 65 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"3R1k2/4p3/p5Q1/4pp2/8/8/P4PPK/1r6 b - - 0 37");
+    testResultTrue(isChekmate(&bord),"test 3R1k2/4p3/p5Q1/4pp2/8/8/P4PPK/1r6 b - - 0 37 is a chekMate");
+
+    setupEmpty(&bord);
+    readInFen(&bord,"5k1Q/p3qr1p/Pp2B1p1/6N1/1b1P3P/8/1P4P1/6K1 b - - 2 35");
+    testResultTrue(isChekmate(&bord),"test 5k1Q/p3qr1p/Pp2B1p1/6N1/1b1P3P/8/1P4P1/6K1 b - - 2 35 is a chekMate");
 }
 
 /**************************

@@ -14,13 +14,13 @@ class MCTS_Node {
     MCTS_Node* parent = nullptr;
     // action we took to get here from parent
     // we can use this to iteratively reconstruct the board corresponding to this node
-    const Action* action;
+    const Action* action = nullptr;
     double value = 0.0; // rolling mean of rewards from this node
     double visits = 0;  // amount of time a node is visited (used for calculation of UCT)
 
 public:
     std::vector<MCTS_Node> children {};  // the children of this node
-    /* Een top in de MCTS-spelboom */
+    /* a node in the MCTS-gameTree */
     MCTS_Node(MCTS_Node* parentArg,const Action* move): parent(parentArg), action(move){};
 
     [[nodiscard]] double uct() const;
@@ -58,7 +58,7 @@ public:
                                                                  return a.uct() < b.uct();
                                                              });
 
-                node = &(*selectedNodeIterator); //TODO check
+                node = &(*selectedNodeIterator);
                 movePiece(&itterBoard, node->getAction());
             }
             bool node_turn = itterBoard.whiteToPlay;

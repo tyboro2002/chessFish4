@@ -987,7 +987,7 @@ inline bool isDraw(Board* bord){ //TODO test
 inline bool isChekmate(Board* bord) { //TODO test
     ActionList actionList;
     getLegalMoves(bord,&actionList);
-    return actionList.count == 0 && calculateKingDanger(bord) != 0ULL;
+    return actionList.count == 0 && calculateKingDanger(bord);
 }
 
 inline bool isEnded(Board* bord){ //TODO test
