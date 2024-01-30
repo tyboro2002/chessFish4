@@ -12,7 +12,7 @@
 #include <thread>
 #include <mutex>
 
-#include "game.h"
+#include "../game.h"
 
 void askForMove(Board* bord, Action* move, ActionList* moveList);
 void printEngines();
@@ -28,4 +28,4 @@ void makeRandomMove(Board* bord, ActionList* moveList);
 */
 
 //void minimax_root(Board* bord, int depth, bool maximize, Move* moveOut, MOVELIST* moveList, TranspositionTable* transpositionTable, PositionTracker* positionTracker);
-//void minimax_rootOptimized(Board* bord, int depth, bool maximize, Move* moveOut, MOVELIST* moveList, TranspositionTable* transpositionTable, PositionTracker* positionTracker);
+//void minimax_root(Board* bord, int depth, bool maximize, Move* moveOut, MOVELIST* moveList, TranspositionTable* transpositionTable, PositionTracker* positionTracker);

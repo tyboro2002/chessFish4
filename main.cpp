@@ -1,18 +1,18 @@
 #include <iostream>
 #include "game.h"
-#include "engine.h"
-#include "tests.h"
-#include "timing.h"
+#include "old_code/engine.h"
+#include "tests/tests.h"
+#include "timing/timing.h"
 #include <limits>
-#include "chessFish4Game.h"
-#include "GUIEngineGame.h"
-#include "MagicsTester.h"
+#include "old_code/chessFish4Game.h"
+#include "visuals/GUIEngineGame.h"
+#include "magic_numbers/MagicsTester.h"
 
 using namespace std;
 
 #define RUN_TESTS // Define this macro to run tests
 //#define RUN_GAME  // Uncomment this line to run the game
-//#define DRAW // Define this macro to run draw
+#define DRAW // Define this macro to run draw
 //#define MAGIC // Define this macro to run the initialisation of the magic numbers
 //#define TIME // Define this macro to time the code
 
@@ -30,7 +30,7 @@ int main() {
     magicsTester.init_magic_numbers();
 #endif
 
-    init_all_sliders_attacks(false, "../foundMagicNumbers.txt", "../foundMagicNumbersCondensed.txt");
+    init_all_sliders_attacks(false, "../magic_numbers/foundMagicNumbers.txt", "../magic_numbers/foundMagicNumbersCondensed.txt");
 
 #ifdef RUN_TESTS
     TestRunner testRunner = TestRunner(true,true);

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
-#include "moves.h"
+#include "../moves.h"
 
 class TimerRunner {
     /*

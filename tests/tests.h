@@ -11,9 +11,9 @@
 #include <algorithm>  // for std::is_permutation
 #include <thread> // to parallelize perft
 
-#include "game.h"
-#include "engine.h"
-#include "moves.h"
+#include "../game.h"
+#include "../old_code/engine.h"
+#include "../moves.h"
 #include "testMoves.h"
 
 using namespace std;
@@ -46,6 +46,7 @@ private:
     void GenerateActions();
     void testDrawFunction();
     void testCheckMateFunction();
+    void testIsEndedFunction();
 
     void testGeneralPerftResultst();
 

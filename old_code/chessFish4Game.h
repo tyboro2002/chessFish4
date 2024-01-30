@@ -4,7 +4,7 @@
 #include <iostream>
 #include <limits>
 
-#include "game.h"
+#include "../game.h"
 #include "engine.h"
 
 void runGame();

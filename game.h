@@ -981,7 +981,7 @@ inline bool isDraw(Board* bord){ //TODO test
     // TODO test op insuficient material ?
     ActionList actionList;
     getLegalMoves(bord,&actionList);
-    return bord->halfmoveClock >= 50 || (actionList.count == 0 && calculateKingDanger(bord) == 0ULL);
+    return bord->halfmoveClock >= 100 || (actionList.count == 0 && calculateKingDanger(bord) == 0ULL);
 }
 
 inline bool isChekmate(Board* bord) { //TODO test

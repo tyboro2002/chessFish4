@@ -1,7 +1,7 @@
 #include "timing.h"
-#include "tests.h"
-#include "game.h"
-#include "engine.h"
+#include "../tests/tests.h"
+#include "../game.h"
+#include "../old_code/engine.h"
 #include <chrono>
 #include <complex>
 

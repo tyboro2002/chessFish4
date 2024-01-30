@@ -11,25 +11,27 @@ add_executable(ChessFish4 main.cpp
         moves.h
         game.h
         game.cpp
-        engine.h
-        engine.cpp
-        timing.cpp
-        tests.h
-        tests.cpp
-        chessFish4Game.cpp
-        chessFish4Game.h
-        testMoves.h
-        GUIEngine.h
-        GUIEngineGame.h
-        MagicNumberGenerator.cpp
-        MagicNumberGenerator.h
-        MagicsTester.cpp
-        MagicsTester.h
-        ChessEngine.h
-        RandomEngine.cpp
-        RandomEngine.h
-        MonteCarloEngine.cpp
-        MonteCarloEngine.h
+        old_code/engine.h
+        old_code/engine.cpp
+        timing/timing.cpp
+        tests/tests.h
+        tests/tests.cpp
+        old_code/chessFish4Game.cpp
+        old_code/chessFish4Game.h
+        tests/testMoves.h
+        visuals/GUIEngine.h
+        visuals/GUIEngineGame.h
+        magic_numbers/MagicNumberGenerator.cpp
+        magic_numbers/MagicNumberGenerator.h
+        magic_numbers/MagicsTester.cpp
+        magic_numbers/MagicsTester.h
+        engines/ChessEngine.h
+        engines/RandomEngine.cpp
+        engines/RandomEngine.h
+        engines/MonteCarloEngine.cpp
+        engines/MonteCarloEngine.h
+        engines/MiniMaxEngine.cpp
+        engines/MiniMaxEngine.h
 )
 
 target_link_libraries(ChessFish4 PRIVATE

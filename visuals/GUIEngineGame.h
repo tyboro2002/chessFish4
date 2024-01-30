@@ -1,16 +1,17 @@
 #define OLC_PGE_APPLICATION
 #include "GUIEngine.h"
 #include <optional>
-#include "moves.h"
-#include "MagicsTester.h"
-#include "ChessEngine.h"
-#include "RandomEngine.h"
-#include "MonteCarloEngine.h"
+#include "../moves.h"
+#include "../magic_numbers/MagicsTester.h"
+#include "../engines/ChessEngine.h"
+#include "../engines/RandomEngine.h"
+#include "../engines/MonteCarloEngine.h"
+#include "../engines/MiniMaxEngine.h"
 
-#define LOOP
+#define LOOP 1 // 1 to loop 0 to not loop
 #define LOOP_FRAMES 30
 
-#include "MagicsTester.h"
+#include "../magic_numbers/MagicsTester.h"
 
 #define CHESS_SIZE 8
 #define BITMAPS 64
@@ -26,7 +27,29 @@
 #define CASTELING_RIGHTS_D_TEXT_RIGHTS 30
 #define CASTELING_RIGHTS_DIST_RIGHTS 100
 
+#define WHITE_ENGINE_SELECTION_X 1000
+#define WHITE_ENGINE_SELECTION_Y 100
+
+#define BLACK_ENGINE_SELECTION_X 1300
+#define BLACK_ENGINE_SELECTION_Y 100
+
+#define ENGINE_TOLERANCE 100 //the amount of pixels we can click away from the center of the engine to rotate it
+
+
 #define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen appear this amount larger
+
+// Function to calculate the distance between two points (x1, y1) and (x2, y2)
+inline double calculateDistance(int x1, int y1, int x2, int y2) {
+    return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+}
+
+enum Engines {
+    HUMAN,
+    MINIMAX,
+    RANDOM,
+    MONTE_CARLO,
+    NUM_ENGINES
+};
 
 class ChessFishVisualiserUI : public olc::PixelGameEngine {
 public:
@@ -39,8 +62,15 @@ public:
 public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
+
+        minimaxLogo = olc::Sprite("../assets/engine_logos/minimax.png");
+        randomLogo = olc::Sprite("../assets/engine_logos/random.png");
+        monteCarloLogo = olc::Sprite("../assets/engine_logos/monte-carlo.png");
+
+        humanLogo = olc::Sprite("../assets/engine_logos/human.png");
+
         //setupEmpty(&bord);
-        //readInFen(&bord,"4k3/8/8/8/8/3q1q2/8/4K3 w - - 0 1");
+        //readInFen(&bord,"rn1qkbnr/p1p1ppp1/8/3p4/4Q3/7P/1PPP1P1P/RNB1KBNR w KQkq - 0 1");
         setup(&bord);
         return true;
     }
@@ -48,36 +78,25 @@ public:
     bool OnUserUpdate(float fElapsedTime) override {
         // Clear the screen
         Clear(olc::Pixel(50, 50, 50));
-#ifdef LOOP
-        /*
+
         loopNumber++;
         if(LOOP_FRAMES < loopNumber) {
             loopNumber %= LOOP_FRAMES;
-            bitb++;
-            bitb %= BITMAPS;
+            //if(LOOP && !humanPlay()) doMove = true;
         }
-         */
-#endif
-        // Draw the button
-        //DrawButton("next bitboard!", ScreenWidth() / 2 - 50, ScreenHeight() / 2 - 25, 150, 50, olc::WHITE, olc::DARK_GREY);
 
-        // Draw the counter value
-        //DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, std::to_string(bitb));
-
-        // Optional: Provide a list of squares to mark with a purple dot
-        //std::vector<int> purpleSquares = { 1, 3, 4,6,9,10,11, 13,14,15, 21,22,24,28,32};
-
-        // Optional: Provide a list of squares to mark with a purple dot
-        //std::vector<int> greenSquares = {63-bitb};
-
-        // Called once per frame, draws random coloured pixels
-        //DrawChessboard(CHESS_SIZE, CELL_SIZE, moves[bitb], purpleSquares, greenSquares);
         DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ /* is_attacked(E8,&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
         if (gameOver) DrawSprite(300,200,&spriteSheet); // TODO make this display endgame screen
 
+        SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
+        DrawSprite(WHITE_ENGINE_SELECTION_X,WHITE_ENGINE_SELECTION_Y,getEngineSprite(selectedWhiteEngine));
+        DrawString((WHITE_ENGINE_SELECTION_X+BLACK_ENGINE_SELECTION_X) /2 + humanLogo.width/2, (WHITE_ENGINE_SELECTION_Y+BLACK_ENGINE_SELECTION_Y) /2 + humanLogo.height/2, "VS");
+        DrawSprite(BLACK_ENGINE_SELECTION_X,BLACK_ENGINE_SELECTION_Y,getEngineSprite(selectedBlackEngine));
+        SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
         // Check for button click
         if (GetMouse(0).bPressed){
+            doMove = false;
             int x = GetMouseX();
             int y = GetMouseY();
 
@@ -91,15 +110,52 @@ public:
                 // The mouse click is within the chessboard
                 // Now, 'row' and 'col' represent the clicked cell
                 int toSq = 63-(row*8+col);
-                if(selectedSquare != -1){
-                    if(selectedSquare != toSq && 1ULL<<toSq & mask && !gameOver ){
-                        Action action = {.src = selectedSquare, .dst = toSq};
-                        movePiece(&bord, &action);
-                        printFancyBoard(&bord);
-                        //randomEngine->makeMove(&bord);
-                        randomMonteCarloEngine->makeMove(&bord);
-                        printFancyBoard(&bord);
-                        if(isEnded(&bord)) gameOver = True; //TODO klopt iets nog nie
+                if(selectedSquare != -1 || !humanPlay()){
+                    if((selectedSquare != toSq && 1ULL<<toSq & mask) || (!humanPlay()) && !gameOver){
+                        if(bord.whiteToPlay){
+                            switch (selectedWhiteEngine) {
+                                case RANDOM:
+                                    randomEngine->makeMove(&bord);
+                                    break;
+                                case MONTE_CARLO:
+                                    randomMonteCarloEngine->makeMove(&bord);
+                                    break;
+                                case MINIMAX:
+                                    miniMaxEngine->makeMove(&bord);
+                                    break;
+                                case HUMAN:
+                                    Action action = {.src = selectedSquare, .dst = toSq};
+                                    if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
+                                    movePiece(&bord, &action);
+                                    break;
+                            }
+                            cout << "white move made" << endl;
+                            printFancyBoard(&bord);
+                        }else{
+                            switch (selectedBlackEngine) {
+                                case RANDOM:
+                                    randomEngine->makeMove(&bord);
+                                    break;
+                                case MONTE_CARLO:
+                                    randomMonteCarloEngine->makeMove(&bord);
+                                    break;
+                                case MINIMAX:
+                                    miniMaxEngine->makeMove(&bord);
+                                    break;
+                                case HUMAN:
+                                    Action action = {.src = selectedSquare, .dst = toSq};
+                                    if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
+                                    movePiece(&bord, &action);
+                                    break;
+                            }
+                            cout << "black move made" << endl;
+                            printFancyBoard(&bord);
+                        }
+
+                        if(isEnded(&bord)) {
+                            cout << "game ended before this" << endl;
+                            gameOver = True;
+                        }
                     }
                     selectedSquare = -1;
                     mask = 0ULL;
@@ -111,7 +167,15 @@ public:
                     mask = calculateBitmapFromSquare(selectedSquare, &actionList);
                 }
                 message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
-            } else {
+            } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + humanLogo.width / 2, WHITE_ENGINE_SELECTION_Y + humanLogo.height / 2) <= 100){
+                selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
+                message = "white engine rotated";
+            }
+            else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + humanLogo.width / 2, BLACK_ENGINE_SELECTION_Y + humanLogo.height / 2) <= 100){
+                selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
+                message = "black engine rotated";
+            }
+            else {
                 message = "Clicked outside the chessboard"; // The mouse click is outside the chessboard
             }
         }
@@ -134,19 +198,50 @@ public:
     }
 
 private:
-    //U64 loopNumber = 0;
-    //int bitb = 0;
-    //U64 moves[BITMAPS];
-    //U64 blocks = 4586532442ULL;
+    U64 loopNumber = 0;
+    bool doMove = false;
+
     Board bord{};
     olc::Sprite spriteSheet;
+    /* load the engine logos */
+    olc::Sprite minimaxLogo;
+    olc::Sprite randomLogo;
+    olc::Sprite monteCarloLogo;
+
+    olc::Sprite humanLogo;
+
     int selectedSquare = -1;
     std::string message = "";
     U64 mask = 0ULL;
     bool gameOver = false;
 
+    int selectedWhiteEngine = 0;
+    int selectedBlackEngine = 0;
+
+    int amountOfEngines = NUM_ENGINES;
+
     ChessEngine* randomEngine = new RandomChessEngine();
     ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
+    ChessEngine* miniMaxEngine = new MiniMaxEngine(4);
+
+    bool humanPlay() {
+       return (bord.whiteToPlay ? (selectedWhiteEngine == HUMAN) : (selectedBlackEngine == HUMAN));
+    }
+
+    olc::Sprite* getEngineSprite(int engine){
+        switch (engine) {
+            case HUMAN:
+                return &humanLogo;
+            case MINIMAX:
+                return &minimaxLogo;
+            case RANDOM:
+                return &randomLogo;
+            case MONTE_CARLO:
+                return &monteCarloLogo;
+            default:
+                return &humanLogo; //TODO not implemented logo
+        }
+    }
 
     // Function to draw a chessboard
     void DrawChessboard(int size, int cellSize, std::optional<uint64_t> bitboard = std::nullopt, std::optional<std::vector<int>> purpleSquares = std::nullopt, std::optional<std::vector<int>> greenSquares = std::nullopt){

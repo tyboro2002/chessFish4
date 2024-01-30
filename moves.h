@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MagicsTester.h"
+#include "magic_numbers/MagicsTester.h"
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>

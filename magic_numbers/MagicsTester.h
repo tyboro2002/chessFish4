@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include "MagicNumberGenerator.h"
-#include "moves.h"
+#include "../moves.h"
 
 class MagicsTester {
     MagicNumberGenerator magicNumberGenerator;
