@@ -1,6 +1,7 @@
 #define OLC_PGE_APPLICATION
 #include "GUIEngine.h"
 #include <optional>
+#include <utility>
 #include "../moves.h"
 #include "../magic_numbers/MagicsTester.h"
 #include "../engines/ChessEngine.h"
@@ -43,12 +44,48 @@ inline double calculateDistance(int x1, int y1, int x2, int y2) {
     return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
 }
 
-enum Engines {
+enum Engines { // to add an engine add it in this list and in the list in the constructor
     HUMAN,
     MINIMAX,
     RANDOM,
     MONTE_CARLO,
     NUM_ENGINES
+};
+
+enum EndGameResult {
+    WHITE_WINS_Checkmate,
+    WHITE_WINS_Resignation,
+    WHITE_WINS_Timeout,
+
+    BLACK_WINS_Checkmate,
+    BLACK_WINS_Resignation,
+    BLACK_WINS_Timeout,
+
+    DRAW_Stalemate,
+    DRAW_Insufficient_material,
+    DRAW_50_move_rule,
+    DRAW_Repetition,
+    DRAW_Agreement,
+};
+
+struct EngineInfo {
+    std::string name;  // Name of the engine
+    Engines id; //Engine id
+    std::unique_ptr<olc::Sprite> pLogo;
+
+    // Constructor to load the logo
+    EngineInfo(const char* name, Engines id, const std::string& logoPath)
+            : name(name), id(id), pLogo(std::make_unique<olc::Sprite>(logoPath)) {}
+};
+
+struct DetailedEndGameResult {
+    std::string description; // Detailed description of the end game result
+    std::unique_ptr<olc::Sprite> pSprite; // Sprite associated with the result
+    EndGameResult id;
+
+    // Constructor to load the sprite
+    DetailedEndGameResult(std::string  desc, EndGameResult id, const std::string& spritePath)
+            : description(std::move(desc)), id(id), pSprite(std::make_unique<olc::Sprite>(spritePath)) {}
 };
 
 class ChessFishVisualiserUI : public olc::PixelGameEngine {
@@ -63,11 +100,25 @@ public:
     bool OnUserCreate() override {
         spriteSheet = olc::Sprite("../assets/pieces.png");
 
-        minimaxLogo = olc::Sprite("../assets/engine_logos/minimax.png");
-        randomLogo = olc::Sprite("../assets/engine_logos/random.png");
-        monteCarloLogo = olc::Sprite("../assets/engine_logos/monte-carlo.png");
+        engineInfoArray.emplace_back("Human Engine", HUMAN, "../assets/engine_logos/human.png");
+        engineInfoArray.emplace_back("Minimax Engine", MINIMAX, "../assets/engine_logos/minimax.png");
+        engineInfoArray.emplace_back("Random Engine", RANDOM, "../assets/engine_logos/random.png");
+        engineInfoArray.emplace_back("Monte Carlo Engine", MONTE_CARLO, "../assets/engine_logos/monte-carlo.png");
 
-        humanLogo = olc::Sprite("../assets/engine_logos/human.png");
+
+        detailedResults.emplace_back("white wins by Checkmate", WHITE_WINS_Checkmate, "../assets/end_screens/white/white-won-Checkmate.png");
+        detailedResults.emplace_back("white wins by Resignation", WHITE_WINS_Resignation, "../assets/end_screens/white/white-won-Resignation.png");
+        detailedResults.emplace_back("white wins by Timeout", WHITE_WINS_Timeout, "../assets/end_screens/white/white-won-Timeout.png");
+
+        detailedResults.emplace_back("black wins by Checkmate", BLACK_WINS_Checkmate, "../assets/end_screens/black/black-won-Checkmate.png");
+        detailedResults.emplace_back("black wins by Resignation", BLACK_WINS_Resignation, "../assets/end_screens/black/black-won-Resignation.png");
+        detailedResults.emplace_back("black wins by Timeout", BLACK_WINS_Timeout, "../assets/end_screens/black/black-won-Timeout.png");
+
+        detailedResults.emplace_back("draw by Stalemate", DRAW_Stalemate, "../assets/end_screens/draw/draw-Stalemate.png");
+        detailedResults.emplace_back("draw by Insufficient material", DRAW_Insufficient_material, "../assets/end_screens/draw/draw-Insufficient_material.png");
+        detailedResults.emplace_back("draw by 50 move-rule", DRAW_50_move_rule, "../assets/end_screens/draw/draw-50-move-rule.png");
+        detailedResults.emplace_back("draw by Repetition", DRAW_Repetition, "../assets/end_screens/draw/draw-Repetition.png");
+        detailedResults.emplace_back("draw by Agreement", DRAW_Agreement, "../assets/end_screens/draw/draw-Agreement.png");
 
         //setupEmpty(&bord);
         //readInFen(&bord,"rn1qkbnr/p1p1ppp1/8/3p4/4Q3/7P/1PPP1P1P/RNB1KBNR w KQkq - 0 1");
@@ -90,7 +141,7 @@ public:
 
         SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
         DrawSprite(WHITE_ENGINE_SELECTION_X,WHITE_ENGINE_SELECTION_Y,getEngineSprite(selectedWhiteEngine));
-        DrawString((WHITE_ENGINE_SELECTION_X+BLACK_ENGINE_SELECTION_X) /2 + humanLogo.width/2, (WHITE_ENGINE_SELECTION_Y+BLACK_ENGINE_SELECTION_Y) /2 + humanLogo.height/2, "VS");
+        DrawString((WHITE_ENGINE_SELECTION_X+BLACK_ENGINE_SELECTION_X) /2 + engineInfoArray.at(0).pLogo->width/2, (WHITE_ENGINE_SELECTION_Y+BLACK_ENGINE_SELECTION_Y) /2 + engineInfoArray.at(0).pLogo->height/2, "VS");
         DrawSprite(BLACK_ENGINE_SELECTION_X,BLACK_ENGINE_SELECTION_Y,getEngineSprite(selectedBlackEngine));
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
@@ -167,11 +218,11 @@ public:
                     mask = calculateBitmapFromSquare(selectedSquare, &actionList);
                 }
                 message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
-            } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + humanLogo.width / 2, WHITE_ENGINE_SELECTION_Y + humanLogo.height / 2) <= 100){
+            } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= 100){
                 selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
                 message = "white engine rotated";
             }
-            else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + humanLogo.width / 2, BLACK_ENGINE_SELECTION_Y + humanLogo.height / 2) <= 100){
+            else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= 100){
                 selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
                 message = "black engine rotated";
             }
@@ -203,12 +254,16 @@ private:
 
     Board bord{};
     olc::Sprite spriteSheet;
-    /* load the engine logos */
+    /* engine info structs */
+    std::vector<EngineInfo> engineInfoArray;
+    std::vector<DetailedEndGameResult> detailedResults;
+    /*
     olc::Sprite minimaxLogo;
     olc::Sprite randomLogo;
     olc::Sprite monteCarloLogo;
 
     olc::Sprite humanLogo;
+     */
 
     int selectedSquare = -1;
     std::string message = "";
@@ -229,17 +284,15 @@ private:
     }
 
     olc::Sprite* getEngineSprite(int engine){
-        switch (engine) {
-            case HUMAN:
-                return &humanLogo;
-            case MINIMAX:
-                return &minimaxLogo;
-            case RANDOM:
-                return &randomLogo;
-            case MONTE_CARLO:
-                return &monteCarloLogo;
-            default:
-                return &humanLogo; //TODO not implemented logo
+        auto it = std::find_if(engineInfoArray.begin(), engineInfoArray.end(),
+                               [engine](const EngineInfo& engineCurr) { return engineCurr.id == engine; });
+
+        if (it != engineInfoArray.end()) {
+            // Found the engine with the desired ID
+            return it->pLogo.get();
+        } else {
+            // Engine with the desired ID not found
+            return engineInfoArray.at(0).pLogo.get(); //TODO not implemented logo
         }
     }
 
