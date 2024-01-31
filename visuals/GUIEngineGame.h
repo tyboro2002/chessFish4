@@ -9,8 +9,7 @@
 #include "../engines/MonteCarloEngine.h"
 #include "../engines/MiniMaxEngine.h"
 
-#define LOOP 1 // 1 to loop 0 to not loop
-#define LOOP_FRAMES 30
+#define LOOP_FRAMES 5
 
 #include "../magic_numbers/MagicsTester.h"
 
@@ -41,6 +40,8 @@
 
 #define ENGINE_TOLERANCE 100 //the amount of pixels we can click away from the center of the engine to rotate it
 
+#define SIMULATION_RESULT_X 100
+#define SIMULATION_RESULT_Y (ScreenHeight() - 150)
 
 #define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen appear this amount larger
 
@@ -57,21 +58,6 @@ enum Engines { // to add an engine add it in this list and in the list in the co
     NUM_ENGINES
 };
 
-enum EndGameResult {
-    WHITE_WINS_Checkmate,
-    WHITE_WINS_Resignation,
-    WHITE_WINS_Timeout,
-
-    BLACK_WINS_Checkmate,
-    BLACK_WINS_Resignation,
-    BLACK_WINS_Timeout,
-
-    DRAW_Stalemate,
-    DRAW_Insufficient_material,
-    DRAW_50_move_rule,
-    DRAW_Repetition,
-    DRAW_Agreement,
-};
 
 struct EngineInfo {
     std::string name;  // Name of the engine
@@ -138,7 +124,7 @@ public:
         loopNumber++;
         if(LOOP_FRAMES < loopNumber) {
             loopNumber %= LOOP_FRAMES;
-            //if(LOOP && !humanPlay()) doMove = true;
+            if(loop && !humanPlay()) doMove = true;
         }
 
         DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ /* is_attacked(E8,&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
@@ -150,8 +136,7 @@ public:
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
         // Check for button click
-        if (GetMouse(0).bPressed){
-            doMove = false;
+        if (GetMouse(0).bPressed || doMove){
             int x = GetMouseX();
             int y = GetMouseY();
 
@@ -160,14 +145,21 @@ public:
             int col = (x - TOP_LEFT_X_FIELD) / CELL_SIZE;
 
             if(gameOver){
-                if(calculateDistance(x, y, END_GAME_X + detailedResults.at(0).pSprite->height * END_GAME_SIZE / 2, END_GAME_Y + detailedResults.at(0).pSprite->width * END_GAME_SIZE / 2) <= END_GAME_TOLERANCE*END_GAME_SIZE){
+                if(calculateDistance(x, y, END_GAME_X + detailedResults.at(0).pSprite->height * END_GAME_SIZE / 2, END_GAME_Y + detailedResults.at(0).pSprite->width * END_GAME_SIZE / 2) <= END_GAME_TOLERANCE*END_GAME_SIZE || loopGames){
                     gameOver = false;
                     setup(&bord);
+                    loopGames--;
+                    if(loopGames <= 0){
+                        loopGames = 0;
+                        loop = false;
+                        doMove = false;
+                    }
                 }
             }else{
                 // Check if the click is within the chessboard boundaries
                 if (row >= 0 && row < CHESS_SIZE &&
-                    col >= 0 && col < CHESS_SIZE) {
+                    col >= 0 && col < CHESS_SIZE || doMove) {
+                    doMove = false;
                     // The mouse click is within the chessboard
                     // Now, 'row' and 'col' represent the clicked cell
                     int toSq = 63-(row*8+col);
@@ -228,11 +220,11 @@ public:
                         mask = calculateBitmapFromSquare(selectedSquare, &actionList);
                     }
                     message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
-                } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE){
+                } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE && !doMove){
                     selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
                     message = "white engine rotated";
                 }
-                else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE){
+                else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE && !doMove){
                     selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
                     message = "black engine rotated";
                 }
@@ -258,23 +250,44 @@ public:
         else DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+4*CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
+        /* draw results of the simulations */
+        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y, "simulation results: ",olc::WHITE,2);
+        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y+30, "White wins: " + std::to_string(simulationResults.getWhiteWins()/LOOP_FRAMES)+   " Black Wins: " +std::to_string(simulationResults.getBlackWins()/LOOP_FRAMES) + " Draws: " +std::to_string(simulationResults.getDraws()/LOOP_FRAMES) ,olc::WHITE,2);
+
+        /* draw the end game screen */
         if (gameOver){
             SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
             if(isChekmate(&bord)){
-                if (bord.whiteToPlay) DrawSprite(END_GAME_X,END_GAME_Y, getEndGameSprite(BLACK_WINS_Checkmate),END_GAME_SIZE);
-                else DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(WHITE_WINS_Checkmate),END_GAME_SIZE);
+                if (bord.whiteToPlay){
+                    DrawSprite(END_GAME_X,END_GAME_Y, getEndGameSprite(BLACK_WINS_Checkmate),END_GAME_SIZE);
+                    if(loopGames > 0) simulationResults.update(BLACK_WINS_Checkmate);
+                }
+                else {
+                    DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(WHITE_WINS_Checkmate),END_GAME_SIZE);
+                    if(loopGames > 0) simulationResults.update(WHITE_WINS_Checkmate);
+                }
             }else{ //we assume it's a draw else (this is the only way in this implementation to get here but can change later)
-                if(bord.halfmoveClock >= 100) DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_50_move_rule),END_GAME_SIZE);
-                else DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_Stalemate),END_GAME_SIZE);
+                if(bord.halfmoveClock >= 100){
+                    DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_50_move_rule),END_GAME_SIZE);
+                    if(loopGames > 0) simulationResults.update(DRAW_50_move_rule);
+                }
+                else{
+                    DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_Stalemate),END_GAME_SIZE);
+                    if(loopGames > 0) simulationResults.update(DRAW_Stalemate);
+                }
             }
             SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
         }
+
         return true;
     }
 
 private:
     U64 loopNumber = 0;
     bool doMove = false;
+    int loopGames = 0;
+    bool loop = false;
+    SimulationResults simulationResults;
 
     Board bord{};
     olc::Sprite spriteSheet;

@@ -2,6 +2,47 @@
 #include "../game.h"
 #include <map>
 
+struct SimulationResults{
+    U64 whiteWins = 0;
+    U64 blackWins = 0;
+    U64 draws = 0;
+public:
+    void update(EndGameResult endGameResult){
+        switch (endGameResult) {
+            case WHITE_WINS_Checkmate:
+            case WHITE_WINS_Resignation:
+            case WHITE_WINS_Timeout:
+                whiteWins++;
+                break;
+            case BLACK_WINS_Checkmate:
+            case BLACK_WINS_Resignation:
+            case BLACK_WINS_Timeout:
+                blackWins++;
+                break;
+            default:
+                draws++;
+        }
+    }
+
+    void reset(){
+        whiteWins = 0;
+        blackWins = 0;
+        draws = 0;
+    }
+
+    [[nodiscard]] U64 getWhiteWins() const{
+        return whiteWins;
+    }
+
+    [[nodiscard]] U64 getBlackWins() const{
+        return blackWins;
+    }
+
+    [[nodiscard]] U64 getDraws() const{
+        return draws;
+    }
+};
+
 const std::map<Pieces, int> piece_score_dic = {
         //white
         {WPAWN, 100},

@@ -74,6 +74,23 @@ typedef unsigned long long U64;
     U64 enPassantTarget = bord->enPassantTarget;             \
     U64 halfmoveClock = bord->halfmoveClock;
 
+
+enum EndGameResult {
+    WHITE_WINS_Checkmate,
+    WHITE_WINS_Resignation,
+    WHITE_WINS_Timeout,
+
+    BLACK_WINS_Checkmate,
+    BLACK_WINS_Resignation,
+    BLACK_WINS_Timeout,
+
+    DRAW_Stalemate,
+    DRAW_Insufficient_material,
+    DRAW_50_move_rule,
+    DRAW_Repetition,
+    DRAW_Agreement,
+};
+
 namespace std {
     template<>
     struct hash<Board> {
@@ -979,6 +996,7 @@ inline void getAllMoves(Board* bord, ActionList* actionList){
 inline bool isDraw(Board* bord){ //TODO test
     // TODO 3 fold repetition ?
     // TODO test op insuficient material ?
+    if(countSetBits(bord->white) == 1 && countSetBits(bord->black) == 1) return true;
     ActionList actionList;
     getLegalMoves(bord,&actionList);
     return bord->halfmoveClock >= 100 || (actionList.count == 0 && calculateKingDanger(bord) == 0ULL);
