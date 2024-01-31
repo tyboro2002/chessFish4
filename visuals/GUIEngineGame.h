@@ -34,6 +34,11 @@
 #define BLACK_ENGINE_SELECTION_X 1300
 #define BLACK_ENGINE_SELECTION_Y 100
 
+#define END_GAME_X (ScreenWidth() / 2)
+#define END_GAME_Y (ScreenHeight() / 2 - 200)
+#define END_GAME_SIZE 3
+#define END_GAME_TOLERANCE 100
+
 #define ENGINE_TOLERANCE 100 //the amount of pixels we can click away from the center of the engine to rotate it
 
 
@@ -137,7 +142,6 @@ public:
         }
 
         DrawChessboard(CHESS_SIZE, CELL_SIZE,  /*calculateKingDanger(&bord)*/ /* is_attacked(E8,&bord)*/ mask /*selectedSquare==-1 ? 0ULL : mask */ /*1ULL << (63-selectedSquare)*/  /*moves[bitb]*/ /*, purpleSquares, greenSquares*/);
-        if (gameOver) DrawSprite(300,200,&spriteSheet); // TODO make this display endgame screen
 
         SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
         DrawSprite(WHITE_ENGINE_SELECTION_X,WHITE_ENGINE_SELECTION_Y,getEngineSprite(selectedWhiteEngine));
@@ -155,81 +159,89 @@ public:
             int row = (y - TOP_LEFT_y_FIELD) / CELL_SIZE;
             int col = (x - TOP_LEFT_X_FIELD) / CELL_SIZE;
 
-            // Check if the click is within the chessboard boundaries
-            if (row >= 0 && row < CHESS_SIZE &&
-                col >= 0 && col < CHESS_SIZE) {
-                // The mouse click is within the chessboard
-                // Now, 'row' and 'col' represent the clicked cell
-                int toSq = 63-(row*8+col);
-                if(selectedSquare != -1 || !humanPlay()){
-                    if((selectedSquare != toSq && 1ULL<<toSq & mask) || (!humanPlay()) && !gameOver){
-                        if(bord.whiteToPlay){
-                            switch (selectedWhiteEngine) {
-                                case RANDOM:
-                                    randomEngine->makeMove(&bord);
-                                    break;
-                                case MONTE_CARLO:
-                                    randomMonteCarloEngine->makeMove(&bord);
-                                    break;
-                                case MINIMAX:
-                                    miniMaxEngine->makeMove(&bord);
-                                    break;
-                                case HUMAN:
-                                    Action action = {.src = selectedSquare, .dst = toSq};
-                                    if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
-                                    movePiece(&bord, &action);
-                                    break;
-                            }
-                            cout << "white move made" << endl;
-                            printFancyBoard(&bord);
-                        }else{
-                            switch (selectedBlackEngine) {
-                                case RANDOM:
-                                    randomEngine->makeMove(&bord);
-                                    break;
-                                case MONTE_CARLO:
-                                    randomMonteCarloEngine->makeMove(&bord);
-                                    break;
-                                case MINIMAX:
-                                    miniMaxEngine->makeMove(&bord);
-                                    break;
-                                case HUMAN:
-                                    Action action = {.src = selectedSquare, .dst = toSq};
-                                    if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
-                                    movePiece(&bord, &action);
-                                    break;
-                            }
-                            cout << "black move made" << endl;
-                            printFancyBoard(&bord);
-                        }
-
-                        if(isEnded(&bord)) {
-                            cout << "game ended before this" << endl;
-                            gameOver = True;
-                        }
-                    }
-                    selectedSquare = -1;
-                    mask = 0ULL;
-                }else{
-                    selectedSquare = toSq;
-                    ActionList actionList;
-                    //printf("cliked at %d\n",toSq);
-                    getLegalMoves(&bord, &actionList);
-                    mask = calculateBitmapFromSquare(selectedSquare, &actionList);
+            if(gameOver){
+                if(calculateDistance(x, y, END_GAME_X + detailedResults.at(0).pSprite->height * END_GAME_SIZE / 2, END_GAME_Y + detailedResults.at(0).pSprite->width * END_GAME_SIZE / 2) <= END_GAME_TOLERANCE*END_GAME_SIZE){
+                    gameOver = false;
+                    setup(&bord);
                 }
-                message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
-            } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= 100){
-                selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
-                message = "white engine rotated";
-            }
-            else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= 100){
-                selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
-                message = "black engine rotated";
-            }
-            else {
-                message = "Clicked outside the chessboard"; // The mouse click is outside the chessboard
+            }else{
+                // Check if the click is within the chessboard boundaries
+                if (row >= 0 && row < CHESS_SIZE &&
+                    col >= 0 && col < CHESS_SIZE) {
+                    // The mouse click is within the chessboard
+                    // Now, 'row' and 'col' represent the clicked cell
+                    int toSq = 63-(row*8+col);
+                    if(selectedSquare != -1 || !humanPlay()){
+                        if((selectedSquare != toSq && 1ULL<<toSq & mask) || (!humanPlay()) && !gameOver){
+                            if(bord.whiteToPlay){
+                                switch (selectedWhiteEngine) {
+                                    case RANDOM:
+                                        randomEngine->makeMove(&bord);
+                                        break;
+                                    case MONTE_CARLO:
+                                        randomMonteCarloEngine->makeMove(&bord);
+                                        break;
+                                    case MINIMAX:
+                                        miniMaxEngine->makeMove(&bord);
+                                        break;
+                                    case HUMAN:
+                                        Action action = {.src = selectedSquare, .dst = toSq};
+                                        if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
+                                        movePiece(&bord, &action);
+                                        break;
+                                }
+                                cout << "white move made" << endl;
+                                printFancyBoard(&bord);
+                            }else{
+                                switch (selectedBlackEngine) {
+                                    case RANDOM:
+                                        randomEngine->makeMove(&bord);
+                                        break;
+                                    case MONTE_CARLO:
+                                        randomMonteCarloEngine->makeMove(&bord);
+                                        break;
+                                    case MINIMAX:
+                                        miniMaxEngine->makeMove(&bord);
+                                        break;
+                                    case HUMAN:
+                                        Action action = {.src = selectedSquare, .dst = toSq};
+                                        if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
+                                        movePiece(&bord, &action);
+                                        break;
+                                }
+                                cout << "black move made" << endl;
+                                printFancyBoard(&bord);
+                            }
+
+                            if(isEnded(&bord)) {
+                                cout << "game ended before this" << endl;
+                                gameOver = True;
+                            }
+                        }
+                        selectedSquare = -1;
+                        mask = 0ULL;
+                    }else{
+                        selectedSquare = toSq;
+                        ActionList actionList;
+                        //printf("cliked at %d\n",toSq);
+                        getLegalMoves(&bord, &actionList);
+                        mask = calculateBitmapFromSquare(selectedSquare, &actionList);
+                    }
+                    message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
+                } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE){
+                    selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
+                    message = "white engine rotated";
+                }
+                else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE){
+                    selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
+                    message = "black engine rotated";
+                }
+                else {
+                    message = "Clicked outside the chessboard"; // The mouse click is outside the chessboard
+                }
             }
         }
+
         DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
         DrawString(CASTELING_RIGHTS_X, CASTELING_RIGHTS_Y, "castling rights:",olc::WHITE,2);
         SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
@@ -245,6 +257,18 @@ public:
         if (bord.whiteToPlay) DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+4*CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,0,CELL_SIZE,CELL_SIZE);
         else DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+4*CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,CELL_SIZE,CELL_SIZE,CELL_SIZE);
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
+
+        if (gameOver){
+            SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
+            if(isChekmate(&bord)){
+                if (bord.whiteToPlay) DrawSprite(END_GAME_X,END_GAME_Y, getEndGameSprite(BLACK_WINS_Checkmate),END_GAME_SIZE);
+                else DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(WHITE_WINS_Checkmate),END_GAME_SIZE);
+            }else{ //we assume it's a draw else (this is the only way in this implementation to get here but can change later)
+                if(bord.halfmoveClock >= 100) DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_50_move_rule),END_GAME_SIZE);
+                else DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_Stalemate),END_GAME_SIZE);
+            }
+            SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
+        }
         return true;
     }
 
@@ -293,6 +317,19 @@ private:
         } else {
             // Engine with the desired ID not found
             return engineInfoArray.at(0).pLogo.get(); //TODO not implemented logo
+        }
+    }
+
+    olc::Sprite* getEndGameSprite(EndGameResult endGameResult ){
+        auto it = std::find_if(detailedResults.begin(), detailedResults.end(),
+                               [endGameResult](const DetailedEndGameResult& detailedEndGameResult) { return detailedEndGameResult.id == endGameResult; });
+
+        if (it != detailedResults.end()) {
+            // Found the engine with the desired ID
+            return it->pSprite.get();
+        } else {
+            // Engine with the desired ID not found
+            return detailedResults.at(0).pSprite.get(); //TODO not implemented logo
         }
     }
 
