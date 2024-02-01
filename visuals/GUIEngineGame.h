@@ -8,42 +8,12 @@
 #include "../engines/RandomEngine.h"
 #include "../engines/MonteCarloEngine.h"
 #include "../engines/MiniMaxEngine.h"
+#include "../configurations.h" /* include all configurations for the visual engine */
 
-#define LOOP_FRAMES 5
+#define LOOP_FRAMES 1
 
 #include "../magic_numbers/MagicsTester.h"
 
-#define CHESS_SIZE 8
-#define BITMAPS 64
-
-
-#define CELL_SIZE 100
-#define TOP_LEFT_X_FIELD 100
-#define TOP_LEFT_y_FIELD 100
-#define INTENSITY 150
-
-#define CASTELING_RIGHTS_X (ScreenWidth() / 2 - 10)
-#define CASTELING_RIGHTS_Y (ScreenHeight() / 2 + 60)
-#define CASTELING_RIGHTS_D_TEXT_RIGHTS 30
-#define CASTELING_RIGHTS_DIST_RIGHTS 100
-
-#define WHITE_ENGINE_SELECTION_X 1000
-#define WHITE_ENGINE_SELECTION_Y 100
-
-#define BLACK_ENGINE_SELECTION_X 1300
-#define BLACK_ENGINE_SELECTION_Y 100
-
-#define END_GAME_X (ScreenWidth() / 2)
-#define END_GAME_Y (ScreenHeight() / 2 - 200)
-#define END_GAME_SIZE 3
-#define END_GAME_TOLERANCE 100
-
-#define ENGINE_TOLERANCE 100 //the amount of pixels we can click away from the center of the engine to rotate it
-
-#define SIMULATION_RESULT_X 100
-#define SIMULATION_RESULT_Y (ScreenHeight() - 150)
-
-#define SCREEN_SIZE 1 // the program will scale all sprites down this amount making the screen appear this amount larger
 
 // Function to calculate the distance between two points (x1, y1) and (x2, y2)
 inline double calculateDistance(int x1, int y1, int x2, int y2) {
@@ -146,14 +116,7 @@ public:
 
             if(gameOver){
                 if(calculateDistance(x, y, END_GAME_X + detailedResults.at(0).pSprite->height * END_GAME_SIZE / 2, END_GAME_Y + detailedResults.at(0).pSprite->width * END_GAME_SIZE / 2) <= END_GAME_TOLERANCE*END_GAME_SIZE || loopGames){
-                    gameOver = false;
-                    setup(&bord);
-                    loopGames--;
-                    if(loopGames <= 0){
-                        loopGames = 0;
-                        loop = false;
-                        doMove = false;
-                    }
+                    reset();
                 }
             }else{
                 // Check if the click is within the chessboard boundaries
@@ -182,8 +145,8 @@ public:
                                         movePiece(&bord, &action);
                                         break;
                                 }
-                                cout << "white move made" << endl;
-                                printFancyBoard(&bord);
+                                //cout << "white move made" << endl;
+                                //printFancyBoard(&bord);
                             }else{
                                 switch (selectedBlackEngine) {
                                     case RANDOM:
@@ -201,12 +164,12 @@ public:
                                         movePiece(&bord, &action);
                                         break;
                                 }
-                                cout << "black move made" << endl;
-                                printFancyBoard(&bord);
+                                //cout << "black move made" << endl;
+                                //printFancyBoard(&bord);
                             }
 
                             if(isEnded(&bord)) {
-                                cout << "game ended before this" << endl;
+                                //cout << "game ended before this" << endl;
                                 gameOver = True;
                             }
                         }
@@ -227,6 +190,27 @@ public:
                 else if (calculateDistance(x, y, BLACK_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, BLACK_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE && !doMove){
                     selectedBlackEngine = (selectedBlackEngine +1 ) % amountOfEngines;
                     message = "black engine rotated";
+                }else if (x >= START_SIMULATION_X && x < START_SIMULATION_X+START_SIMULATION_WIDTH*TEXT_SIZE &&
+                          y >= START_SIMULATION_Y && y < START_SIMULATION_Y+START_SIMULATION_HEIGHT*TEXT_SIZE){
+                    loop = true;
+                }else if (x >= RESET_SIMULATION_X && x < RESET_SIMULATION_X+RESET_SIMULATION_WIDTH*TEXT_SIZE &&
+                          y >= RESET_SIMULATION_Y && y < RESET_SIMULATION_Y+RESET_SIMULATION_HEIGHT*TEXT_SIZE){
+                    simulationResults.reset();
+                    loopGames = 0;
+                    loop = false;
+                    reset();
+                }else if (x >= RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*2 && x < RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*2 +INC_SIMULATION_WIDTH*TEXT_SIZE &&
+                          y >= RESET_SIMULATION_Y && y < RESET_SIMULATION_Y+INC_SIMULATION_HEIGHT*TEXT_SIZE){
+                    loopGames += 1;
+                }else if (x >= RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*3 && x < RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*3 +INC_SIMULATION_WIDTH*TEXT_SIZE &&
+                         y >= RESET_SIMULATION_Y && y < RESET_SIMULATION_Y+INC_SIMULATION_HEIGHT*TEXT_SIZE){
+                    loopGames += 10;
+                }else if (x >= RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*4 && x < RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*4 +INC_SIMULATION_WIDTH*TEXT_SIZE &&
+                          y >= RESET_SIMULATION_Y && y < RESET_SIMULATION_Y+INC_SIMULATION_HEIGHT*TEXT_SIZE){
+                    loopGames += 100;
+                }else if (x >= RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*5 && x < RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*5 +INC_SIMULATION_WIDTH*TEXT_SIZE &&
+                          y >= RESET_SIMULATION_Y && y < RESET_SIMULATION_Y+INC_SIMULATION_HEIGHT*TEXT_SIZE){
+                    loopGames += 1'000;
                 }
                 else {
                     message = "Clicked outside the chessboard"; // The mouse click is outside the chessboard
@@ -235,7 +219,7 @@ public:
         }
 
         DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
-        DrawString(CASTELING_RIGHTS_X, CASTELING_RIGHTS_Y, "castling rights:",olc::WHITE,2);
+        DrawString(CASTELING_RIGHTS_X, CASTELING_RIGHTS_Y, "castling rights:",olc::WHITE,TEXT_SIZE);
         SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
         //draw white king side castling rights
         if (bord.whiteKingsideCastle) DrawPartialSprite(CASTELING_RIGHTS_X,CASTELING_RIGHTS_Y+CASTELING_RIGHTS_D_TEXT_RIGHTS, &spriteSheet, 0,0,CELL_SIZE,CELL_SIZE);
@@ -251,8 +235,15 @@ public:
         SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
 
         /* draw results of the simulations */
-        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y, "simulation results: ",olc::WHITE,2);
-        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y+30, "White wins: " + std::to_string(simulationResults.getWhiteWins()/LOOP_FRAMES)+   " Black Wins: " +std::to_string(simulationResults.getBlackWins()/LOOP_FRAMES) + " Draws: " +std::to_string(simulationResults.getDraws()/LOOP_FRAMES) ,olc::WHITE,2);
+        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y, "games to go: " + std::to_string(loopGames) + " simulation results: ",olc::WHITE,TEXT_SIZE);
+        DrawString(SIMULATION_RESULT_X, SIMULATION_RESULT_Y+30, "White wins: " + std::to_string(simulationResults.getWhiteWins()/LOOP_FRAMES) +   " Black Wins: " +std::to_string(simulationResults.getBlackWins()/LOOP_FRAMES) + " Draws: " +std::to_string(simulationResults.getDraws()/LOOP_FRAMES) ,olc::WHITE,TEXT_SIZE);
+        DrawButton("start",START_SIMULATION_X,START_SIMULATION_Y,START_SIMULATION_WIDTH,START_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+        DrawButton("reset",RESET_SIMULATION_X,RESET_SIMULATION_Y,RESET_SIMULATION_WIDTH,RESET_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+        DrawButton("1",RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*2,RESET_SIMULATION_Y,INC_SIMULATION_WIDTH,INC_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+        DrawButton("10",RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*3,RESET_SIMULATION_Y,INC_SIMULATION_WIDTH,INC_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+        DrawButton("100",RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*4,RESET_SIMULATION_Y,INC_SIMULATION_WIDTH,INC_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+        DrawButton("1000",RESET_SIMULATION_X+SIMULATION_BUTTON_INC_X*5,RESET_SIMULATION_Y,INC_SIMULATION_WIDTH,INC_SIMULATION_HEIGHT,olc::WHITE,olc::GREY,TEXT_SIZE);
+
 
         /* draw the end game screen */
         if (gameOver){
@@ -276,6 +267,7 @@ public:
                     if(loopGames > 0) simulationResults.update(DRAW_Stalemate);
                 }
             }
+            if(loopGames > 0) reset();
             SetPixelMode(olc::Pixel::NORMAL); // Draw all pixels
         }
 
@@ -316,7 +308,18 @@ private:
     ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
     ChessEngine* miniMaxEngine = new MiniMaxEngine(4);
 
-    bool humanPlay() {
+    void reset(){
+        gameOver = false;
+        setup(&bord);
+        loopGames--;
+        if(loopGames <= 0){
+            loopGames = 0;
+            loop = false;
+            doMove = false;
+        }
+    }
+
+    bool humanPlay() const {
        return (bord.whiteToPlay ? (selectedWhiteEngine == HUMAN) : (selectedBlackEngine == HUMAN));
     }
 
@@ -400,8 +403,11 @@ private:
         }
     }
 
-    void DrawButton(const std::string& text, int x, int y, int width, int height, olc::Pixel textCol, olc::Pixel buttonCol)
+    void DrawButton(const std::string& text, int x, int y, int width, int height, olc::Pixel textCol, olc::Pixel buttonCol, int scale)
     {
+        width *= scale;
+        height *= scale;
+
         // Draw the button background
         FillRect(x, y, width, height, buttonCol);
 
@@ -409,9 +415,9 @@ private:
         DrawRect(x, y, width, height, olc::WHITE);
 
         // Draw the button text
-        int textWidth = text.length() * 8; // NOLINT(*-narrowing-conversions)
-        int textHeight = 8;
-        DrawString(x + (width - textWidth) / 2, y + (height - textHeight) / 2, text, textCol);
+        int textWidth = text.length() * 8 * scale; // NOLINT(*-narrowing-conversions)
+        int textHeight = 8 * scale;
+        DrawString(x + (width - textWidth) / 2, y + (height - textHeight) / 2, text, textCol, scale);
     }
 
 };

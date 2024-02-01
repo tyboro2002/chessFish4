@@ -19,8 +19,8 @@ public:
         Action move;
         minimax_root(bord, depth, false, &move, &actionList); //maximize means if its white ?
         movePiece(bord,&move);
-        printAction(&move);
-        std::cout << "MiniMax move made.\n";
+        //printAction(&move);
+        //std::cout << "MiniMax move made.\n";
     }
 
 private:

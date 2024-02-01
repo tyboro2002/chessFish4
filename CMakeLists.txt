@@ -32,6 +32,7 @@ add_executable(ChessFish4 main.cpp
         engines/MonteCarloEngine.h
         engines/MiniMaxEngine.cpp
         engines/MiniMaxEngine.h
+        configurations.h
 )
 
 target_link_libraries(ChessFish4 PRIVATE

@@ -115,7 +115,7 @@ public:
                                                      });
 
         MCTS_Node* node = &(*selectedNodeIterator); //TODO check
-        printAction(node->getAction());
+        //printAction(node->getAction());
         if(node->getAction() != nullptr){
             movePiece(bord, node->getAction());
         }
