@@ -10,29 +10,12 @@
 #include "../engines/MiniMaxEngine.h"
 #include "../configurations.h" /* include all configurations for the visual engine */
 
-#define LOOP_FRAMES 1
-
 #include "../magic_numbers/MagicsTester.h"
-
-
-// Function to calculate the distance between two points (x1, y1) and (x2, y2)
-inline double calculateDistance(int x1, int y1, int x2, int y2) {
-    return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
-}
-
-enum Engines { // to add an engine add it in this list and in the list in the constructor
-    HUMAN,
-    MINIMAX,
-    RANDOM,
-    MONTE_CARLO,
-    NUM_ENGINES
-};
-
 
 struct EngineInfo {
     std::string name;  // Name of the engine
     Engines id; //Engine id
-    std::unique_ptr<olc::Sprite> pLogo;
+    std::unique_ptr<olc::Sprite> pLogo; // the logo for the engine used in the selection draw
 
     // Constructor to load the logo
     EngineInfo(const char* name, Engines id, const std::string& logoPath)
@@ -42,12 +25,17 @@ struct EngineInfo {
 struct DetailedEndGameResult {
     std::string description; // Detailed description of the end game result
     std::unique_ptr<olc::Sprite> pSprite; // Sprite associated with the result
-    EndGameResult id;
+    EndGameResult id; // the effective result
 
     // Constructor to load the sprite
     DetailedEndGameResult(std::string  desc, EndGameResult id, const std::string& spritePath)
             : description(std::move(desc)), id(id), pSprite(std::make_unique<olc::Sprite>(spritePath)) {}
 };
+
+// Function to calculate the distance between two points (x1, y1) and (x2, y2)
+inline double calculateDistance(int x1, int y1, int x2, int y2) {
+    return std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+}
 
 class ChessFishVisualiserUI : public olc::PixelGameEngine {
 public:

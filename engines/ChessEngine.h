@@ -2,6 +2,14 @@
 #include "../game.h"
 #include <map>
 
+enum Engines { // to add an engine add it in this list and in the list in the constructor in GUIEngineGame.h
+    HUMAN,
+    MINIMAX,
+    RANDOM,
+    MONTE_CARLO,
+    NUM_ENGINES
+};
+
 struct SimulationResults{
     U64 whiteWins = 0;
     U64 blackWins = 0;

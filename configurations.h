@@ -1,5 +1,8 @@
 #pragma once
 
+/* speed of simulations */
+#define LOOP_FRAMES 1
+
 /* visual configurations */
 #define CHESS_SIZE 8
 #define BITMAPS 64
