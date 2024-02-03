@@ -32,7 +32,7 @@ private:
     U64 time_king_moves();
     U64 time_queen_moves();
     U64 time_rook_moves();
-    U64 time_bischop_moves();
+    U64 time_bishop_moves();
     U64 time_pawn_moves();
 
     U64 time_all_attackers();
@@ -45,14 +45,8 @@ private:
     U64 time_bischop_moves_magic();
     U64 time_queen_moves_magic();
 
-    U64 time_perft(int depth);
-    U64 time_perft_in_check(int depth);
+    U64 time_perft(int depth) const;
+    U64 time_perft_in_check(int depth) const;
 
-    U64 timeFunction(const std::function<U64()> &func, U64 num_runs, const char* description);
+    U64 timeFunction(const std::function<U64()> &func, U64 num_runsRequested, const char* description);
 };
-
-void time_code();
-void time_bitwise_code();
-void time_minimax_code();
-void time_mate_test_code();
-void time_parralel_evaluation();

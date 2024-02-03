@@ -294,7 +294,7 @@ private:
 
     ChessEngine* randomEngine = new RandomChessEngine();
     ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
-    ChessEngine* miniMaxEngine = new MiniMaxEngine(4);
+    ChessEngine* miniMaxEngine = new MiniMaxEngine(5);
 
     void reset(){
         gameOver = false;

@@ -8,8 +8,6 @@ void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, A
     int size = moveList->count;
     Action best_move_found = moveList->moves[0];
 
-    bool endgame = false; //bool end_game = check_end_game(bord); //TODO make function to check for endgame
-
     for (int i = 0; i < size; i++) {
         Action move = moveList->moves[i];
         Board boardCopy{};
@@ -48,13 +46,10 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
         getLegalMoves(bord,&moveList);
         orderMoves(bord, &moveList);
 
-        int size = moveList.count;
-
-        for (int i = 0; i < size; i++) {
-            Action move = moveList.moves[i];
+        for (int i = 0; i < moveList.count; i++) {
             Board boardCopy{};
             copyBoard(bord, &boardCopy);
-            movePiece(bord,&move);
+            movePiece(bord,&moveList.moves[i]);
 
             //printFancyBoard(&boardCopy);
             if (isChekmate(&boardCopy)) return INFINITY;
@@ -81,13 +76,10 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
         getLegalMoves(bord,&moveList);
         orderMoves(bord, &moveList);
 
-        int size = moveList.count;
-
-        for (int i = 0; i < size; i++) {
-            Action move = moveList.moves[i];
+        for (int i = 0; i < moveList.count; i++) {
             Board boardCopy{};
             copyBoard(bord, &boardCopy);
-            movePiece(bord,&move);
+            movePiece(bord,&moveList.moves[i]);
 
             if (isChekmate(&boardCopy)) return -INFINITY;
 

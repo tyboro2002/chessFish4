@@ -1,10 +1,6 @@
-#include <iostream>
 #include "game.h"
-#include "old_code/engine.h"
 #include "tests/tests.h"
 #include "timing/timing.h"
-#include <limits>
-#include "old_code/chessFish4Game.h"
 #include "visuals/GUIEngineGame.h"
 #include "magic_numbers/MagicsTester.h"
 
@@ -17,14 +13,6 @@ using namespace std;
 //#define TIME // Define this macro to time the code
 
 int main() {
-    /*
-    std::cout << "moves reversed: " << std::endl << std::endl;
-    for (int i = 63; i>= 0; i--){
-        std::bitset<64> binaryRepresentation(queenMoves[i]);
-        std::cout << "0b" << binaryRepresentation << ",\n";
-        //std::cout << bischopRelevantBits[i] << " ,";
-    }
-     */
 #ifdef MAGIC
     MagicsTester magicsTester;
     magicsTester.init_magic_numbers();
@@ -63,28 +51,3 @@ int main() {
 #endif
     return 0;
 }
-
-
-/*
- //king_danger_squares_test();
-    //path_test();
-    //checking_test();
-    //time_code();
-    //move_test();
-    //move_test_check();
-    //time_bitwise_code();
-    //fen_test();
-    //legalMoveTest();
-    //randomMoveTest();
-    //move_test_halfmove();
-
-    //time_minimax_code();
-    //time_mate_test_code();
-    //runAutomatedTests();
-
-    //time_parralel_evaluation();
-
-    //knightMovesGenerator();
-
-    //randomTest();
- */

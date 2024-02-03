@@ -386,49 +386,21 @@ private:
 
 void printPositionRecords(const PositionTracker* tracker);
 
-int findMoveIndex(MOVELIST* moveList, Move* targetMove);
-
 Pieces pieceAt(int square,const Board* bord);
 
-void makeMove(Board* bord, Move* move, PositionTracker* positionTracker);
-
-void white_pawn_moves(int position, MOVELIST* movelist, Board* bord);
-void black_pawn_moves(int position, MOVELIST* movelist, Board* bord);
-void white_rook_moves(int position, MOVELIST* movelist, Board* bord);
-void black_rook_moves(int position, MOVELIST* movelist, Board* bord);
-void white_knight_moves(int position, MOVELIST* movelist, Board* bord);
-void black_knight_moves(int position, MOVELIST* movelist, Board* bord);
-void white_bishop_moves(int position, MOVELIST* movelist, Board* bord);
-void black_bishop_moves(int position, MOVELIST* movelist, Board* bord);
-void white_queen_moves(int position, MOVELIST* movelist, Board* bord);
-void black_queen_moves(int position, MOVELIST* movelist, Board* bord);
-void white_king_moves(int position, MOVELIST* movelist, Board* bord);
-void black_king_moves(int position, MOVELIST* movelist, Board* bord);
-void white_moves(MOVELIST* movelist, Board* bord);
-void black_moves(MOVELIST* movelist, Board* bord);
-
-bool weHaveMoves(Board* bord);
-bool inCheck(Board* bord);
-DRAWTYPE isDraw(Board* bord, PositionTracker* positionTracker);
-
-U64 squaresBetweenBitmap(int startSquare, int endSquare);
-
-void copyBoard(const Board* bordIn, Board* bordOut);
-
 std::string squareToString(int square);
-std::string specialToString(SPECIAL special);
-std::string actionToString(const Action* move);
-std::string moveToStringShort(const Move* move);
-
 
 /*==========================
    below is the new code
  =========================*/
 
+std::string actionToString(const Action* move);
+
 /* add pieces to the board */
 void setup(Board* bord);
 void setupEmpty(Board* bord);
 void addPiece(Board* bord,Pieces piece,int square);
+//void copyBoard(const Board* bordIn, Board* bordOut);
 
 /* print the bitboard with a message */
 void printBitBoard(U64 bitbord, const std::string& extra);
@@ -481,7 +453,7 @@ void printAction(const Action* action);
 /*
  * inlined functions
  */
-inline U64 get_white_pawn_attacks(const int square,const U64 white,const U64 black){
+inline U64 get_white_pawn_attacks(const int square,const U64 white,const U64 black){ //TODO try remove the if
     U64 att = whitePawnAttacks[square] & black; // the squares this piece can attack
     U64 whiteBlack = white | black;
     if(((1ULL << square)&twoRow) && !((1ULL<<(square+8))&(whiteBlack)) && !((1ULL<<(square+16))&(whiteBlack))) att |= (1ULL<<(square+16));
@@ -489,7 +461,7 @@ inline U64 get_white_pawn_attacks(const int square,const U64 white,const U64 bla
     return att & ~oneRow;
 }
 
-inline U64 get_black_pawn_attacks(const int square, const U64 white, const U64 black){
+inline U64 get_black_pawn_attacks(const int square, const U64 white, const U64 black){ //TODO try remove the if
     U64 att = blackPawnAttacks[square] & white; // the squares this piece can attack
     U64 whiteBlack = white | black;
     if(((1ULL << square)&sevenRow) && !((1ULL<<(square-8))&(whiteBlack)) && !((1ULL<<(square-16))&(whiteBlack))) att |= (1ULL<<(square-16));
@@ -526,7 +498,7 @@ inline U64 bitmap_white_queen(const int square,const  Board* bord) {return get_q
 
 inline U64 bitmap_black_queen(const int square,const  Board* bord) {return get_queen_attacks(square, bord->white | bord->black) & (~bord->black);}
 
-inline U64 bitmap_white_king(const int position,const Board* bord) {
+inline U64 bitmap_white_king(const int position,const Board* bord) { //TODO try to remove if (and of thats faster)
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E1) {
@@ -545,7 +517,7 @@ inline U64 bitmap_white_king(const int position,const Board* bord) {
     return ret & (~bord->white);
 }
 
-inline U64 bitmap_black_king(const int position,const  Board* bord) {
+inline U64 bitmap_black_king(const int position,const  Board* bord) { //TODO try to remove if (and of thats faster)
     U64 empty = ~(bord->white | bord->black);
     U64 ret = kingMoves[position];
     if (position == E8) {
@@ -591,6 +563,38 @@ inline U64 calculateKingDanger(const Board* bord){
         U64 knight = bitmap_black_knight(kingSquare,bord) & (bord->white & bord->knight);
         U64 pawn = blackPawnAttacks[kingSquare] & (bord->white & bord->pawn);
         U64 king = bitmap_black_king(kingSquare,bord) & (bord->white & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+}
+
+/* same as calculate king dianger but instead of calculating danger of our king calculate danger of opponents king */
+inline U64 calculateKingDangerInvers(const Board* bord){
+    if(bord->whiteToPlay) {
+        /* find the square of the king */
+        int kingSquare = get_ls1b_index(bord->black & bord->king);
+        /* if there are certainly no pieces able to capture the queen return */
+        //if((bitmap_black_queen(kingSquare,bord) & bord->black) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_black_queen(kingSquare,bord) & (bord->white & bord->queen);
+        U64 bishop = bitmap_black_bishop(kingSquare,bord) & (bord->white & bord->bishop);
+        U64 rook = bitmap_black_rook(kingSquare,bord) & (bord->white & bord->rook);
+        U64 knight = bitmap_black_knight(kingSquare,bord) & (bord->white & bord->knight);
+        U64 pawn = blackPawnAttacks[kingSquare] & (bord->white & bord->pawn);
+        U64 king = bitmap_black_king(kingSquare,bord) & (bord->white & bord->king);
+        return queen | bishop | rook | knight | pawn | king;
+    }
+    else{
+        /* find the square of the king */
+        int kingSquare = get_ls1b_index(bord->white & bord->king);
+        /* if there are certainly no pieces able to capture the queen return */
+        //if((bitmap_white_queen(kingSquare,bord) & bord->white) == 0ULL) return 0ULL;
+        /* get a bitmap of all the pieces that attack the king */
+        U64 queen = bitmap_white_queen(kingSquare,bord) & (bord->black & bord->queen);
+        U64 bishop = bitmap_white_bishop(kingSquare,bord) & (bord->black & bord->bishop);
+        U64 rook = bitmap_white_rook(kingSquare,bord) & (bord->black & bord->rook);
+        U64 knight = bitmap_white_knight(kingSquare,bord) & (bord->black & bord->knight);
+        U64 pawn = whitePawnAttacks[kingSquare] & (bord->black & bord->pawn);
+        U64 king = bitmap_white_king(kingSquare,bord) & (bord->black & bord->king);
         return queen | bishop | rook | knight | pawn | king;
     }
 }
@@ -1010,6 +1014,29 @@ inline bool isChekmate(Board* bord) { //TODO test
 
 inline bool isEnded(Board* bord){ //TODO test
     return isChekmate(bord) || isDraw(bord);
+}
+
+// Function to copy values from bordIn to bordOut
+inline void copyBoard(const Board* bordIn, Board* bordOut) {
+    if (!bordIn || !bordOut) return; // Handle nullptr input
+    // Copy the members from bordIn to bordOut
+    bordOut->rook = bordIn->rook;
+    bordOut->knight = bordIn->knight;
+    bordOut->bishop = bordIn->bishop;
+    bordOut->queen = bordIn->queen;
+    bordOut->king = bordIn->king;
+    bordOut->pawn = bordIn->pawn;
+    bordOut->white = bordIn->white;
+    bordOut->black = bordIn->black;
+    bordOut->whiteToPlay = bordIn->whiteToPlay;
+    bordOut->whiteKingsideCastle = bordIn->whiteKingsideCastle;
+    bordOut->whiteQueensideCastle = bordIn->whiteQueensideCastle;
+    bordOut->blackKingsideCastle = bordIn->blackKingsideCastle;
+    bordOut->blackQueensideCastle = bordIn->blackQueensideCastle;
+    bordOut->enPassentValid = bordIn->enPassentValid;
+    bordOut->enPassantTarget = bordIn->enPassantTarget;
+    bordOut->halfmoveClock = bordIn->halfmoveClock;
+    bordOut->reserved = bordIn->reserved;
 }
 
 //TODO a function to convert from board to fen (see: string Position::fen() const { from https://github.com/official-stockfish/Stockfish/blob/master/src/position.cpp)

@@ -507,14 +507,18 @@ double minimax(Board* bord, double alpha, double beta, int depth, bool maximizin
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //makeMove(&boardCopy, &move, positionTracker);
+            /*//old code removed
             if (!weHaveMoves(&boardCopy)) {
                 return INFINITY;
             }
+             */
             double curr_move = -INFINITY;
+            /* //old code removed
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
                 curr_move = minimax(&boardCopy, alpha, beta, depth - 1, !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
             }
+             */
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -545,14 +549,17 @@ double minimax(Board* bord, double alpha, double beta, int depth, bool maximizin
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //(&boardCopy, &move, positionTracker);
+            /*//old code removed
             if (!weHaveMoves(&boardCopy)) {
                 return -INFINITY;
             }
+             */
             double curr_move = INFINITY;
+            /*//old code removed
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
                 curr_move = minimax(&boardCopy, alpha, beta, depth - 1, !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
-            }
+            }*/
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -582,7 +589,7 @@ void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, Action
     if (ttEntry != nullptr && ttEntry->depth >= depth) {
         Board boardCopy;
         copyBoard(bord, &boardCopy);
-        makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
+        //makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
         /*
         if (isDraw(&boardCopy, positionTracker) || (findMoveIndex(moveList, &(ttEntry->bestMove))) == -1) {
             positionTracker->removePosition(&boardCopy);
@@ -612,6 +619,7 @@ void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, Action
         Board boardCopy;
         copyBoard(bord, &boardCopy);
         //makeMove(&boardCopy, &move, positionTracker);//
+        /*//old code removed
         if (!weHaveMoves(&boardCopy)) {
             //moveOut->src = move.src;//
             //moveOut->dst = move.dst;//
@@ -619,12 +627,14 @@ void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, Action
             //moveOut->special = move.special;//
             return;
         }
+         */
         double value = 0.0;
         int branchCount = 0;
         int* branchCounter = &branchCount;
+        /*//old code removed
         if (isDraw(bord, positionTracker) == NOT_DRAW) {
             value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, !white_plays((&boardCopy)), branchCounter, transpositionTable, positionTracker);
-        }
+        }*/
         positionTracker->removePosition(&boardCopy);
         //cout << "move: " << move.NaturalOut(cr) << " " << branchCount << endl;
         if (maximize && value > best_move) {
@@ -684,14 +694,16 @@ double minimaxOptimized(Board* bord, double alpha, double beta, int depth, bool 
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //makeMove(&boardCopy, &move, positionTracker);
+            /*//old code removed
             if (!weHaveMoves(&boardCopy)) {
                 return INFINITY;
-            }
+            }*/
             double curr_move = -INFINITY;
+            /*  //old code removed
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
-                curr_move = minimaxOptimized(&boardCopy, alpha, beta, depth - 1 + (inCheck(bord) ? 1 : 0), !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
-            }
+                curr_move = minimaxOptimized(&boardCopy, alpha, beta, depth - 1+(inCheck(bord) ? 1 : 0), !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
+            }*/
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -722,14 +734,16 @@ double minimaxOptimized(Board* bord, double alpha, double beta, int depth, bool 
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //makeMove(&boardCopy, &move, positionTracker);
+            /*//old code removed
             if (!weHaveMoves(&boardCopy)) {
                 return -INFINITY;
-            }
+            }*/
             double curr_move = INFINITY;
+            /*//old code removed
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
                 curr_move = minimaxOptimized(&boardCopy, alpha, beta, depth - 1 + (inCheck(bord) ? 1 : 0), !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
-            }
+            }*/
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -760,11 +774,12 @@ void minimax_rootOptimized(Board* bord, int depth, bool maximize, Move* moveOut,
         // Return the stored evaluation score if depth is sufficient
         Board boardCopy;
         copyBoard(bord, &boardCopy);
-        makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
+        //makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
+        /* //old code removed
         if (isDraw(&boardCopy, positionTracker) || (findMoveIndex(moveList, &(ttEntry->bestMove))) == -1) {
             positionTracker->removePosition(&boardCopy);
             goto breakBothIfs; // Jump to the labeled statement
-        }
+        }*/
         positionTracker->removePosition(&boardCopy);
         moveOut->src = (ttEntry->bestMove).src;
         moveOut->dst = (ttEntry->bestMove).dst;
@@ -786,20 +801,22 @@ void minimax_rootOptimized(Board* bord, int depth, bool maximize, Move* moveOut,
         Move move = moves[i];
         Board boardCopy;
         copyBoard(bord, &boardCopy);
-        makeMove(&boardCopy, &move, positionTracker);
+        //makeMove(&boardCopy, &move, positionTracker);
+        /*//old code removed
         if (!weHaveMoves(&boardCopy)) {
             moveOut->src = move.src;
             moveOut->dst = move.dst;
             moveOut->capture = move.capture;
             moveOut->special = move.special;
             return;
-        }
+        }*/
         double value = 0.0;
         int branchCount = 0;
         int* branchCounter = &branchCount;
+        /*
         if (isDraw(bord, positionTracker) == NOT_DRAW) {
             value = minimaxOptimized(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, !white_plays((&boardCopy)), branchCounter, transpositionTable, positionTracker);
-        }
+        }*/
         positionTracker->removePosition(&boardCopy);
         //cout << "move: " << move.NaturalOut(cr) << " " << branchCount << endl;
         if (maximize && value > best_move) {
@@ -859,14 +876,16 @@ double minimaxOptimizedItterativeDeepening(Board* bord, double alpha, double bet
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //makeMove(&boardCopy, &move, positionTracker);
+            /*
             if (!weHaveMoves(&boardCopy)) {
                 return INFINITY;
-            }
+            }*/
             double curr_move = -INFINITY;
+            /*
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
                 curr_move = minimaxOptimizedItterativeDeepening(&boardCopy, alpha, beta, depth - 1 + (inCheck(bord) ? 1 : 0), !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
-            }
+            }*/
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -897,14 +916,17 @@ double minimaxOptimizedItterativeDeepening(Board* bord, double alpha, double bet
             Move move = moves[i];
             Board boardCopy;
             copyBoard(bord, &boardCopy);
-            makeMove(&boardCopy, &move, positionTracker);
+            //
+            // makeMove(&boardCopy, &move, positionTracker);
+            /*//old code removed
             if (!weHaveMoves(&boardCopy)) {
                 return -INFINITY;
-            }
+            }*/
             double curr_move = INFINITY;
+            /*//old code removed
             if (isDraw(bord, positionTracker) == NOT_DRAW) {
                 curr_move = minimaxOptimizedItterativeDeepening(&boardCopy, alpha, beta, depth - 1 + (inCheck(bord) ? 1 : 0), !maximizing_player, !whiteVraagteken, counter, transpositionTable, positionTracker);
-            }
+            }*/
             positionTracker->removePosition(&boardCopy);
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -935,11 +957,12 @@ void minimax_rootOptimizedItterativeDeepening(Board* bord, int depth, bool maxim
         // Return the stored evaluation score if depth is sufficient
         Board boardCopy;
         copyBoard(bord, &boardCopy);
-        makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
+        //makeMove(&boardCopy, &(ttEntry->bestMove), positionTracker);
+        /* //old code removed
         if (isDraw(&boardCopy, positionTracker) || (findMoveIndex(moveList, &(ttEntry->bestMove))) == -1) {
             positionTracker->removePosition(&boardCopy);
             goto breakBothIfs; // Jump to the labeled statement
-        }
+        }*/
         positionTracker->removePosition(&boardCopy);
         moveOut->src = (ttEntry->bestMove).src;
         moveOut->dst = (ttEntry->bestMove).dst;
@@ -973,20 +996,22 @@ void minimax_rootOptimizedItterativeDeepening(Board* bord, int depth, bool maxim
         Move move = moves[i];
         Board boardCopy;
         copyBoard(bord, &boardCopy);
-        makeMove(&boardCopy, &move, positionTracker);
+        //(&boardCopy, &move, positionTracker);
+        /*//old code removed
         if (!weHaveMoves(&boardCopy)) {
             moveOut->src = move.src;
             moveOut->dst = move.dst;
             moveOut->capture = move.capture;
             moveOut->special = move.special;
             return;
-        }
+        }*/
         double value = 0.0;
         int branchCount = 0;
         int* branchCounter = &branchCount;
+        /*
         if (isDraw(bord, positionTracker) == NOT_DRAW) {
             value = minimaxOptimizedItterativeDeepening(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, !white_plays((&boardCopy)), branchCounter, transpositionTable, positionTracker);
-        }
+        }*/
         positionTracker->removePosition(&boardCopy);
         //cout << "move: " << move.NaturalOut(cr) << " " << branchCount << endl;
         if (maximize && value > best_move) {
@@ -1033,7 +1058,7 @@ void makeMiniMaxOptimizedMove(Board* bord, MOVELIST* moveList, int depth, bool m
     // Calculate the duration in microseconds (change to other duration units as needed)
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList->count << " moves and it was located at position: " << findMoveIndex(moveList, &moveOut) << " in: " << duration/1000 << " milliseconds." << endl;
-    makeMove(bord, &moveOut, positionTracker);
+    //makeMove(bord, &moveOut, positionTracker);
 }
 
 void makeMiniMaxOptimizedItterativeDeepeningMove(Board* bord, MOVELIST* moveList, int maxDepth, bool maximize, TranspositionTable* transpositionTable, PositionTracker* positionTracker, size_t maxTime) {
@@ -1068,11 +1093,11 @@ void makeMiniMaxOptimizedItterativeDeepeningMove(Board* bord, MOVELIST* moveList
         // Calculate the duration in microseconds (change to other duration units as needed)
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
         depth++;
-        cout << "depth: " << depth << " found: " << moveToStringShort(&moveOut) << " out of " << moveList->count << " moves and it was located at position: " << findMoveIndex(moveList, &moveOut) << " in: " << duration << " milliseconds." << endl;
+        //cout << "depth: " << depth << " found: " << moveToStringShort(&moveOut) << " out of " << moveList->count << " moves and it was located at position: " << findMoveIndex(moveList, &moveOut) << " in: " << duration << " milliseconds." << endl;
     }
 
     //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList->count << " moves and it was located at position: " << findMoveIndex(moveList, &moveOut) << " in: " << duration << " milliseconds." << endl;
-    makeMove(bord, &moveOut, positionTracker);
+    //makeMove(bord, &moveOut, positionTracker);
 }
 
 void askForMove(Board* bord, Action* move, ActionList* moveList) {

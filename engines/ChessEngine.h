@@ -274,7 +274,7 @@ inline int evaluate_piece(Pieces piece, int square, bool endgame) {
     }
 }
 
-inline double move_value(Board* bord, Action* mv, bool endgame) {
+inline int move_value(Board* bord, Action* mv, bool endgame) {
     /*
     * How good is a move?
     * A promotion is great.
@@ -293,7 +293,7 @@ inline double move_value(Board* bord, Action* mv, bool endgame) {
     int _to_value = evaluate_piece(_piece, mv -> dst, endgame);
     int position_change = _to_value - _from_value;
 
-    int capture_value = 0.0;
+    int capture_value = 0;
 
     if (pieceAt(mv->dst, bord) != NOPIECE) {
         capture_value = evaluate_capture(bord, mv);
@@ -312,7 +312,7 @@ inline void reverseArray(Action* arr, const std::size_t size) {
 }
 
 inline void orderMoves(Board* bord, ActionList* moveList) {
-    bool end_game = false;//check_end_game(bord);
+    bool end_game = false;//check_end_game(bord); //TODO make function to check for endgame
 
     int size = moveList->count;
     // Define a lambda function to compare moves by their values

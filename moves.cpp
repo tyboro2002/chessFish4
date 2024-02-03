@@ -102,31 +102,18 @@ bool testMagicNumber(int square,bool bischop){
     int bits_in_mask = count_bits(mask);
     U64 amount_of_tests = 1 << bits_in_mask;
     //printf("bits in mask: %d giving %llu occupancys\n", bits_in_mask, amount_of_tests);
+    U64 fly;
+    U64 magic;
     for (int i = 0; i<amount_of_tests;i++){
         U64 occ_test = set_occupancy(i,bits_in_mask,mask);
         if(bischop){
-            U64 fly = bishop_attacks_on_the_fly(square,occ_test);
-            U64 magic = get_bishop_attacks(square, occ_test); // 1152930310397399040 square 5
-
-            //std::cout << std::bitset<64>(occ_test) << " " << i << std::endl;
-            //std::cout << std::bitset<64>(fly) << std::endl;
-            //std::cout << std::bitset<64>(magic) << std::endl << std::endl;
-
-            //printBitBoard(fly, "fly");
-            //printBitBoard(magic, "magic");
-            if(fly != magic){
-                return false;
-            }
+            fly = bishop_attacks_on_the_fly(square,occ_test);
+            magic = get_bishop_attacks(square, occ_test);
         }else{
-            U64 fly = rook_attacks_on_the_fly(square,occ_test);
-            U64 magic = get_rook_attacks(square, occ_test);
-            if(fly != magic){
-                std::cout << std::bitset<64>(occ_test) << " " << i  << " failed, needed: " << amount_of_tests << " (magic number:  " << rook_magic_numbers[square] << " )" << std::endl;
-                std::cout << std::bitset<64>(fly) << std::endl;
-                std::cout << std::bitset<64>(magic) << std::endl << std::endl;
-                return false;
-            }
+            fly = rook_attacks_on_the_fly(square,occ_test);
+            magic = get_rook_attacks(square, occ_test);
         }
+        if(fly != magic) return false;
     }
     return true;
 }

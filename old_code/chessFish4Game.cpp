@@ -46,7 +46,7 @@ void runGame() {
         time = 0;
     }
     bool finished = false;
-    while (i < duration && !finished && !isDraw(&bord, &positionTracker)) {
+    while (i < duration && !finished /*&& !isDraw(&bord, &positionTracker)*/) { //old code removed
         cout << "action: " << i+1<< endl;
         printBoard(&bord);
         //GenLegalMoveList(&actionList, &bord, &positionTracker);
@@ -75,7 +75,7 @@ void runGame() {
             cout << "black has no more legal moves" << endl;
             finished = true;
         }
-        if (!finished && !isDraw(&bord, &positionTracker)) {
+        if (!finished /*&& !isDraw(&bord, &positionTracker)*/) { //old code removed
             if (engineNumberB == 0) {
                 askForMove(&bord, &action, &actionList);
                 cout << "You selected: " << actionToString(&action) << endl;
@@ -93,10 +93,12 @@ void runGame() {
             i++;
         }
     }
+    /*//old code removed
     if (isDraw(&bord, &positionTracker) && actionList.count != 0) {
         cout << "a draw occured" << endl;
     }
     if (isDraw(&bord, &positionTracker) && (engineNumberA == 0 || engineNumberB == 0) ) {
         printPositionRecords(&positionTracker);
     }
+     */
 }

@@ -34,6 +34,9 @@ void TestRunner::testResultFalse(bool condition, const std::string& testName) {
 }
 
 
+/***************************************
+ *         move generator tests        *
+ ***************************************/
 
 void TestRunner::kingMovesGenerator() {
     Board bord{};
@@ -405,6 +408,8 @@ void TestRunner::pawnMovesGenerator() {
     //TODO add en passent tests
 }
 
+
+/* action list test */
 void TestRunner::GenerateActions() {
     ActionList testActionList;
     testActionList.addMove(G1,H3);
@@ -431,7 +436,7 @@ void TestRunner::GenerateActions() {
     setup(&bord);
     ActionList actionList;
     getAllMoves(&bord,&actionList);
-    testResultTrue(actionList.count == 20,"correct amount of actions from starting position as white");
+    testResultTrue(actionList.count == testActionList.count,"correct amount of actions from starting position as white");
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white are the correct actions");
 
     testActionList.count = 0;
@@ -483,7 +488,7 @@ void TestRunner::GenerateActions() {
     setupEmpty(&bord);
     readInFen(&bord,"rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 ");
     getAllMoves(&bord,&actionList);
-    testResultTrue(actionList.count == 44,"correct amount of actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white");
+    testResultTrue(actionList.count == testActionList.count,"correct amount of actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white");
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white are the correct actions");
 
 }
@@ -491,7 +496,7 @@ void TestRunner::GenerateActions() {
 void TestRunner::testGeneralPerftResultst() {
     Board bord{};
     setup(&bord);
-    bool printPercent = false;
+    bool printPercent = true;
 
     testResultTrue(generalPerft(&bord,0,printPercent,0,0ULL) == 1, "perft depth 0, fen: startpos");
     testResultTrue(generalPerft(&bord,1,printPercent,0,0ULL) == 20, "perft depth 1, fen: startpos");
@@ -574,100 +579,6 @@ void TestRunner::testGeneralPerftResultst() {
     //testResultTrue(generalPerft(&bord,7,printPercent,0,0ULL) == 287'188'994'746, "perft depth 7, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     //testResultTrue(generalPerft(&bord,8,printPercent,0,0ULL) == 11'923'589'843'526, "perft depth 8, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
     //testResultTrue(generalPerft(&bord,9,printPercent,0,0ULL) == 490'154'852'788'714, "perft depth 9, fen: r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
-
-
-
-
-    /*
-    //cout << detailedPerft(&bord,9) << endl;
-
-
-    Action action;
-    action.src = D2;
-    action.dst = D4;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    cout << detailedPerft(&bord,8) << endl;
-
-
-    action.src = G8;
-    action.dst = F6;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,7) << endl;
-
-
-    action.src = D1;
-    action.dst = D3;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,6) << endl;
-
-
-    action.src = F6;
-    action.dst = E4;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,5) << endl;
-
-
-    action.src = C1;
-    action.dst = E3;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,4) << endl;
-
-
-    action.src = E4;
-    action.dst = D2;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,3) << endl;
-
-
-    action.src = B1;
-    action.dst = C3;
-    movePiece(&bord,&action);
-
-    //printBoard(&bord);
-    //cout << detailedPerft(&bord,2) << endl;
-
-
-    action.src = H7;
-    action.dst = H5;
-    movePiece(&bord,&action);
-
-    printBoard(&bord);
-    printBitBoard(calculateDanger(&bord,B1),"B1 danger squares");
-    printBitBoard(calculateDanger(&bord,C1),"C1 danger squares");
-    printBitBoard(calculateDanger(&bord,D1),"D1 danger squares");
-    printBitBoard(~c1_mask, "all danger");
-    cout << ((get_ls1b_index(bord.white & bord.king) == E1) ? "white king is at E1" : "white king is not at E1") << endl;
-    cout << detailedPerft(&bord,1) << endl;
-
-
-    action.src = G3;
-    action.dst = H4;
-    movePiece(&bord,&action);
-    */
-
-     /*
-    bord.whiteToPlay ^= 1;
-    printBoard(&bord);
-    printBitBoard(calculateKingDanger(&bord),"king danger");
-    printBitBoard(bord.white & bord.king, "index");
-    printBitBoard(bitmap_black_queen(H4,&bord),"bitmap at h4");
-    printBitBoard(bitmap_white_queen(H4,&bord),"bitmap at h4");
-    bord.whiteToPlay ^= 1;
-     */
-
-
 }
 
 
@@ -1698,275 +1609,4 @@ void TestRunner::testIsEndedFunction() {
         readInFen(&bord,"8/8/8/8/8/3k4/3p4/3K4 w - - 2 69");
         testResultTrue(isEnded(&bord),"8/8/8/8/8/3k4/3p4/3K4 w - - 2 69 is a game over");
     }
-}
-
-/**************************
- * old tests
- * below
- */
-
-
-void king_danger_squares_test() {
-    Board bord{};
-    Move move{};
-    MOVELIST moveList{};
-    // Clear move list
-    moveList.count = 0;   // set each field for each move
-
-    setup(&bord);
-    setupEmpty(&bord);
-    printBoard(&bord);
-    addPiece(&bord, BKING, E7);
-    addPiece(&bord, BROOK, E3);
-    addPiece(&bord, WKING, E1);
-    addPiece(&bord, WROOK, E4);
-    addPiece(&bord, WROOK, H7);
-    printBoard(&bord);
-    //printBitBoard(all_black_attacks(&bord), "black moves");
-    printBitBoard(bitmap_black_king(E7, &bord), "black king moves");
-    //printBitBoard(black_checking_pieces(&bord), "black checking pieces");
-
-    black_king_moves(E7, &moveList, &bord);
-
-    std::cout << std::endl;
-}
-
-void path_test() {
-    printBitBoard(squaresBetweenBitmap(A8, H1), "between A8 H1");
-    printBitBoard(squaresBetweenBitmap(C7, C2), "between C7 C2");
-    printBitBoard(squaresBetweenBitmap(H2, D6), "between H2 D6");
-    //printBitBoard(squaresBetweenBitmap(H3, D6), "between H3 D6");
-    printBitBoard(squaresBetweenBitmap(H3, H3), "between H3 H3");
-}
-
-
-/*
-* further tests are automatic tests
-*/
-
-bool mateInOneTest() {
-    Board bord{};
-    Move move{};
-    Move moveOut{};
-    TranspositionTable transpositionTable;
-    PositionTracker positionTracker;
-    setupEmpty(&bord);
-    std::string fen = "4kb1r/p2ppppp/8/8/8/8/P1PPPPPP/RQ2KB1R w - - 0 1";
-    //readInFen(&bord, &fen);
-
-    MOVELIST moveList{};
-    // Clear move list
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-
-    //minimax_root(&bord, 1, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = B1;
-    move.dst = B8;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    return move == moveOut;
-}
-
-bool mateInTwoTest() {
-    Board bord{};
-    Move move{};
-    Move moveOut{};
-    TranspositionTable transpositionTable;
-    PositionTracker positionTracker;
-    setupEmpty(&bord);
-    std::string fen = "r1bq2r1/b4pk1/p1pp1p2/1p2pP2/1P2P1PB/3P4/1PP3P1/R1Q1K2R w - - 0 1";
-    //readInFen(&bord, &fen);
-    //printBoard(&bord);
-    int depth = 3; // set the depth for the minimax
-    MOVELIST moveList{};
-    // Clear move list
-
-    //white move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = C1;
-    move.dst = H6;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-    //black move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord,&positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = G7;
-    move.dst = H6;
-    move.capture = H6;
-    move.special = NOT_SPECIAL;
-    //makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-
-    //white move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = H4;
-    move.dst = F6;
-    move.capture = F6;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut,&positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-    return move == moveOut;
-}
-
-bool mateInThreeTest() {
-    Board bord{};
-    Move move{};
-    Move moveOut{};
-    TranspositionTable transpositionTable;
-    PositionTracker positionTracker;
-    setupEmpty(&bord);
-    std::string fen = "r3k2r/ppp2Npp/1b5n/4p2b/2B1P2q/BQP2P2/P5PP/RN5K w kq - 1 0";
-    //readInFen(&bord, &fen);
-    //printBoard(&bord);
-    int depth = 5; // set the depth for the minimax
-    MOVELIST moveList{};
-    // Clear move list
-
-    //white move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = C4;
-    move.dst = B5;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut,&positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-    //black move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = C7;
-    move.dst = C6;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-
-    //white move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = B3;
-    move.dst = E6;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-    //black move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = H4;
-    move.dst = E7;
-    move.capture = -52;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-
-    //white move
-    moveList.count = 0;   // set each field for each move
-    //GenLegalMoveList(&moveList, &bord, &positionTracker);
-    //minimax_root(&bord, depth, true, &moveOut, &moveList, &transpositionTable, &positionTracker);
-    //cout << "the minimax engine selected: " << moveToString(&moveOut) << " out of " << moveList.count << " moves and it was located at position: " << findMoveIndex(&moveList, &moveOut) << endl;
-    move.src = E6;
-    move.dst = E7;
-    move.capture = E7;
-    move.special = NOT_SPECIAL;
-    makeMove(&bord, &moveOut, &positionTracker);
-    //printBoard(&bord);
-    if (!(move == moveOut)) {
-        return false;
-    }
-    return move == moveOut;
-}
-
-bool runAutomatedTests() {
-    // run mate in one test
-    cout << "mate in one test" << endl;
-    if (mateInOneTest()) {
-        cout << "SUCCEED" << endl;
-    }
-    else {
-        cout << "FAILED" << endl;
-        return false;
-    }
-    // run mate in two test
-    cout << "mate in two test" << endl;
-    if (mateInTwoTest()) {
-        cout << "SUCCEED" << endl;
-    }
-    else {
-        cout << "FAILED" << endl;
-        return false;
-    }
-    // run mate in three test
-    cout << "mate in three test" << endl;
-    if (mateInThreeTest()) {
-        cout << "SUCCEED" << endl;
-    }
-    else {
-        cout << "FAILED" << endl;
-        return false;
-    }
-    return true;
-}
-
-bool runAutomatedTestsSilent() {
-    if (!mateInOneTest()) {
-        cout << "mate in one test FAILED" << endl;
-        return false;
-    }
-    if (!mateInTwoTest()){
-        cout << "mate in two test FAILED" << endl;
-        return false;
-    }
-    if (!mateInThreeTest()){
-        cout << "mate in three test FAILED" << endl;
-        return false;
-    }
-    return true;
 }
