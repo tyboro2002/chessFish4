@@ -1,10 +1,24 @@
 #include "MiniMaxEngine.h"
 
 void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, Action *moveOut, ActionList *moveList) {
-    //TODO transposition tables
     //TODO try iterative deepening (maybe in other engine)
     //std::cout << "root" << std::endl;
     //printFancyBoard(bord);
+    transpositionTable.printInfoShort();
+    //transpositionTable.printTranspositionTable();
+
+    // Lookup the position in the Transposition Table
+    TranspositionTableEntry* ttEntry = transpositionTable.lookup(bord);
+    if (ttEntry != nullptr && ttEntry->depth >= depth) {
+        // Return the stored evaluation score if depth is sufficient
+        moveOut->src = (ttEntry->bestMove).src;
+        moveOut->dst = (ttEntry->bestMove).dst;
+        moveOut->special = (ttEntry->bestMove).special;
+        printAction(&ttEntry->bestMove);
+        std::cout << "used transposition table" << std::endl;
+        return;
+    }
+
     double best_move = maximize ? -INFINITY : INFINITY;
     orderMoves(bord, moveList);
     int size = moveList->count;
@@ -33,6 +47,8 @@ void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, A
             best_move_found = move;
         }
     }
+
+    transpositionTable.store(bord, best_move, depth, best_move_found);
     moveOut->src = best_move_found.src;
     moveOut->dst = best_move_found.dst;
     moveOut->special = best_move_found.special;
@@ -40,6 +56,13 @@ void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, A
 
 double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int currentDepth, bool maximizing_player, bool whitePlays) {
     if (currentDepth == 0) return evaluateBoard(bord);
+
+    // Lookup the position in the Transposition Table
+    TranspositionTableEntry* ttEntry = transpositionTable.lookup(bord);
+    if (ttEntry != nullptr && ttEntry->depth >= depth) {
+        // Return the stored evaluation score if depth is sufficient
+        return ttEntry->score;
+    }
 
     if (maximizing_player) {
         float best_move = -INFINITY;
@@ -67,7 +90,10 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             best_move = (best_move > curr_move) ? best_move : curr_move;
             alpha = (alpha > best_move) ? alpha : best_move;
-            if (beta <= alpha) return best_move;
+            if (beta <= alpha){
+                transpositionTable.store(bord, best_move, depth, moveList.moves[i]);
+                return best_move;
+            }
         }
         return best_move;
     }
@@ -96,7 +122,10 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             best_move = (best_move < curr_move) ? best_move : curr_move;
             beta = (beta < best_move) ? beta : best_move;
-            if (beta <= alpha) return best_move;
+            if (beta <= alpha){
+                transpositionTable.store(bord, best_move, depth, moveList.moves[i]);
+                return best_move;
+            }
         }
         return best_move;
     }

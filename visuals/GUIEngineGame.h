@@ -283,7 +283,7 @@ private:
      */
 
     int selectedSquare = -1;
-    std::string message = "";
+    std::string message;
     U64 mask = 0ULL;
     bool gameOver = false;
 

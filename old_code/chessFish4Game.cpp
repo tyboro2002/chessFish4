@@ -6,7 +6,7 @@ void runGame() {
     Board bord{};
     Action action;
     ActionList actionList;
-    TranspositionTable transpositionTable;
+    //TranspositionTable transpositionTable;
     PositionTracker positionTracker;
     //setupEmpty(&bord);
     //std::string fen = "4kb1r/p2ppppp/8/8/8/8/P1PPPPPP/RQ2KB1R w - - 0 1";

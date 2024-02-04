@@ -284,8 +284,8 @@ inline int move_value(Board* bord, Action* mv, bool endgame) {
     */
 
     if (mv->special != Non_Exceptional) {
-        if (bord->whiteToPlay) return INFINITY;
-        else return -INFINITY;
+        if (bord->whiteToPlay) return INT32_MAX;
+        else return -INT32_MAX;
     }
 
     Pieces _piece = pieceAt(mv->src, bord);
@@ -327,3 +327,76 @@ inline void orderMoves(Board* bord, ActionList* moveList) {
 
     if (!bord->whiteToPlay) reverseArray(moveList->moves, size);
 }
+
+struct TranspositionTableEntry {
+    int score = 0;
+    int depth = 0;
+    Action bestMove;
+};
+
+class TranspositionTable {
+public:
+    TranspositionTable() : currentSize(0), maxSizeBytes(100 * 1024 * 1024) {} // 100MB
+
+    void store(Board* board, const int score, const int depth, Action bestMove) {
+        //printFancyBoard(board);
+        size_t hashValue = std::hash<Board>{}(*board);
+        TranspositionTableEntry entry = { score, depth, bestMove };
+
+        // If adding this entry will exceed the max size, evict some entries
+        while (currentSize + sizeof(entry) > maxSizeBytes) {
+            evictOldestEntry();
+        }
+
+        // Store the entry and update the size
+        table[hashValue] = entry;
+        currentSize += sizeof(entry);
+    }
+
+    size_t getCurrentSize() const { return currentSize; }
+    size_t getNumElements() const { return table.size(); }
+
+    void printInfoShort() const {
+        std::cout << "Current size of TranspositionTable: " << currentSize << " bytes" << std::endl;
+        std::cout << "Number of elements in TranspositionTable: " << table.size() << std::endl;
+    }
+
+    void printTranspositionTable() {
+        std::cout << "Current size of TranspositionTable: " << currentSize << " bytes" << std::endl;
+        std::cout << "Number of elements in TranspositionTable: " << table.size() << std::endl;
+        std::cout << "TranspositionTable Entries:" << std::endl;
+
+        for (const auto& entry : table) {
+            std::cout << "Hash: " << entry.first << std::endl;
+            std::cout << "  Score: " << entry.second.score << std::endl;
+            std::cout << "  Depth: " << entry.second.depth << std::endl;
+            std::cout << "  Best Move: ";
+            printAction(&entry.second.bestMove);
+            std::cout << "------------------------" << std::endl;
+        }
+    }
+
+    TranspositionTableEntry* lookup(Board* board) {
+        auto it = table.find(std::hash<Board>{}(*board));
+        if (it != table.end()) return &(it->second);
+        return nullptr;
+    }
+
+    void clear() {
+        table.clear();
+        currentSize = 0;
+    }
+
+private:
+    std::unordered_map<size_t, TranspositionTableEntry> table;
+    size_t currentSize;
+    const size_t maxSizeBytes;
+
+    void evictOldestEntry() {
+        if (!table.empty()) {
+            size_t oldestKey = table.begin()->first;
+            currentSize -= sizeof(table[oldestKey]);
+            table.erase(oldestKey);
+        }
+    }
+};
