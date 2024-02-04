@@ -1,6 +1,8 @@
 #include "MiniMaxEngine.h"
 
 void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, Action *moveOut, ActionList *moveList) {
+    //TODO transposition tables
+    //TODO try iterative deepening (maybe in other engine)
     //std::cout << "root" << std::endl;
     //printFancyBoard(bord);
     double best_move = maximize ? -INFINITY : INFINITY;
@@ -40,7 +42,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
     if (currentDepth == 0) return evaluateBoard(bord);
 
     if (maximizing_player) {
-        double best_move = -INFINITY;
+        float best_move = -INFINITY;
         ActionList moveList{};
         moveList.count = 0;
         getLegalMoves(bord,&moveList);
@@ -49,13 +51,13 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
         for (int i = 0; i < moveList.count; i++) {
             Board boardCopy{};
             copyBoard(bord, &boardCopy);
-            movePiece(bord,&moveList.moves[i]);
+            movePiece(&boardCopy,&moveList.moves[i]);
 
             //printFancyBoard(&boardCopy);
             if (isChekmate(&boardCopy)) return INFINITY;
 
             double curr_move = -INFINITY;
-            if (!isDraw(bord)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1, false,
+            if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1, false,
                                                    whitePlays);
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
@@ -79,12 +81,12 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
         for (int i = 0; i < moveList.count; i++) {
             Board boardCopy{};
             copyBoard(bord, &boardCopy);
-            movePiece(bord,&moveList.moves[i]);
+            movePiece(&boardCopy,&moveList.moves[i]);
 
             if (isChekmate(&boardCopy)) return -INFINITY;
 
             double curr_move = INFINITY;
-            curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1,
+            if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1,
                                 true, !whitePlays);
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
