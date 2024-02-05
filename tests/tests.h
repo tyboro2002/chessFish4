@@ -45,6 +45,8 @@ private:
     void testCheckMateFunction();
     void testIsEndedFunction();
 
+    void testMoveToFront();
+
     //TODO fen test function
 
     void testGeneralPerftResultst();

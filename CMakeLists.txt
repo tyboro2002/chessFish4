@@ -35,6 +35,8 @@ add_executable(ChessFish4 main.cpp
         configurations.h
         engines/IterativeDeepeningMinimaxEngine.cpp
         engines/IterativeDeepeningMinimaxEngine.h
+        engines/Extra/StockFishEngine.cpp
+        engines/Extra/StockFishEngine.h
 )
 
 target_link_libraries(ChessFish4 PRIVATE

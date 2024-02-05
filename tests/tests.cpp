@@ -408,6 +408,28 @@ void TestRunner::pawnMovesGenerator() {
     //TODO add en passent tests
 }
 
+void TestRunner::testMoveToFront() {
+    ActionList testActionList;
+    testActionList.addMove(G1,H3);
+    testActionList.addMove(G1,F3);
+    testActionList.addMove(B1,C3);
+    testActionList.addMove(B1,A3);
+
+    // Create a copy of the initial action list for comparison
+    ActionList originalActionList = testActionList;
+
+    // Move G1,F3 to the front
+    testActionList.moveToFront({G1,F3});
+
+    // Check if count is the same
+    testResultTrue(testActionList.count == originalActionList.count, "Move to front - Count check");
+
+    // Check if the moved action is now at the front
+    testResultTrue(testActionList.moves[0] == Action{G1,F3}, "Move to front - Action at front check");
+    testResultTrue(testActionList.moves[1] == Action{G1,H3}, "Move to front - Action at second check");
+    testResultTrue(testActionList.moves[2] == Action{B1,C3}, "Move to front - Action at third check");
+    testResultTrue(testActionList.moves[3] == Action{B1,A3}, "Move to front - Action at fourth check");
+}
 
 /* action list test */
 void TestRunner::GenerateActions() {
@@ -598,6 +620,8 @@ int TestRunner::runAutomatedTestCases() {
     testDrawFunction();
     testCheckMateFunction();
     testIsEndedFunction();
+
+    testMoveToFront();
 
     //testGeneralPerftResultst();
 

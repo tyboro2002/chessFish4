@@ -1,10 +1,9 @@
 #include "MiniMaxEngine.h"
 
-void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, Action *moveOut, ActionList *moveList) {
-    //TODO try iterative deepening (maybe in other engine)
+void MiniMaxEngine::minimax_root(Board *bord, bool maximize, Action *moveOut, ActionList *moveList) {
     //std::cout << "root" << std::endl;
     //printFancyBoard(bord);
-    transpositionTable.printInfoShort();
+    //transpositionTable.printInfoShort();
     //transpositionTable.printTranspositionTable();
 
     // Lookup the position in the Transposition Table
@@ -14,8 +13,8 @@ void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, A
         moveOut->src = (ttEntry->bestMove).src;
         moveOut->dst = (ttEntry->bestMove).dst;
         moveOut->special = (ttEntry->bestMove).special;
-        printAction(&ttEntry->bestMove);
-        std::cout << "used transposition table" << std::endl;
+        //printAction(&ttEntry->bestMove);
+        //std::cout << "used transposition table" << std::endl;
         return;
     }
 
@@ -40,7 +39,7 @@ void MiniMaxEngine::minimax_root(Board *bord, int currentDepth, bool maximize, A
         }
 
         double value = 0.0;
-        if (!isDraw(bord)) value = minimax(&boardCopy, -INFINITY, INFINITY, currentDepth - 1, !maximize, bord->whiteToPlay);
+        if (!isDraw(bord)) value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, bord->whiteToPlay);
         //std::cout << "resulted in: " << value << std::endl;
         if ((maximize && value > best_move) || (!maximize && value < best_move)) {
             best_move = value;
@@ -59,7 +58,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
     // Lookup the position in the Transposition Table
     TranspositionTableEntry* ttEntry = transpositionTable.lookup(bord);
-    if (ttEntry != nullptr && ttEntry->depth >= depth) {
+    if (ttEntry != nullptr && ttEntry->depth >= currentDepth) {
         // Return the stored evaluation score if depth is sufficient
         return ttEntry->score;
     }
@@ -91,7 +90,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
             best_move = (best_move > curr_move) ? best_move : curr_move;
             alpha = (alpha > best_move) ? alpha : best_move;
             if (beta <= alpha){
-                transpositionTable.store(bord, best_move, depth, moveList.moves[i]);
+                transpositionTable.store(bord, best_move, currentDepth, moveList.moves[i]);
                 return best_move;
             }
         }
@@ -123,7 +122,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
             best_move = (best_move < curr_move) ? best_move : curr_move;
             beta = (beta < best_move) ? beta : best_move;
             if (beta <= alpha){
-                transpositionTable.store(bord, best_move, depth, moveList.moves[i]);
+                transpositionTable.store(bord, best_move, currentDepth, moveList.moves[i]);
                 return best_move;
             }
         }

@@ -22,7 +22,7 @@ std::string actionToString(const Action* move) {
     return squareToString(move->src) + squareToString(move->dst) + (move->special == Promote_Rook ? "r" : "") + (move->special == Promote_Knight ? "n" : "") + (move->special == Promote_Bishop ? "b" : "") + (move->special == Promote_Queen ? "q" : "");
 }
 
-void printPositionRecords(const PositionTracker* tracker) { //only used in old code
+void printPositionRecords(const PositionTracker* tracker) {
     for (const auto& entry : tracker->getPositionRecords()) {
         const size_t positionHash = entry.first;
         const PositionRecord& record = entry.second;
@@ -490,4 +490,11 @@ void printAction(const Action* action){
 
 void printActionList(const ActionList* actionList){
     for (int i = 0; i<actionList->count; i++) printAction(&actionList->moves[i]);
+}
+
+void printActionListNumberd(const ActionList* actionList){
+    for (int i = 0; i<actionList->count; i++) {
+        std::cout << i << ") ";
+        printAction(&actionList->moves[i]);
+    }
 }

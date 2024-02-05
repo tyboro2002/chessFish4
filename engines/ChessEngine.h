@@ -1,5 +1,6 @@
 #pragma once
 #include "../game.h"
+#include "../configurations.h"
 #include <map>
 
 enum Engines { // to add an engine add it in this list and in the list in the constructor in GUIEngineGame.h
@@ -7,6 +8,8 @@ enum Engines { // to add an engine add it in this list and in the list in the co
     MINIMAX,
     RANDOM,
     MONTE_CARLO,
+    ITERATIVE_DEEPENING,
+    STOCKFISH,
     NUM_ENGINES
 };
 
@@ -200,6 +203,19 @@ const int kingEvalEndGameBlack[64] = {
         -30, -30, -30, -30, -30, -30, 50
 };
 
+inline bool check_end_game(Board* bord) {
+    /*
+    *  Are we in the end game ?
+    *  Per Michniewski :
+    *  -Both sides have no queens or
+    *  -Every side which has a queen has additionally no other pieces or one minorpiece maximum.
+    */
+
+    int queens = countSetBits(bord->queen);
+    int minors = countSetBits(bord->bishop | bord->knight);
+    return queens == 0 || (queens == 2 && minors <= 1);
+}
+
 class ChessEngine {
 public:
     virtual void initialize() = 0;
@@ -312,7 +328,7 @@ inline void reverseArray(Action* arr, const std::size_t size) {
 }
 
 inline void orderMoves(Board* bord, ActionList* moveList) {
-    bool end_game = false;//check_end_game(bord); //TODO make function to check for endgame
+    bool end_game = check_end_game(bord);
 
     int size = moveList->count;
     // Define a lambda function to compare moves by their values
@@ -336,7 +352,8 @@ struct TranspositionTableEntry {
 
 class TranspositionTable {
 public:
-    TranspositionTable() : currentSize(0), maxSizeBytes(100 * 1024 * 1024) {} // 100MB
+    TranspositionTable(int size) : currentSize(0), maxSizeBytes(size) {}
+    TranspositionTable() : currentSize(0), maxSizeBytes(TRANSPOSITION_TABLE_SIZE_DEFAULT) {} // 100MB
 
     void store(Board* board, const int score, const int depth, Action bestMove) {
         //printFancyBoard(board);

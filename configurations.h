@@ -1,5 +1,14 @@
 #pragma once
 
+/* path to engines for extra engines */
+#define COMMANDS_PATH "../externalEngines/testCommands.txt"
+#define OUTPUT_PATH "../externalEngines/output.txt"
+
+/* size of transpositionTable (sort of cache size) */
+#define TRANSPOSITION_TABLE_SIZE_DEFAULT (100 * 1024 * 1024)
+#define TRANSPOSITION_TABLE_SIZE_MINIMAX (1024 * 1024 * 1024)
+#define TRANSPOSITION_TABLE_SIZE_ITERATIVE_DEEPENING (200 * 1024 * 1024)
+
 /* speed of simulations */
 #define LOOP_FRAMES 1
 

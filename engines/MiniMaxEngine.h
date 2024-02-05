@@ -16,7 +16,7 @@ public:
         ActionList actionList;
         getLegalMoves(bord,&actionList);
         Action move;
-        minimax_root(bord, depth, false, &move, &actionList); //maximize means if its white ?
+        minimax_root(bord, false, &move, &actionList); //maximize means if its white ?
         movePiece(bord,&move);
         //printAction(&move);
         //std::cout << "MiniMax move made.\n";
@@ -24,8 +24,8 @@ public:
 
 private:
     int depth = 0;
-    TranspositionTable transpositionTable;
-    void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, ActionList* moveList);
+    TranspositionTable transpositionTable = TranspositionTable(TRANSPOSITION_TABLE_SIZE_MINIMAX);
+    void minimax_root(Board* bord, bool maximize, Action* moveOut, ActionList* moveList);
     double minimax(Board* bord, double alpha, double beta, int depth, bool maximizing_player, bool whitePlays);
 };
 

@@ -8,6 +8,8 @@
 #include "../engines/RandomEngine.h"
 #include "../engines/MonteCarloEngine.h"
 #include "../engines/MiniMaxEngine.h"
+#include "../engines/IterativeDeepeningMinimaxEngine.h"
+#include "../engines/Extra/StockFishEngine.h"
 #include "../configurations.h" /* include all configurations for the visual engine */
 
 #include "../magic_numbers/MagicsTester.h"
@@ -53,7 +55,10 @@ public:
         engineInfoArray.emplace_back("Minimax Engine", MINIMAX, "../assets/engine_logos/minimax.png");
         engineInfoArray.emplace_back("Random Engine", RANDOM, "../assets/engine_logos/random.png");
         engineInfoArray.emplace_back("Monte Carlo Engine", MONTE_CARLO, "../assets/engine_logos/monte-carlo.png");
+        engineInfoArray.emplace_back("Iterative Deepening minimax engine",ITERATIVE_DEEPENING,"../assets/engine_logos/iterative-deepening.png");
+        engineInfoArray.emplace_back("StockFish engine",STOCKFISH,"../assets/engine_logos/stockfish.png");
 
+        stockFishEngine->initialize();
 
         detailedResults.emplace_back("white wins by Checkmate", WHITE_WINS_Checkmate, "../assets/end_screens/white/white-won-Checkmate.png");
         detailedResults.emplace_back("white wins by Resignation", WHITE_WINS_Resignation, "../assets/end_screens/white/white-won-Resignation.png");
@@ -127,6 +132,12 @@ public:
                                     case MINIMAX:
                                         miniMaxEngine->makeMove(&bord);
                                         break;
+                                    case ITERATIVE_DEEPENING:
+                                        iterativeDeepeningMiniMaxEngine->makeMove(&bord);
+                                        break;
+                                    case STOCKFISH:
+                                        stockFishEngine->makeMove(&bord);
+                                        break;
                                     case HUMAN:
                                         Action action = {.src = selectedSquare, .dst = toSq};
                                         if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
@@ -146,6 +157,12 @@ public:
                                     case MINIMAX:
                                         miniMaxEngine->makeMove(&bord);
                                         break;
+                                    case ITERATIVE_DEEPENING:
+                                        iterativeDeepeningMiniMaxEngine->makeMove(&bord);
+                                        break;
+                                    case STOCKFISH:
+                                        stockFishEngine->makeMove(&bord);
+                                        break;
                                     case HUMAN:
                                         Action action = {.src = selectedSquare, .dst = toSq};
                                         if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
@@ -155,8 +172,10 @@ public:
                                 //cout << "black move made" << endl;
                                 //printFancyBoard(&bord);
                             }
+                            moveNumber++;
+                            positionTracker.addPosition(&bord);
 
-                            if(isEnded(&bord)) {
+                            if(isEnded(&bord, &positionTracker)) {
                                 //cout << "game ended before this" << endl;
                                 gameOver = True;
                             }
@@ -170,7 +189,7 @@ public:
                         getLegalMoves(&bord, &actionList);
                         mask = calculateBitmapFromSquare(selectedSquare, &actionList);
                     }
-                    message = "Clicked Row: " + std::to_string(row) + ", Col: " + std::to_string(col) + ", resulting in square: " + std::to_string(selectedSquare);
+                    message = "move: " + std::to_string(moveNumber) + " done";
                 } else if (calculateDistance(x, y, WHITE_ENGINE_SELECTION_X + engineInfoArray.at(0).pLogo->width / 2, WHITE_ENGINE_SELECTION_Y + engineInfoArray.at(0).pLogo->height / 2) <= ENGINE_TOLERANCE && !doMove){
                     selectedWhiteEngine = (selectedWhiteEngine +1 ) % amountOfEngines;
                     message = "white engine rotated";
@@ -206,7 +225,7 @@ public:
             }
         }
 
-        DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message);
+        DrawString(ScreenWidth() / 2 - 10, ScreenHeight() / 2 + 30, message, olc::WHITE, TEXT_SIZE);
         DrawString(CASTELING_RIGHTS_X, CASTELING_RIGHTS_Y, "castling rights:",olc::WHITE,TEXT_SIZE);
         SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
         //draw white king side castling rights
@@ -249,8 +268,10 @@ public:
                 if(bord.halfmoveClock >= 100){
                     DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_50_move_rule),END_GAME_SIZE);
                     if(loopGames > 0) simulationResults.update(DRAW_50_move_rule);
-                }
-                else{
+                } else if(positionTracker.getPositionOccurrences(&bord) >= 3){
+                    DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_Repetition),END_GAME_SIZE);
+                    if(loopGames > 0) simulationResults.update(DRAW_Repetition);
+                }else{
                     DrawSprite(END_GAME_X,END_GAME_Y,getEndGameSprite(DRAW_Stalemate),END_GAME_SIZE);
                     if(loopGames > 0) simulationResults.update(DRAW_Stalemate);
                 }
@@ -270,6 +291,9 @@ private:
     SimulationResults simulationResults;
 
     Board bord{};
+    PositionTracker positionTracker;
+    int moveNumber = 0;
+
     olc::Sprite spriteSheet;
     /* engine info structs */
     std::vector<EngineInfo> engineInfoArray;
@@ -295,11 +319,15 @@ private:
     ChessEngine* randomEngine = new RandomChessEngine();
     ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
     ChessEngine* miniMaxEngine = new MiniMaxEngine(5);
+    ChessEngine* iterativeDeepeningMiniMaxEngine = new IterativeDeepeningMinimaxEngine(2);
+    ChessEngine* stockFishEngine = new StockFishEngine(2);
 
     void reset(){
         gameOver = false;
         setup(&bord);
         loopGames--;
+        moveNumber = 0;
+        positionTracker.clear();
         if(loopGames <= 0){
             loopGames = 0;
             loop = false;

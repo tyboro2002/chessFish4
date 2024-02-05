@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <bitset>
+#include <sstream>
 #include "moves.h"
 
 typedef unsigned long long U64;
@@ -263,64 +264,27 @@ struct ActionList{
     void popMove(){
         count--;
     }
+
+    // Function to move a specific move to the front
+    bool moveToFront(const Action& action) {
+        // Find the move in the list
+        for (int i = 0; i < count; ++i) {
+            if (moves[i].src == action.src && moves[i].dst == action.dst && moves[i].special == action.special) {
+                // Move the found move to the front
+                Action temp = moves[i];
+                for (int j = i; j >= 0; j--) {
+                    moves[j] = moves[j - 1];
+                }
+                moves[0] = temp;
+                return true;
+            }
+        }
+        return false; // Move not found in the list
+    }
 };
 
 void printBoard(Board* bord);
 void printFancyBoard(Board* bord);
-
-struct PositionRecord {
-    int occurrences;
-};
-
-class PositionTracker {
-public:
-    //PositionTracker() {} //constructor
-
-    bool addPosition(const Board* position) {
-        size_t positionHash = std::hash<Board>{}(*position);
-        positionRecords[positionHash].occurrences++;
-        return positionRecords[positionHash].occurrences >= 3;
-    }
-
-    void removePosition(Board* position) {
-        size_t positionHash = std::hash<Board>{}(*position);
-        auto it = positionRecords.find(positionHash);
-        if (it != positionRecords.end()) {
-            if (it->second.occurrences > 1) {
-                it->second.occurrences--;
-                return;
-            }
-            else {
-                positionRecords.erase(it);
-                return;
-            }
-        }
-        printBoard(position);
-        std::cout << "bord nie gevonde" << std:: endl;
-    }
-
-    int getPositionOccurrences(const Board* position) const {
-        size_t positionHash = std::hash<Board>{}(*position);
-        auto it = positionRecords.find(positionHash);
-        if (it != positionRecords.end()) {
-            return it->second.occurrences;
-        }
-        return 0;
-    }
-
-    void clear() {
-        positionRecords.clear();
-    }
-
-    const std::unordered_map<size_t, PositionRecord>& getPositionRecords() const {
-        return positionRecords;
-    }
-
-private:
-    std::unordered_map<size_t, PositionRecord> positionRecords;
-};
-
-void printPositionRecords(const PositionTracker* tracker);
 
 Pieces pieceAt(int square,const Board* bord);
 
@@ -382,6 +346,9 @@ void readInFen(Board* bord,const char* fen);
 
 /* print an actionlist */
 void printActionList(const ActionList* actionList);
+
+/* print an action list prefixed by the number of each move */
+void printActionListNumberd(const ActionList* actionList);
 
 /* print an action */
 void printAction(const Action* action);
@@ -933,8 +900,58 @@ inline void getAllMoves(Board* bord, ActionList* actionList){
     for (int i = 0;i<64;i++){ getMovesAtSquare(bord,i,actionList);}
 }
 
-inline bool isDraw(Board* bord){ //TODO test
-    // TODO 3 fold repetition ?
+
+struct PositionRecord {
+    int occurrences;
+};
+
+class PositionTracker {
+public:
+    //PositionTracker() {} //constructor
+
+    bool addPosition(const Board* position) {
+        size_t positionHash = std::hash<Board>{}(*position);
+        positionRecords[positionHash].occurrences++;
+        return positionRecords[positionHash].occurrences >= 3;
+    }
+
+    void removePosition(Board* position) {
+        size_t positionHash = std::hash<Board>{}(*position);
+        auto it = positionRecords.find(positionHash);
+        if (it != positionRecords.end()) {
+            if (it->second.occurrences > 1) {
+                it->second.occurrences--;
+                return;
+            }
+            else {
+                positionRecords.erase(it);
+                return;
+            }
+        }
+        printBoard(position);
+        std::cout << "bord nie gevonde" << std:: endl;
+    }
+
+    int getPositionOccurrences(const Board* position) const {
+        size_t positionHash = std::hash<Board>{}(*position);
+        auto it = positionRecords.find(positionHash);
+        if (it != positionRecords.end()) return it->second.occurrences;
+        return 0;
+    }
+
+    void clear() {
+        positionRecords.clear();
+    }
+
+    const std::unordered_map<size_t, PositionRecord>& getPositionRecords() const {
+        return positionRecords;
+    }
+
+private:
+    std::unordered_map<size_t, PositionRecord> positionRecords;
+};
+
+inline bool isDraw(Board* bord){
     // TODO test op insuficient material ?
     if(countSetBits(bord->white) == 1 && countSetBits(bord->black) == 1) return true;
     ActionList actionList;
@@ -942,14 +959,22 @@ inline bool isDraw(Board* bord){ //TODO test
     return bord->halfmoveClock >= 100 || (actionList.count == 0 && calculateKingDanger(bord) == 0ULL);
 }
 
-inline bool isChekmate(Board* bord) { //TODO test
+inline bool isDraw(Board* bord,PositionTracker* positionTracker){
+    return positionTracker->getPositionOccurrences(bord) >= 3 || isDraw(bord);
+}
+
+inline bool isChekmate(Board* bord) {
     ActionList actionList;
     getLegalMoves(bord,&actionList);
     return actionList.count == 0 && calculateKingDanger(bord);
 }
 
-inline bool isEnded(Board* bord){ //TODO test
+inline bool isEnded(Board* bord){
     return isChekmate(bord) || isDraw(bord);
+}
+
+inline bool isEnded(Board* bord, PositionTracker* positionTracker){
+    return isChekmate(bord) || isDraw(bord, positionTracker);
 }
 
 // Function to copy values from bordIn to bordOut
@@ -975,4 +1000,112 @@ inline void copyBoard(const Board* bordIn, Board* bordOut) {
     bordOut->reserved = bordIn->reserved;
 }
 
+void printPositionRecords(const PositionTracker* tracker);
+
+inline std::string convertToFEN(const Board* board){
+    std::stringstream fen;
+
+    Square order[] = {
+            A8, B8, C8, D8, E8, F8, G8, H8,
+            A7, B7, C7, D7, E7, F7, G7, H7,
+            A6, B6, C6, D6, E6, F6, G6, H6,
+            A5, B5, C5, D5, E5, F5, G5, H5,
+            A4, B4, C4, D4, E4, F4, G4, H4,
+            A3, B3, C3, D3, E3, F3, G3, H3,
+            A2, B2, C2, D2, E2, F2, G2, H2,
+            A1, B1, C1, D1, E1, F1, G1, H1,
+    };
+
+    int empty = 0;
+    for (Square sq : order){
+        Pieces at = pieceAt(sq,board);
+        if(at != NOPIECE){
+            if(empty != 0) fen << empty;
+            empty = 0;
+        }
+        if((sq%8 == 0 && sq != H1)){
+            if(empty != 0) fen << empty;
+            empty = 0;
+        }
+        //std::cout << fen.str() << std::endl;
+        switch (at) {
+            case NOPIECE:
+                empty++;
+                break;
+            case WROOK:
+                fen << "R";
+                break;
+            case WKNIGHT:
+                fen << "N";
+                break;
+            case WBISCHOP:
+                fen << "B";
+                break;
+            case WQUEEN:
+                fen << "Q";
+                break;
+            case WKING:
+                fen << "K";
+                break;
+            case WPAWN:
+                fen << "P";
+                break;
+            case BROOK:
+                fen << "r";
+                break;
+            case BKNIGHT:
+                fen << "n";
+                break;
+            case BBISCHOP:
+                fen << "b";
+                break;
+            case BQUEEN:
+                fen << "q";
+                break;
+            case BKING:
+                fen << "k";
+                break;
+            case BPAWN:
+                fen << "p";
+                break;
+        }
+        if(sq%8 == 0 && sq != H1) fen << "/";
+    }
+
+    fen << ' ';
+
+    // Append active color
+    fen << (board->whiteToPlay ? 'w' : 'b') << ' ';
+
+    // Castling availability
+    std::string castlingAvailability = "";
+    if (board->whiteKingsideCastle) castlingAvailability += "K";
+    if (board->whiteQueensideCastle) castlingAvailability += "Q";
+    if (board->blackKingsideCastle) castlingAvailability += "k";
+    if (board->blackQueensideCastle) castlingAvailability += "q";
+
+    // If no castling availability, use "-" instead
+    if (castlingAvailability.empty()) {
+        castlingAvailability = "-";
+    }
+
+    fen << castlingAvailability << " ";
+
+    // Append en passant square
+    if (board->enPassentValid) {
+        char fileChar = 'a' + ((63-board->enPassantTarget) % 8);
+        char rankChar = '1' + ((board->enPassantTarget) / 8);
+        fen << fileChar << rankChar;
+    } else {
+        fen << '-';
+    }
+
+    // Append halfmove clock and fullmove number (both set to 0 for simplicity)
+    fen << " 0 0";
+
+    return fen.str();
+}
+
+
 //TODO a function to convert from board to fen (see: string Position::fen() const { from https://github.com/official-stockfish/Stockfish/blob/master/src/position.cpp)
+
