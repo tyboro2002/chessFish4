@@ -87,6 +87,25 @@ private:
                 Action action;
                 action.src = (7-(bestmove[0] - 'a')) + (bestmove[1] - '1') * 8;
                 action.dst = (7-(bestmove[2] - 'a')) + (bestmove[3] - '1') * 8;
+                if(bestmove[4] != ' '){
+                    switch (bestmove[4]) {
+                        case 'q':
+                            action.special = Promote_Queen;
+                            break;
+                        case 'r':
+                            action.special = Promote_Rook;
+                            break;
+                        case 'n':
+                            action.special = Promote_Knight;
+                            break;
+                        case 'b':
+                            action.special = Promote_Bishop;
+                            break;
+                        default:
+                            action.special = Non_Exceptional;
+                            break;
+                    }
+                }
                 return action;
             }
         }

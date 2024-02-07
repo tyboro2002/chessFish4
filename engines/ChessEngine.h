@@ -168,10 +168,10 @@ const int kingEvalWhite[64] = {
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
-        -30, -40, -40, -50, -50, -40, -40, -30
+        -30, -40, -40, -50, -100, -40, -40, -30 //TODO old [60] is 50 check if this is better
 };
 const int kingEvalBlack[64] = {
-        -30, -40, -40, -50, -50, -40, -40, -30,
+        -30, -40, -40, -50, -100, -40, -40, -30, //TODO old [4] is 50 check if this is better
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
@@ -224,9 +224,10 @@ public:
 };
 
 inline int evaluateBoard(Board* bord){
-    U64 colorMask;
-    if(bord->whiteToPlay) colorMask = bord->white;
-    else colorMask = bord->black;
+    //U64 colorMask;
+    //if(bord->whiteToPlay) colorMask = bord->white;
+    //else colorMask = bord->black;
+    U64 colorMask = (bord->white & -bord->whiteToPlay) | (bord->black & ~(-bord->whiteToPlay));
     int pawnScore = countSetBits(colorMask & bord->pawn);
     int knightScore = countSetBits(colorMask & bord->knight) * 3;
     int bishopScore = countSetBits(colorMask & bord->bishop) * 3;

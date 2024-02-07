@@ -12,6 +12,10 @@
 /* speed of simulations */
 #define LOOP_FRAMES 1
 
+/* mate constants */
+const int MATE_SCORE = 1000000000; //TODO look why no define
+const int MATE_THRESHOLD = 999000000; //TODO look why no define
+
 /* visual configurations */
 #define CHESS_SIZE 8
 #define BITMAPS 64

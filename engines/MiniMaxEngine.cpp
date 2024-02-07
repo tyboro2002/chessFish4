@@ -31,7 +31,7 @@ void MiniMaxEngine::minimax_root(Board *bord, bool maximize, Action *moveOut, Ac
         //printAction(&move);
         //printFancyBoard(&boardCopy);
 
-        if (isChekmate(&boardCopy)) {
+        if (isCheckmate(&boardCopy)) {
             moveOut->src = move.src;
             moveOut->dst = move.dst;
             moveOut->special = move.special;
@@ -39,7 +39,7 @@ void MiniMaxEngine::minimax_root(Board *bord, bool maximize, Action *moveOut, Ac
         }
 
         double value = 0.0;
-        if (!isDraw(bord)) value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, bord->whiteToPlay);
+        if (!isDraw(&boardCopy)) value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, boardCopy.whiteToPlay);
         //std::cout << "resulted in: " << value << std::endl;
         if ((maximize && value > best_move) || (!maximize && value < best_move)) {
             best_move = value;
@@ -76,7 +76,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
             movePiece(&boardCopy,&moveList.moves[i]);
 
             //printFancyBoard(&boardCopy);
-            if (isChekmate(&boardCopy)) return INFINITY;
+            if (isCheckmate(&boardCopy)) return INFINITY;
 
             double curr_move = -INFINITY;
             if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1, false,
@@ -84,8 +84,8 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
-            //if (curr_move > MATE_THRESHOLD) curr_move -= 1;
-            //else if (curr_move < -MATE_THRESHOLD) curr_move += 1;
+            if (curr_move > MATE_THRESHOLD) curr_move -= 1;
+            else if (curr_move < -MATE_THRESHOLD) curr_move += 1;
 
             best_move = (best_move > curr_move) ? best_move : curr_move;
             alpha = (alpha > best_move) ? alpha : best_move;
@@ -108,7 +108,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
             copyBoard(bord, &boardCopy);
             movePiece(&boardCopy,&moveList.moves[i]);
 
-            if (isChekmate(&boardCopy)) return -INFINITY;
+            if (isCheckmate(&boardCopy)) return -INFINITY;
 
             double curr_move = INFINITY;
             if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1,
@@ -116,8 +116,8 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
-            //if (curr_move > MATE_THRESHOLD) curr_move -= 1;
-            //else if (curr_move < -MATE_THRESHOLD) curr_move += 1;
+            if (curr_move > MATE_THRESHOLD) curr_move -= 1;
+            else if (curr_move < -MATE_THRESHOLD) curr_move += 1;
 
             best_move = (best_move < curr_move) ? best_move : curr_move;
             beta = (beta < best_move) ? beta : best_move;

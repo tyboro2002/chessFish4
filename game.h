@@ -963,18 +963,22 @@ inline bool isDraw(Board* bord,PositionTracker* positionTracker){
     return positionTracker->getPositionOccurrences(bord) >= 3 || isDraw(bord);
 }
 
-inline bool isChekmate(Board* bord) {
+inline bool isCheckmate(Board* bord) {
     ActionList actionList;
     getLegalMoves(bord,&actionList);
     return actionList.count == 0 && calculateKingDanger(bord);
 }
 
+inline bool isCheck(Board* bord) {
+    return calculateKingDanger(bord);
+}
+
 inline bool isEnded(Board* bord){
-    return isChekmate(bord) || isDraw(bord);
+    return isCheckmate(bord) || isDraw(bord);
 }
 
 inline bool isEnded(Board* bord, PositionTracker* positionTracker){
-    return isChekmate(bord) || isDraw(bord, positionTracker);
+    return isCheckmate(bord) || isDraw(bord, positionTracker);
 }
 
 // Function to copy values from bordIn to bordOut
@@ -998,6 +1002,17 @@ inline void copyBoard(const Board* bordIn, Board* bordOut) {
     bordOut->enPassantTarget = bordIn->enPassantTarget;
     bordOut->halfmoveClock = bordIn->halfmoveClock;
     bordOut->reserved = bordIn->reserved;
+}
+
+inline void copyActionList(const ActionList* actionListIn, ActionList* actionListOut){
+    // Clear the destination action list
+    actionListOut->count = 0;
+
+    // Copy each move from the source to the destination
+    for (int i = 0; i < actionListIn->count; ++i) {
+        actionListOut->moves[i] = actionListIn->moves[i];
+        actionListOut->count++;
+    }
 }
 
 void printPositionRecords(const PositionTracker* tracker);
@@ -1106,6 +1121,20 @@ inline std::string convertToFEN(const Board* board){
     return fen.str();
 }
 
+inline void makeNullMove(Board* bord) {
+    // Toggle side to move
+    bord->whiteToPlay = !bord->whiteToPlay;
+
+    // Invalidate en passant
+    bord->enPassentValid = false;
+
+    // You may need to update other relevant information...
+}
+
+inline bool bigPiece(const Board* bord){
+    if(bord->whiteToPlay) return (bord->rook | bord->queen | bord->bishop) & bord->white;
+    else return (bord->rook | bord->queen | bord->bishop) & bord->black;
+}
 
 //TODO a function to convert from board to fen (see: string Position::fen() const { from https://github.com/official-stockfish/Stockfish/blob/master/src/position.cpp)
 

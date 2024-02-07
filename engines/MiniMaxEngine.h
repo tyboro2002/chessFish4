@@ -1,9 +1,6 @@
 #pragma once
 #include "ChessEngine.h"
 
-//const int MATE_SCORE = 1000000000;
-//const int MATE_THRESHOLD = 999000000;
-
 class MiniMaxEngine : public ChessEngine {
 public:
     MiniMaxEngine(int depthGiven) : depth(depthGiven == 0 ? 1: depthGiven){}

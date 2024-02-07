@@ -1,4 +1,4 @@
-position fen r2qk2r/p1p2ppp/b2bp2/4p3/4Pn2/3N2N1P/PPP2PP/1R1B3KR b kq - 0 0
+position fen r1bqk1nr/ppppQppp/2n4/8/8/8P/PPP1PPP/1RNB1KBNR b KQkq - 0 0
 go movetime 2000
 d
 go movetime 1000

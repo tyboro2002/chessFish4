@@ -54,5 +54,5 @@ private:
     int time = 0;
     TranspositionTable transpositionTable = TranspositionTable(TRANSPOSITION_TABLE_SIZE_ITERATIVE_DEEPENING);
     void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, ActionList* moveList, int timeRemaining);
-    double minimax(Board* bord, double alpha, double beta, int depth, bool maximizing_player, bool whitePlays);
+    double minimax(Board* bord, double alpha, double beta, int depth, bool maximizing_player, bool whitePlays, bool doNullPruning);
 };

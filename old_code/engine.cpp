@@ -32,9 +32,6 @@ const map<Pieces, int> piece_score_dic = {
         {NOPIECE,0}
 };
 
-const int MATE_SCORE = 1000000000;
-const int MATE_THRESHOLD = 999000000;
-
 const int pawnEvalWhite[64] = {
         0, 0, 0, 0, 0, 0, 0, 0,
         5, 10, 10, -20, -20, 10, 10, 5,

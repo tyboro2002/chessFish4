@@ -255,7 +255,7 @@ public:
         /* draw the end game screen */
         if (gameOver){
             SetPixelMode(olc::Pixel::MASK); // Don't draw pixels which have any transparency
-            if(isChekmate(&bord)){
+            if(isCheckmate(&bord)){
                 if (bord.whiteToPlay){
                     DrawSprite(END_GAME_X,END_GAME_Y, getEndGameSprite(BLACK_WINS_Checkmate),END_GAME_SIZE);
                     if(loopGames > 0) simulationResults.update(BLACK_WINS_Checkmate);
