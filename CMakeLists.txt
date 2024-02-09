@@ -4,7 +4,7 @@ project(ChessFish4)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") #TODO zet terug
 
 add_executable(ChessFish4 main.cpp
         moves.cpp

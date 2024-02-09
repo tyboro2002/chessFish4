@@ -92,6 +92,31 @@ enum EndGameResult {
     DRAW_Agreement,
 };
 
+enum Exceptional{
+    Non_Exceptional,
+    Promote_Queen,
+    Promote_Rook,
+    Promote_Bishop,
+    Promote_Knight
+};
+
+/* a type representing the moving of a piece */
+class Action{
+public:
+    // Action is a lightweight type, it is accommodated in only 16 bits
+    int  src : 8 = 0;
+    int  dst : 8 = 0;
+    Exceptional special : 8 = Non_Exceptional;
+
+    bool operator==(const Action& other) const {
+        return src == other.src && dst == other.dst && special == other.special;
+    }
+
+    bool operator!=(const Action& other) const {
+        return !(*this == other);
+    }
+};
+
 namespace std {
     template<>
     struct hash<Board> {
@@ -133,6 +158,18 @@ namespace std {
             //lhs.reserved == rhs.reserved;
 
             //lhs.extra == rhs.extra;
+        }
+    };
+
+    template<>
+    struct hash<Action> {
+        size_t operator()(const Action& action) const {
+            // Combine the hash values of individual components of the board
+            // to create a unique hash value for the entire board.
+            size_t combinedHash = hash<U64>{}(action.src) ^
+                                  hash<U64>{}(action.dst) ^
+                                  hash<U64>{}(action.special);// ^
+            return combinedHash;
         }
     };
 }
@@ -226,35 +263,10 @@ struct MOVELIST{
     Move moves[MAXMOVES];
 };
 
-enum Exceptional{
-    Non_Exceptional,
-    Promote_Queen,
-    Promote_Rook,
-    Promote_Bishop,
-    Promote_Knight
-};
-
-/* a type representing the moving of a piece */
-class Action{
-public:
-    // Action is a lightweight type, it is accommodated in only 16 bits
-    int  src : 8 = 0;
-    int  dst : 8 = 0;
-    Exceptional special : 8 = Non_Exceptional;
-
-    bool operator==(const Action& other) const {
-        return src == other.src && dst == other.dst && special == other.special;
-    }
-
-    bool operator!=(const Action& other) const {
-        return !(*this == other);
-    }
-};
-
 /* a list of actions used to represent everything we can do from a formation */
 struct ActionList{
     int count = 0;  // number of moves
-    Action moves[MAXMOVES]{};
+    Action moves[MAXMOVES];
 
     // Function to add a move to the list
     void addMove(int src, int dst, Exceptional exp = Non_Exceptional) {
@@ -364,7 +376,7 @@ void printActionListNumberd(const ActionList* actionList);
 void printAction(const Action* action);
 
 /* print an action (without a newline after it to make able to use in other functions) */
-void printActionInline(const Action* action);
+void printActionInline(const Action action);
 
 /*
  * inlined functions

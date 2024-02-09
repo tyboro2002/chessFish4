@@ -1,3 +1,4 @@
+#include <unordered_set>
 #include "tests.h"
 
 #define REMOVE_CASTELS()    bord.whiteKingsideCastle = 0; \
@@ -458,6 +459,7 @@ void TestRunner::GenerateActions() {
     setup(&bord);
     ActionList actionList;
     getAllMoves(&bord,&actionList);
+
     testResultTrue(actionList.count == testActionList.count,"correct amount of actions from starting position as white");
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from starting position as white are the correct actions");
 
@@ -512,7 +514,6 @@ void TestRunner::GenerateActions() {
     getAllMoves(&bord,&actionList);
     testResultTrue(actionList.count == testActionList.count,"correct amount of actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white");
     testResultTrue(areActionListsEqual(actionList,testActionList),"actions from rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 position as white are the correct actions");
-
 }
 
 void TestRunner::testGeneralPerftResultst() {
@@ -617,6 +618,7 @@ int TestRunner::runAutomatedTestCases() {
     printPassed = temp;
 
     GenerateActions();
+
     testDrawFunction();
     testCheckMateFunction();
     testIsEndedFunction();
@@ -651,9 +653,14 @@ bool TestRunner::areActionListsEqual(const ActionList& list1, const ActionList& 
         return false;
     }
 
-    // Check if both sets of moves contain the same elements
-    if(std::is_permutation(list1.moves, list1.moves + list1.count, list2.moves)) return true;
-    else{
+    // Convert arrays to unordered sets
+    std::unordered_set<Action> set1(list1.moves, list1.moves + list1.count);
+    std::unordered_set<Action> set2(list2.moves, list2.moves + list2.count);
+
+    // Check if sets are the same
+    if (set1 == set2) {
+        return true;
+    }else{
         if (printFaults){cout << "moves in list1 but not in list2: " << endl;
             for (int i = 0; i<list1.count; i++) {
                 Action actie = list1.moves[i];

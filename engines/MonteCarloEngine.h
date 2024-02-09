@@ -8,40 +8,34 @@
 #include "queue"
 
 #define DOUBLE_MAX std::numeric_limits<double>::max()
-#define UCT_CONST sqrt(2) //TODO check
+#define UCT_CONST 1.41421356237 //sqrt(2) //TODO check
 
 class MCTS_Node {
     // parent of this node (None for the root)
     MCTS_Node* parent = nullptr;
     // action we took to get here from parent
     // we can use this to iteratively reconstruct the board corresponding to this node
-    const Action* action = nullptr;
+    std::optional<Action> action;;
     double value = 0.0; // rolling mean of rewards from this node
     double visits = 0;  // amount of time a node is visited (used for calculation of UCT)
 
 public:
     std::vector<std::unique_ptr<MCTS_Node>> children;
     /* a node in the MCTS-gameTree */
-    MCTS_Node(MCTS_Node* parentArg, const Action* move): parent(parentArg), action(move){};
+    MCTS_Node(MCTS_Node* parentArg, std::optional<Action> move): parent(parentArg), action(move){};
 
-    [[nodiscard]] double uct() const;
-    void visit() {visits++;}
-    void updateValue (int flag, int reward) {value += (flag * reward - value) / visits;}
-    [[nodiscard]] MCTS_Node* getParent() const {return parent;}
-    [[nodiscard]] double getValue() const {return value;}
-    [[nodiscard]] const Action* getAction() const {return action;}
+    inline void visit() {visits++;}
+    inline void updateValue (int flag, int reward) {value += (flag * reward - value) / visits;}
+    [[nodiscard]] inline MCTS_Node* getParent() const {return parent;}
+    [[nodiscard]] inline double getValue() const {return value;}
+    [[nodiscard]] inline std::optional<Action> getAction() const {return action;}
 
-    void printMCTSTree(int depth = 0) const {
-        for (int i = 0; i < depth; ++i) {
-            std::cout << "  ";  // Add indentation based on the depth
-        }
+    inline void printMCTSTree(int depth = 0) const {
+        for (int i = 0; i < depth; ++i) std::cout << "  ";  // Add indentation based on the depth
 
         std::cout << "Action: ";
-        if (action != nullptr) {
-            printActionInline(action);
-        } else {
-            std::cout << "None";
-        }
+        if (action.has_value()) printActionInline(action.value());
+        else std::cout << "None";
 
         std::cout << " | Value: " << value << " | Visits: " << visits << " | children:  " << children.size() <<std::endl;
 
@@ -49,19 +43,20 @@ public:
         for (const auto& child : children) child->printMCTSTree(depth + 1);
     }
 
-    void printChildren() const {
+    inline void printChildren() const {
         std::cout << "Children: " << children.size() << std::endl;
         for (const auto& child : children) {
             std::cout << "  Action: ";
-            if (child->action != nullptr) {
-                printActionInline(child->action);
-            } else {
-                std::cout << "None";
-            }
+            if (child->action.has_value()) printActionInline(child->action.value());
+            else std::cout << "None";
             std::cout << " | Value: " << child->value << " | Visits: " << child->visits << std::endl;
         }
     }
-
+    [[nodiscard]] inline double uct() const{
+        /* Upper Confidence Bound for trees formule */
+        if (visits > 0 && parent != nullptr) return value + 2 * UCT_CONST * sqrt(2 * log(parent->visits) / visits);
+        else return DOUBLE_MAX;
+    }
 };
 
 class MonteCarloEngine : public ChessEngine {
@@ -75,7 +70,7 @@ public:
 
     Action getPreferredAction(Board* bord) override { //TODO children of the root node seems to change to the other players children
         //create empty root node
-        MCTS_Node root = MCTS_Node(nullptr, nullptr);
+        MCTS_Node root = MCTS_Node(nullptr, std::nullopt);
         for (int i = 0; i<iterations; i++){
             Board iterBoard{};
             copyBoard(bord, &iterBoard);
@@ -93,47 +88,27 @@ public:
                                                              });
 
                 node = selectedNodeIterator->get();
-                printAction(node->getAction());
-                movePiece(&iterBoard, node->getAction());
+                Action action = (node->getAction().value());
+                movePiece(&iterBoard, &action);
             }
 
             bool node_turn = iterBoard.whiteToPlay;
-            std::cout << "node_turn: " << node_turn << std::endl;
-
-            printFancyBoard(&iterBoard);
-
-            node->printMCTSTree();
-
-            std::cout << "root: " << std::endl;
-            root.printChildren(); //stil okay (TODO remove)
 
             // EXPANSION
             // We generate all the child nodes for the selected node
             if(!isEnded(&iterBoard)){
                 //node->children.clear();
-                std::cout << "after clearing childs" << std::endl;
-                root.printMCTSTree();
-                node->printMCTSTree();
                 ActionList actionList;
-                std::cout << "location of actionList: " << &actionList << " location of node: " << &node << " location of node children: " << &node->children << std::endl;
-                std::cout << "creating action list" << std::endl;
-                root.printMCTSTree();
-                node->printMCTSTree();
                 getLegalMoves(&iterBoard, &actionList);
-                std::cout << "before adding childs" << std::endl;
-                root.printMCTSTree();
-                node->printMCTSTree();
                 for (int childNumber = 0; childNumber < actionList.count; childNumber++){
-                    auto newNode = std::make_unique<MCTS_Node>(node, &actionList.moves[childNumber]);
+                    auto newNode = std::make_unique<MCTS_Node>(node, actionList.moves[childNumber]);
                     node->children.push_back(std::move(newNode));
 
-                    std::cout << "after adding child: " << childNumber << std::endl;
-                    node->printMCTSTree();
                     // The children wil be shuffled to prevent bias
                     // An equivalent solution would be to chose in the selection step a random unexplored child instead of the first
                     std::random_device rd;
                     std::mt19937 rng(rd());
-                    //std::shuffle(node->children.begin(), node->children.end(), rng); //TODO place back
+                    std::shuffle(node->children.begin(), node->children.end(), rng);
                 }
             }
 
@@ -145,21 +120,18 @@ public:
             while (!isEnded(&iterBoard) && rollout_depth < max_depth) {
                 rollout_depth ++;
                 // initiate the base agent to play like the current player
-                // base_agent.player = iterBoard.whiteToPlay;
                 // make a move
                 Action action = base_agent->getPreferredAction(&iterBoard);
                 movePiece(&iterBoard, &action);
             }
             //  Om de score van het resultaat te bepalen, moeten we de base_agent weer op onze speler instellen
-            //self.base_agent.player = self.player
-            //reward = self.base_agent.score(iter_board)
             int reward = evaluateBoard(&iterBoard);
 
             // NEGAMAX BACKPROPAGATION
             // if it is our turn at the beginning of the rollout, this means that the last move is from our opponent => flag = -1
 
             int flag = (node_turn == player) ? -1 : 1;
-            while (node->getParent()){
+            while (node){
                 node->visit();
                 // update the node value withe running mean
                 node->updateValue(flag, reward);
@@ -167,9 +139,9 @@ public:
             }
 
             /* print out the tree for debugging */
-            std::cout << "after itt " << i << " the tree is " << std::endl;
-            root.printMCTSTree();
-            std::cout << "---------------------------------" << std::endl;
+            //std::cout << "after itt " << i << " the tree is " << std::endl;
+            //root.printMCTSTree();
+            //std::cout << "---------------------------------" << std::endl;
         }
 
         // make a move with the current MCTS-tree
@@ -179,7 +151,6 @@ public:
                                                          return a->getValue() < b->getValue();
                                                      });
 
-        root.printChildren();
 
         MCTS_Node* node = selectedNodeIterator->get(); // Dereference the unique_ptr
         return *(node->getAction());

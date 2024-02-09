@@ -487,8 +487,8 @@ void printAction(const Action* action){
     cout << squareToString(action->src)<< squareToString(action->dst) << (action->special == Promote_Rook ? "r" : "") << (action->special == Promote_Knight ? "n" : "") << (action->special == Promote_Bishop ? "b" : "") << (action->special == Promote_Queen ? "q" : "") << endl;
 }
 
-void printActionInline(const Action* action){
-    cout << squareToString(action->src)<< squareToString(action->dst) << (action->special == Promote_Rook ? "r" : "") << (action->special == Promote_Knight ? "n" : "") << (action->special == Promote_Bishop ? "b" : "") << (action->special == Promote_Queen ? "q" : "");
+void printActionInline(const Action action){
+    cout << squareToString(action.src)<< squareToString(action.dst) << (action.special == Promote_Rook ? "r" : "") << (action.special == Promote_Knight ? "n" : "") << (action.special == Promote_Bishop ? "b" : "") << (action.special == Promote_Queen ? "q" : "");
 }
 
 void printActionList(const ActionList* actionList){

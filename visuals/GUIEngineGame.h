@@ -328,9 +328,9 @@ private:
     int amountOfEngines = NUM_ENGINES;
 
     ChessEngine* randomEngine = new RandomChessEngine();
+    ChessEngine* miniMaxEngine = new MiniMaxEngine(MINIMAX_DEPTH);
     ChessEngine* randomMonteCarloEngineBlack = new MonteCarloEngine(false, MONTE_CARLO_BLACK_DEPTH, MONTE_CARLO_BLACK_ITT, randomEngine);
     ChessEngine* randomMonteCarloEngineWhite = new MonteCarloEngine(true,  MONTE_CARLO_WHITE_DEPTH, MONTE_CARLO_WHITE_ITT, randomEngine);
-    ChessEngine* miniMaxEngine = new MiniMaxEngine(MINIMAX_DEPTH);
     ChessEngine* iterativeDeepeningMiniMaxEngine = new IterativeDeepeningMinimaxEngine(ITERATIVE_DEEPENING_TIME_GIVEN);
     ChessEngine* stockFishEngine = new StockFishEngine(STOCKFISH_TIME_GIVEN);
 
