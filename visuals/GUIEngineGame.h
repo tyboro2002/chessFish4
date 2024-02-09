@@ -121,27 +121,28 @@ public:
                     int toSq = 63-(row*8+col);
                     if(selectedSquare != -1 || !humanPlay()){
                         if((selectedSquare != toSq && 1ULL<<toSq & mask) || (!humanPlay()) && !gameOver){
+                            Action action;
                             if(bord.whiteToPlay){
                                 switch (selectedWhiteEngine) {
                                     case RANDOM:
-                                        randomEngine->makeMove(&bord);
+                                        action = randomEngine->getPreferredAction(&bord);
                                         break;
                                     case MONTE_CARLO:
-                                        randomMonteCarloEngine->makeMove(&bord);
+                                        action = randomMonteCarloEngineWhite->getPreferredAction(&bord);
                                         break;
                                     case MINIMAX:
-                                        miniMaxEngine->makeMove(&bord);
+                                        action = miniMaxEngine->getPreferredAction(&bord);
                                         break;
                                     case ITERATIVE_DEEPENING:
-                                        iterativeDeepeningMiniMaxEngine->makeMove(&bord);
+                                        action = iterativeDeepeningMiniMaxEngine->getPreferredAction(&bord);
                                         break;
                                     case STOCKFISH:
-                                        stockFishEngine->makeMove(&bord);
+                                        action = stockFishEngine->getPreferredAction(&bord);
                                         break;
                                     case HUMAN:
-                                        Action action = {.src = selectedSquare, .dst = toSq};
+                                        action = {.src = selectedSquare, .dst = toSq};
                                         if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
-                                        movePiece(&bord, &action);
+                                        //movePiece(&bord, &action);
                                         break;
                                 }
                                 //cout << "white move made" << endl;
@@ -149,35 +150,45 @@ public:
                             }else{
                                 switch (selectedBlackEngine) {
                                     case RANDOM:
-                                        randomEngine->makeMove(&bord);
+                                        action = randomEngine->getPreferredAction(&bord);
                                         break;
                                     case MONTE_CARLO:
-                                        randomMonteCarloEngine->makeMove(&bord);
+                                        action = randomMonteCarloEngineBlack->getPreferredAction(&bord);
                                         break;
                                     case MINIMAX:
-                                        miniMaxEngine->makeMove(&bord);
+                                        action = miniMaxEngine->getPreferredAction(&bord);
                                         break;
                                     case ITERATIVE_DEEPENING:
-                                        iterativeDeepeningMiniMaxEngine->makeMove(&bord);
+                                        action = iterativeDeepeningMiniMaxEngine->getPreferredAction(&bord);
                                         break;
                                     case STOCKFISH:
-                                        stockFishEngine->makeMove(&bord);
+                                        action = stockFishEngine->getPreferredAction(&bord);
                                         break;
                                     case HUMAN:
-                                        Action action = {.src = selectedSquare, .dst = toSq};
+                                        action = {.src = selectedSquare, .dst = toSq};
                                         if((selectedSquare >= 48 && bord.whiteToPlay) || (selectedSquare <= 15 && !bord.whiteToPlay) ) action.special = Promote_Queen; //TODO make player choose
-                                        movePiece(&bord, &action);
                                         break;
                                 }
                                 //cout << "black move made" << endl;
                                 //printFancyBoard(&bord);
                             }
-                            moveNumber++;
-                            positionTracker.addPosition(&bord);
+                            ActionList legalMoves;
+                            getLegalMoves(&bord,&legalMoves);
 
-                            if(isEnded(&bord, &positionTracker)) {
-                                //cout << "game ended before this" << endl;
-                                gameOver = True;
+                            if(legalMoves.contains(action)) {
+                                movePiece(&bord, &action);
+                                moveNumber++;
+                                positionTracker.addPosition(&bord);
+
+                                if (isEnded(&bord, &positionTracker)) {
+                                    //cout << "game ended before this" << endl;
+                                    gameOver = True;
+                                }
+                            }else{
+                                printFancyBoard(&bord);
+                                printAction(&action);
+                                std::cout << "the above move is illegal !" << std::endl;
+                                std::cout << "--------------------------" << std::endl;
                             }
                         }
                         selectedSquare = -1;
@@ -317,10 +328,11 @@ private:
     int amountOfEngines = NUM_ENGINES;
 
     ChessEngine* randomEngine = new RandomChessEngine();
-    ChessEngine* randomMonteCarloEngine = new MonteCarloEngine(false, 10, 100, randomEngine);
-    ChessEngine* miniMaxEngine = new MiniMaxEngine(5);
-    ChessEngine* iterativeDeepeningMiniMaxEngine = new IterativeDeepeningMinimaxEngine(2);
-    ChessEngine* stockFishEngine = new StockFishEngine(2);
+    ChessEngine* randomMonteCarloEngineBlack = new MonteCarloEngine(false, MONTE_CARLO_BLACK_DEPTH, MONTE_CARLO_BLACK_ITT, randomEngine);
+    ChessEngine* randomMonteCarloEngineWhite = new MonteCarloEngine(true,  MONTE_CARLO_WHITE_DEPTH, MONTE_CARLO_WHITE_ITT, randomEngine);
+    ChessEngine* miniMaxEngine = new MiniMaxEngine(MINIMAX_DEPTH);
+    ChessEngine* iterativeDeepeningMiniMaxEngine = new IterativeDeepeningMinimaxEngine(ITERATIVE_DEEPENING_TIME_GIVEN);
+    ChessEngine* stockFishEngine = new StockFishEngine(STOCKFISH_TIME_GIVEN);
 
     void reset(){
         gameOver = false;

@@ -9,12 +9,13 @@ public:
         std::cout << "MiniMax Chess Engine initialized.\n";
     }
 
-    void makeMove(Board* bord) override {
+    Action getPreferredAction(Board* bord) override {
         ActionList actionList;
         getLegalMoves(bord,&actionList);
         Action move;
         minimax_root(bord, false, &move, &actionList); //maximize means if its white ?
-        movePiece(bord,&move);
+        return move;
+        //movePiece(bord,&move);
         //printAction(&move);
         //std::cout << "MiniMax move made.\n";
     }

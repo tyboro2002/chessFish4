@@ -4,6 +4,20 @@
 #define COMMANDS_PATH "../externalEngines/testCommands.txt"
 #define OUTPUT_PATH "../externalEngines/output.txt"
 
+/* engine variables */
+#define MONTE_CARLO_WHITE_DEPTH 1
+#define MONTE_CARLO_WHITE_ITT 2
+
+#define MONTE_CARLO_BLACK_DEPTH MONTE_CARLO_WHITE_DEPTH
+#define MONTE_CARLO_BLACK_ITT MONTE_CARLO_WHITE_ITT
+
+#define MINIMAX_DEPTH 5
+
+#define ITERATIVE_DEEPENING_TIME_GIVEN 2
+
+#define STOCKFISH_TIME_GIVEN 2
+
+
 /* size of transpositionTable (sort of cache size) */
 #define TRANSPOSITION_TABLE_SIZE_DEFAULT (100 * 1024 * 1024)
 #define TRANSPOSITION_TABLE_SIZE_MINIMAX (1024 * 1024 * 1024)

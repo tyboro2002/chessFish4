@@ -12,12 +12,13 @@ public:
         std::cout << "Simple Random Chess Engine initialized.\n";
     }
 
-    void makeMove(Board* bord) override {
+    Action getPreferredAction(Board* bord) override {
         // Generate a random move (for simplicity, just print a message)
         ActionList actionList;
         getLegalMoves(bord,&actionList);
         int selectedIndex = getRandomNumber(actionList.count);
-        movePiece(bord,&actionList.moves[selectedIndex]);
+        return actionList.moves[selectedIndex];
+        //movePiece(bord,&actionList.moves[selectedIndex]);
         //std::cout << "Random move made.\n";
     }
 

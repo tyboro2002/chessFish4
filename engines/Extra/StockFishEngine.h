@@ -15,11 +15,12 @@ public:
         startStockfish();
     }
 
-    void makeMove(Board* board) override {
+    Action getPreferredAction(Board* board) override {
         // Use Stockfish to find the best move
         Action move = getStockFishMove(board);
         //printAction(&move);
-        movePiece(board, &move);
+        return move;
+        //movePiece(board, &move);
     }
 
 private:

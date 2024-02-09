@@ -219,7 +219,7 @@ inline bool check_end_game(Board* bord) {
 class ChessEngine {
 public:
     virtual void initialize() = 0;
-    virtual void makeMove(Board* bord) = 0;
+    virtual Action getPreferredAction(Board* bord) = 0;
     virtual ~ChessEngine() = default;
 };
 

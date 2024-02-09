@@ -10,7 +10,7 @@ public:
         std::cout << "MiniMax Chess Engine with iterative deepening initialized.\n";
     }
 
-    void makeMove(Board* bord) override {
+    Action getPreferredAction(Board* bord) override {
         auto startTime = std::chrono::high_resolution_clock::now();
         ActionList actionList;
         getLegalMoves(bord,&actionList);
@@ -45,7 +45,8 @@ public:
                 break;
             }
         }
-        movePiece(bord,&move);
+        return move;
+        //movePiece(bord,&move);
         //printAction(&move);
         //std::cout << "MiniMax move made.\n";
     }

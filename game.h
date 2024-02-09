@@ -281,6 +281,16 @@ struct ActionList{
         }
         return false; // Move not found in the list
     }
+
+    // Function to check if an action is in the list
+    [[nodiscard]] bool contains(const Action& action) const {
+        for (int i = 0; i < count; ++i) {
+            if (moves[i].src == action.src && moves[i].dst == action.dst && moves[i].special == action.special) {
+                return true; // Action found in the list
+            }
+        }
+        return false; // Action not found in the list
+    }
 };
 
 void printBoard(Board* bord);
@@ -352,6 +362,9 @@ void printActionListNumberd(const ActionList* actionList);
 
 /* print an action */
 void printAction(const Action* action);
+
+/* print an action (without a newline after it to make able to use in other functions) */
+void printActionInline(const Action* action);
 
 /*
  * inlined functions
