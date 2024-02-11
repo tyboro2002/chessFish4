@@ -351,9 +351,9 @@ struct TranspositionTableEntry {
     Action bestMove;
 };
 
-class TranspositionTable {
+class TranspositionTable { //TODO look if this cant be made faster
 public:
-    TranspositionTable(int size) : currentSize(0), maxSizeBytes(size) {}
+    explicit TranspositionTable(int size) : currentSize(0), maxSizeBytes(size) {}
     TranspositionTable() : currentSize(0), maxSizeBytes(TRANSPOSITION_TABLE_SIZE_DEFAULT) {} // 100MB
 
     void store(Board* board, const int score, const int depth, Action bestMove) {

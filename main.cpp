@@ -3,6 +3,7 @@
 #include "timing/timing.h"
 #include "visuals/GUIEngineGame.h"
 #include "magic_numbers/MagicsTester.h"
+#include "UCI/UCISupport.h"
 
 using namespace std;
 
@@ -11,8 +12,14 @@ using namespace std;
 #define DRAW // Define this macro to run draw
 //#define MAGIC // Define this macro to run the initialisation of the magic numbers
 //#define TIME // Define this macro to time the code
+#define UCI // Define this macro to start the engine in UCI mode (if this is on all other macros are neglected)
 
 int main() {
+#ifdef UCI
+    UCISupport uciSupport;
+    uciSupport.runUCI(); // run the UCI mode (exits the program if a quit command is sent)
+#endif
+
 #ifdef MAGIC
     MagicsTester magicsTester;
     magicsTester.init_magic_numbers();

@@ -182,7 +182,7 @@ public:
 
                                 if (isEnded(&bord, &positionTracker)) {
                                     //cout << "game ended before this" << endl;
-                                    gameOver = True;
+                                    gameOver = true;
                                 }
                             }else{
                                 printFancyBoard(&bord);

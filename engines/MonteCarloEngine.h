@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <memory>
+#include <optional>
 #include "queue"
 
 #define DOUBLE_MAX std::numeric_limits<double>::max()

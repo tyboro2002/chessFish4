@@ -4,7 +4,7 @@ project(ChessFish4)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") #TODO zet terug
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(ChessFish4 main.cpp
         moves.cpp
@@ -37,6 +37,8 @@ add_executable(ChessFish4 main.cpp
         engines/IterativeDeepeningMinimaxEngine.h
         engines/Extra/StockFishEngine.cpp
         engines/Extra/StockFishEngine.h
+        UCI/UCISupport.cpp
+        UCI/UCISupport.h
 )
 
 target_link_libraries(ChessFish4 PRIVATE
