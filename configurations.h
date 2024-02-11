@@ -11,7 +11,7 @@
 #define MONTE_CARLO_BLACK_DEPTH MONTE_CARLO_WHITE_DEPTH
 #define MONTE_CARLO_BLACK_ITT MONTE_CARLO_WHITE_ITT
 
-#define MINIMAX_DEPTH 5
+#define MINIMAX_DEPTH 6
 
 #define ITERATIVE_DEEPENING_TIME_GIVEN 2
 
@@ -22,6 +22,11 @@
 #define TRANSPOSITION_TABLE_SIZE_DEFAULT (100 * 1024 * 1024)
 #define TRANSPOSITION_TABLE_SIZE_MINIMAX (1024 * 1024 * 1024)
 #define TRANSPOSITION_TABLE_SIZE_ITERATIVE_DEEPENING (200 * 1024 * 1024)
+
+/* R for null move pruning (an R of x means a null move prune can happen when the depth is higher than x+1 and skips x depth) */
+#define R 3
+#define Rplus1 4
+
 
 /* speed of simulations */
 #define LOOP_FRAMES 1

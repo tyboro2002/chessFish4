@@ -13,8 +13,6 @@ void IterativeDeepeningMinimaxEngine::minimax_root(Board *bord, int depth, bool 
         moveOut->src = (ttEntry->bestMove).src;
         moveOut->dst = (ttEntry->bestMove).dst;
         moveOut->special = (ttEntry->bestMove).special;
-        //printAction(&ttEntry->bestMove);
-        //std::cout << "used transposition table" << std::endl;
         return;
     }
 
@@ -74,13 +72,12 @@ double IterativeDeepeningMinimaxEngine::minimax(Board *bord, double alpha, doubl
         return ttEntry->score;
     }
 
-
-    // TODO Null Move Pruning
-    if (doNullPruning && currentDepth >= 4 && !isCheck(bord) && bigPiece(bord)) {
+    // Null move pruning (if we don't do a move and the opponent isn't able to make the position not initiate a beta cutoff we can prune this branch)
+    if (doNullPruning && currentDepth >= Rplus1 && !isCheck(bord) && bigPiece(bord)) {
         Board boardCopy{};
         copyBoard(bord, &boardCopy);  // Create a copy of the board
         makeNullMove(&boardCopy);     // Make null move on the copy
-        double nullMoveScore = -minimax(&boardCopy, -beta, -beta + 1, currentDepth - 3, !maximizing_player, !whitePlays, false);
+        double nullMoveScore = -minimax(&boardCopy, -beta, -beta + 1, currentDepth - R, !maximizing_player, !whitePlays, false);
 
         if (nullMoveScore >= beta)
             return nullMoveScore;  // Null move cutoff

@@ -39,7 +39,7 @@ void MiniMaxEngine::minimax_root(Board *bord, bool maximize, Action *moveOut, Ac
         }
 
         double value = 0.0;
-        if (!isDraw(&boardCopy)) value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, boardCopy.whiteToPlay);
+        if (!isDraw(&boardCopy)) value = minimax(&boardCopy, -INFINITY, INFINITY, depth - 1, !maximize, boardCopy.whiteToPlay, true);
         //std::cout << "resulted in: " << value << std::endl;
         if ((maximize && value > best_move) || (!maximize && value < best_move)) {
             best_move = value;
@@ -53,7 +53,7 @@ void MiniMaxEngine::minimax_root(Board *bord, bool maximize, Action *moveOut, Ac
     moveOut->special = best_move_found.special;
 }
 
-double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int currentDepth, bool maximizing_player, bool whitePlays) {
+double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int currentDepth, bool maximizing_player, bool whitePlays, bool doNullPruning) {
     if (currentDepth == 0) return evaluateBoard(bord);
 
     // Lookup the position in the Transposition Table
@@ -61,6 +61,17 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
     if (ttEntry != nullptr && ttEntry->depth >= currentDepth) {
         // Return the stored evaluation score if depth is sufficient
         return ttEntry->score;
+    }
+
+    // Null move pruning (if we don't do a move and the opponent isn't able to make the position not initiate a beta cutoff we can prune this branch)
+    if (doNullPruning && currentDepth >= Rplus1 && !isCheck(bord) && bigPiece(bord)) {
+        Board boardCopy{};
+        copyBoard(bord, &boardCopy);  // Create a copy of the board
+        makeNullMove(&boardCopy);     // Make null move on the copy
+        double nullMoveScore = -minimax(&boardCopy, -beta, -beta + 1, currentDepth - R, !maximizing_player, !whitePlays, false);
+
+        if (nullMoveScore >= beta)
+            return nullMoveScore;  // Null move cutoff
     }
 
     if (maximizing_player) {
@@ -80,7 +91,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             double curr_move = -INFINITY;
             if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1, false,
-                                                   whitePlays);
+                                                   whitePlays, true);
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
@@ -112,7 +123,7 @@ double MiniMaxEngine::minimax(Board* bord, double alpha, double beta, int curren
 
             double curr_move = INFINITY;
             if (!isDraw(&boardCopy)) curr_move = minimax(&boardCopy, alpha, beta, currentDepth - 1,
-                                true, !whitePlays);
+                                true, !whitePlays, true);
 
             // Each ply after a checkmate is slower, so they get ranked slightly less
             // We want the fastest mate!
