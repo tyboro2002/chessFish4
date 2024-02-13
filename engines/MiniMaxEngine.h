@@ -3,13 +3,18 @@
 
 class MiniMaxEngine : public ChessEngine {
 public:
-    MiniMaxEngine(int depthGiven) : depth(depthGiven == 0 ? 1: depthGiven){}
+    MiniMaxEngine(int depthGiven) : depth(depthGiven == 0 ? 1: depthGiven){
+        FILL_OPENING_BOOK
+    }
 
     void initialize() override {
         std::cout << "MiniMax Chess Engine initialized.\n";
     }
 
     Action getPreferredAction(Board* bord) override {
+
+        GET_MOVE_FROM_OPENING_BOOK
+
         ActionList actionList;
         getLegalMoves(bord,&actionList);
         Action move;
@@ -24,6 +29,7 @@ public:
 private:
     int depth = 0;
     TranspositionTable transpositionTable = TranspositionTable(TRANSPOSITION_TABLE_SIZE_MINIMAX);
+    OpeningBook openingBook;
     void minimax_root(Board* bord, bool maximize, Action* moveOut, ActionList* moveList);
     double minimax(Board* bord, double alpha, double beta, int depth, bool maximizing_player, bool whitePlays, bool doNullPruning);
 };

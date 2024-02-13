@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iostream>
 #include <bitset>
+#include <unordered_set>
 #include <sstream> // for std::ostringstream
 #include <algorithm>  // for std::is_permutation
 #include <thread> // to parallelize perft
@@ -12,6 +13,7 @@
 #include "../old_code/engine.h"
 #include "../moves.h"
 #include "testMoves.h"
+#include "../OpeningBook/OpeningBook.h"
 
 using namespace std;
 
@@ -46,6 +48,7 @@ private:
     void testIsEndedFunction();
 
     void testMoveToFront();
+    void testOpeningBook();
 
     //TODO fen test function
 

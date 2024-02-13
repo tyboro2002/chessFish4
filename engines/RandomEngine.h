@@ -1,9 +1,7 @@
-// SimpleRandomChessEngine.h
 #pragma once
 #include "ChessEngine.h"
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
 
 class RandomChessEngine : public ChessEngine {
 public:
@@ -23,11 +21,4 @@ public:
     }
 
 private:
-    inline int getRandomNumber(int n) {
-        // Seed the random number generator
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
-        // Generate a random number between 0 and n-1
-        return std::rand() % n;
-    }
 };

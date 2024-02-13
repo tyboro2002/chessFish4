@@ -1,7 +1,18 @@
 #pragma once
 #include "../game.h"
 #include "../configurations.h"
+#include "../OpeningBook/OpeningBook.h"
+#include <ctime>
 #include <map>
+
+#define GET_MOVE_FROM_OPENING_BOOK  \
+    std::vector<Action> moves = openingBook.getBestMoveFromOpeningBook(bord); \
+    if(!moves.empty()) { \
+    int selectedIndex = getRandomNumber(moves.size()); \
+    return moves[selectedIndex]; \
+}
+
+#define FILL_OPENING_BOOK openingBook.fillOpeningBookManualy();
 
 enum Engines { // to add an engine add it in this list and in the list in the constructor in GUIEngineGame.h
     HUMAN,
@@ -12,6 +23,14 @@ enum Engines { // to add an engine add it in this list and in the list in the co
     STOCKFISH,
     NUM_ENGINES
 };
+
+inline int getRandomNumber(int n) {
+    // Seed the random number generator
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    // Generate a random number between 0 and n-1
+    return std::rand() % n;
+}
 
 struct SimulationResults{
     U64 whiteWins = 0;

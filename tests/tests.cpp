@@ -1,4 +1,3 @@
-#include <unordered_set>
 #include "tests.h"
 
 #define REMOVE_CASTELS()    bord.whiteKingsideCastle = 0; \
@@ -624,6 +623,8 @@ int TestRunner::runAutomatedTestCases() {
     testIsEndedFunction();
 
     testMoveToFront();
+
+    testOpeningBook();
 
     //testGeneralPerftResultst();
 
@@ -1640,4 +1641,53 @@ void TestRunner::testIsEndedFunction() {
         readInFen(&bord,"8/8/8/8/8/3k4/3p4/3K4 w - - 2 69");
         testResultTrue(isEnded(&bord),"8/8/8/8/8/3k4/3p4/3K4 w - - 2 69 is a game over");
     }
+}
+
+// Function to check if two vectors have the same elements (disregarding order)
+bool haveSameElements(const std::vector<Action>& vec1, const std::vector<Action>& vec2) {
+    // Use unordered_map as a frequency counter for elements in vec1
+    std::unordered_map<Action, int> freqCounter;
+
+    // Increment frequency for each element in vec1
+    for (const auto& elem : vec1) {
+        freqCounter[elem]++;
+    }
+
+    // Decrement frequency for each element in vec2
+    for (const auto& elem : vec2) {
+        freqCounter[elem]--;
+    }
+
+    // Check if all frequencies are zero, indicating both vectors have the same elements
+    for (const auto& pair : freqCounter) {
+        if (pair.second != 0) {
+            return false; // Frequencies are not equal
+        }
+    }
+
+    return true;
+}
+
+void TestRunner::testOpeningBook() {
+    OpeningBook openingBook;
+    Board board{};
+    setup(&board);
+    Action action{E2,E4};
+    openingBook.addPositionToTable(&board,&action);
+
+    action = Action{D2,D4};
+    openingBook.addPositionToTable(&board,&action);
+
+    //for (Action actie: openingBook.getBestMoveFromOpeningBook(&board)) printAction(&actie);
+    std::vector<Action> testVector;
+    testVector.push_back(Action{D2,D4});
+    testVector.push_back(Action{E2,E4});
+
+    testResultTrue(haveSameElements(openingBook.getBestMoveFromOpeningBook(&board), testVector), "correct actions got from startpos");
+
+    Board emptyBoard{};
+    setupEmpty(&emptyBoard);
+    testResultTrue(openingBook.getBestMoveFromOpeningBook(&emptyBoard).empty(), "no moves in opening book for empty board");
+    testResultTrue(openingBook.getCurrentStoredActions() == 2, "2 actions stored in book");
+    testResultTrue(openingBook.getCurrentStoredPositions() == 1, "1 position stored in book");
 }

@@ -4,13 +4,18 @@
 
 class IterativeDeepeningMinimaxEngine : public ChessEngine{
 public:
-    explicit IterativeDeepeningMinimaxEngine(int timeGiven) : time(timeGiven == 60 ? 1 : timeGiven){}
+    explicit IterativeDeepeningMinimaxEngine(int timeGiven) : time(timeGiven == 60 ? 1 : timeGiven){
+        FILL_OPENING_BOOK
+    }
 
     void initialize() override {
         std::cout << "MiniMax Chess Engine with iterative deepening initialized.\n";
     }
 
     Action getPreferredAction(Board* bord) override {
+
+        GET_MOVE_FROM_OPENING_BOOK
+
         auto startTime = std::chrono::high_resolution_clock::now();
         ActionList actionList;
         getLegalMoves(bord,&actionList);
@@ -54,6 +59,7 @@ public:
 
 private:
     int time = 0;
+    OpeningBook openingBook;
     TranspositionTable transpositionTable = TranspositionTable(TRANSPOSITION_TABLE_SIZE_ITERATIVE_DEEPENING);
     void minimax_root(Board* bord, int depth, bool maximize, Action* moveOut, ActionList* moveList, int timeRemaining);
     double minimax(Board* bord, double alpha, double beta, int depth, bool maximizing_player, bool whitePlays, bool doNullPruning);

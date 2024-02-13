@@ -39,6 +39,8 @@ add_executable(ChessFish4 main.cpp
         engines/Extra/StockFishEngine.h
         UCI/UCISupport.cpp
         UCI/UCISupport.h
+        OpeningBook/OpeningBook.cpp
+        OpeningBook/OpeningBook.h
 )
 
 target_link_libraries(ChessFish4 PRIVATE

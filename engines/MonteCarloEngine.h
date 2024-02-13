@@ -62,14 +62,19 @@ public:
 
 class MonteCarloEngine : public ChessEngine {
 public:
-    MonteCarloEngine(bool isWhite, int depth, int itt, ChessEngine* chessEngine): player(isWhite), max_depth(depth), iterations(itt), base_agent(chessEngine) {}
+    MonteCarloEngine(bool isWhite, int depth, int itt, ChessEngine* chessEngine): player(isWhite), max_depth(depth), iterations(itt), base_agent(chessEngine) {
+        FILL_OPENING_BOOK
+    }
 
     void initialize() override {
         std::srand(std::time(0));
         std::cout << "MonteCarlo Chess Engine initialized.\n";
     }
 
-    Action getPreferredAction(Board* bord) override { //TODO children of the root node seems to change to the other players children
+    Action getPreferredAction(Board* bord) override {
+
+        GET_MOVE_FROM_OPENING_BOOK
+
         //create empty root node
         MCTS_Node root = MCTS_Node(nullptr, std::nullopt);
         for (int i = 0; i<iterations; i++){
@@ -160,6 +165,7 @@ public:
     }
 public:
 private:
+    OpeningBook openingBook;
     bool player; // for which player do we get rewards (true for white false for black)
     int max_depth; // max rollout
     int iterations; // amount of iterations per move
