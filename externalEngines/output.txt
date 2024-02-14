@@ -1,28 +1,28 @@
 Stockfish 11 64 by T. Romstad, M. Costalba, J. Kiiski, G. Linscott
 
  +---+---+---+---+---+---+---+---+
- |   |   |   | r |   |   |   | r |
+ | r | n |   |   | k | b |   | r |
  +---+---+---+---+---+---+---+---+
- | p | p |   |   |   | p | p | p |
+ | p | p | p |   | p | p | p | p |
  +---+---+---+---+---+---+---+---+
- |   |   |   | R | b |   |   |   |
- +---+---+---+---+---+---+---+---+
- |   |   | R |   |   |   |   |   |
- +---+---+---+---+---+---+---+---+
- | P |   |   | B | k | P |   |   |
+ |   |   |   | q | b |   |   |   |
  +---+---+---+---+---+---+---+---+
  |   |   |   |   |   |   |   |   |
  +---+---+---+---+---+---+---+---+
- |   | P | P |   | N |   | P | P |
+ |   | P | q |   | B |   |   |   |
  +---+---+---+---+---+---+---+---+
- |   |   |   |   |   |   | K |   |
+ | K |   |   |   |   |   |   |   |
+ +---+---+---+---+---+---+---+---+
+ | P |   |   |   |   | P |   | P |
+ +---+---+---+---+---+---+---+---+
+ | R |   | B |   |   |   |   |   |
  +---+---+---+---+---+---+---+---+
 
-Fen: 3r3r/pp3ppp/3Rb3/2R5/P2BkP2/8/1PP1N1PP/6K1 w - - 0 1
-Key: 8495988A0E1658F8
+Fen: rn2kb1r/ppp1pppp/3qb3/8/1Pq1B3/K7/P4P1P/R1B5 b kq - 0 1
+Key: A3A0DED063B2C191
 Checkers: 
-info depth 1 seldepth 2 multipv 1 score mate 1 nodes 111 nps 55500 tbhits 0 time 2 pv c5e5
-info depth 2 seldepth 2 multipv 1 score mate 1 nodes 152 nps 50666 tbhits 0 time 3 pv c5e5
-bestmove c5e5
-info depth 1 seldepth 2 multipv 1 score mate 1 nodes 43 nps 10750 tbhits 0 time 4 pv c5e5
-bestmove c5e5
+info depth 1 seldepth 2 multipv 1 score mate 1 nodes 67 nps 67000 tbhits 0 time 1 pv c4b4
+info depth 2 seldepth 2 multipv 1 score mate 1 nodes 123 nps 123000 tbhits 0 time 1 pv c4b4
+bestmove c4b4
+info depth 1 seldepth 2 multipv 1 score mate 1 nodes 57 nps 28500 tbhits 0 time 2 pv d6b4
+bestmove d6b4

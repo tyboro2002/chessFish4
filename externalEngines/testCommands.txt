@@ -1,4 +1,4 @@
-position fen 3r3r/pp3ppp/3Rb2/3R4/1P2BkP1/8/2PP1N1PP/6K w - - 0 0
+position fen rn2kb1r/ppp1pppp/3qb2/8/2Pq1B2/1K6/1P4P1P/R1B b kq b3 0 0
 go depth 2
 d
 go depth 1

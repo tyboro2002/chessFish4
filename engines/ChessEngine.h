@@ -80,14 +80,14 @@ const std::map<Pieces, int> piece_score_dic = {
         {WKNIGHT, 300},
         {WBISCHOP, 300},
         {WQUEEN, 900},
-        {WKING, 0},
+        {WKING, 10'000},
         //black
         {BPAWN, 100},
         {BROOK, 500},
         {BKNIGHT, 300},
         {BBISCHOP, 300},
         {BQUEEN, 900},
-        {BKING, 0},
+        {BKING, 10'000},
         //empty
         {NOPIECE,0}
 };
@@ -187,10 +187,10 @@ const int kingEvalWhite[64] = {
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
-        -30, -40, -40, -50, -100, -40, -40, -30 //TODO old [60] is 50 check if this is better
+        -30, -40, -40, -50, -50, -40, -40, -30
 };
 const int kingEvalBlack[64] = {
-        -30, -40, -40, -50, -100, -40, -40, -30, //TODO old [4] is 50 check if this is better
+        -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
