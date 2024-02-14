@@ -1,4 +1,4 @@
-position fen rnbqkbnr/pppppppp/7/8/8/8/1PPPPPPPP/RNBQKBNR w KQkq - 0 0
-go movetime 2000
+position fen 3r3r/pp3ppp/3Rb2/3R4/1P2BkP1/8/2PP1N1PP/6K w - - 0 0
+go depth 2
 d
-go movetime 1000
+go depth 1

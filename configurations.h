@@ -15,7 +15,8 @@
 
 #define ITERATIVE_DEEPENING_TIME_GIVEN 2
 
-#define STOCKFISH_TIME_GIVEN 2
+#define STOCKFISH_TIME_GIVEN_OR_DEPTH 2
+#define STOCKFISH_GAVE_DEPTH true
 
 
 /* size of transpositionTable (sort of cache size) */

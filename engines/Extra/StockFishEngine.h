@@ -8,7 +8,7 @@
 
 class StockFishEngine : public ChessEngine {
 public:
-    explicit StockFishEngine(int timeGiven) : time(timeGiven == 60 ? 1 : timeGiven) {}
+    explicit StockFishEngine(bool isdepthGiven, int timeGivenOrDepth) : timeOrDepth(timeGivenOrDepth == 0 ? 1 : timeGivenOrDepth), isDepth(isdepthGiven){}
 
     void initialize() override {
         std::cout << "Stockfish Chess Engine initialized.\n";
@@ -24,7 +24,8 @@ public:
     }
 
 private:
-    int time = 0;
+    int timeOrDepth = 0;
+    bool isDepth = false;
 
     void startStockfish() {
         std::string command = "touch ";
@@ -42,11 +43,19 @@ private:
             return {0,0,Non_Exceptional};
         }
 
-        // Write the content to the file
-        file << "position fen " << convertToFEN(bord) << "\n";
-        file << "go movetime " << time << "000\n";
-        file << "d\n";
-        file << "go movetime 1000\n";
+        if(isDepth){
+            // Write the content to the file
+            file << "position fen " << convertToFEN(bord) << "\n";
+            file << "go depth " << timeOrDepth << "\n";
+            file << "d\n";
+            file << "go depth 1\n";
+        }else{
+            // Write the content to the file
+            file << "position fen " << convertToFEN(bord) << "\n";
+            file << "go movetime " << timeOrDepth << "000\n";
+            file << "d\n";
+            file << "go movetime 1000\n";
+        }
 
         // Close the file
         file.close();

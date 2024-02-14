@@ -332,7 +332,7 @@ private:
     ChessEngine* randomMonteCarloEngineBlack = new MonteCarloEngine(false, MONTE_CARLO_BLACK_DEPTH, MONTE_CARLO_BLACK_ITT, randomEngine);
     ChessEngine* randomMonteCarloEngineWhite = new MonteCarloEngine(true,  MONTE_CARLO_WHITE_DEPTH, MONTE_CARLO_WHITE_ITT, randomEngine);
     ChessEngine* iterativeDeepeningMiniMaxEngine = new IterativeDeepeningMinimaxEngine(ITERATIVE_DEEPENING_TIME_GIVEN);
-    ChessEngine* stockFishEngine = new StockFishEngine(STOCKFISH_TIME_GIVEN);
+    ChessEngine* stockFishEngine = new StockFishEngine(STOCKFISH_GAVE_DEPTH, STOCKFISH_TIME_GIVEN_OR_DEPTH);
 
     void reset(){
         gameOver = false;
